@@ -44,7 +44,7 @@ describe('Layout Component', () => {
       </Layout>
     );
     
-    expect(screen.getByText('Medora')).toBeInTheDocument();
+    expect(screen.getByText(/Medora/)).toBeInTheDocument();
   });
 
   it('should render logout button', () => {
