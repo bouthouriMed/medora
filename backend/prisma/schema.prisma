@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Clinic {
+  id        String   @id @default(uuid())
+  name      String
+  address   String?
+  phone     String?
+  email     String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+
+  users        User[]
+  patients     Patient[]
+  appointments Appointment[]
+  invoices     Invoice[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  firstName    String
+  lastName     String
+  role         String   @default("DOCTOR")
+  clinicId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  clinic       Clinic        @relation(fields: [clinicId], references: [id])
+  appointments Appointment[]
+
+  @@index([clinicId])
+}
+
+model Patient {
+  id           String   @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  dateOfBirth  DateTime?
+  address      String?
+  notes        String?
+  clinicId     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  clinic       Clinic        @relation(fields: [clinicId], references: [id])
+  appointments Appointment[]
+  invoices     Invoice[]
+
+  @@index([clinicId])
+}
+
+model Appointment {
+  id          String   @id @default(uuid())
+  patientId   String
+  doctorId    String
+  clinicId    String
+  dateTime    DateTime
+  status      String   @default("SCHEDULED")
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  doctor      User      @relation(fields: [doctorId], references: [id])
+  clinic      Clinic    @relation(fields: [clinicId], references: [id])
+  invoices    Invoice[]
+
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([dateTime])
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  appointmentId String
+  patientId     String
+  clinicId      String
+  amount        Float
+  status        String   @default("UNPAID")
+  dueDate       DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  patient       Patient     @relation(fields: [patientId], references: [id])
+  clinic        Clinic      @relation(fields: [clinicId], references: [id])
+
+  @@index([clinicId])
+  @@index([patientId])
+}
