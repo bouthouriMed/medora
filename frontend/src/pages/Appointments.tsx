@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation } from '../api';
 import { showToast } from '../components/Toast';
@@ -9,30 +9,31 @@ export default function Appointments() {
   const [showModal, setShowModal] = useState(false);
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
-  const filterParam = searchParams.get('filter');
 
   const getTodayString = () => {
     const today = new Date();
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
 
+  const selectedDate = useMemo(() => {
+    const filter = searchParams.get('filter');
+    const startDate = searchParams.get('startDate');
+    
+    if (filter === 'today') {
+      return getTodayString();
+    }
+    if (filter === 'upcoming' || !filter) {
+      return '';
+    }
+    return startDate || '';
+  }, [searchParams]);
+
   const isTodayActive = () => {
     const filter = searchParams.get('filter');
     const startDate = searchParams.get('startDate');
     return filter === 'today' || (startDate && startDate === getTodayString());
   };
-
-  useEffect(() => {
-    if (filterParam === 'today') {
-      setSelectedDate(getTodayString());
-    } else if (filterParam === 'upcoming') {
-      setSelectedDate('');
-    } else if (!filterParam) {
-      setSelectedDate('');
-    }
-  }, [filterParam]);
   
   const { data: allAppointments } = useGetAppointmentsQuery({});
   
@@ -45,7 +46,8 @@ export default function Appointments() {
       return { filter: 'upcoming' };
     }
     if (filter === 'today' || (startDate && endDate)) {
-      return { startDate: startDate || getTodayString(), endDate: endDate || getTodayString() };
+      const date = startDate || getTodayString();
+      return { startDate: date, endDate: date };
     }
     if (startDate) {
       return { startDate, endDate };
@@ -142,7 +144,6 @@ export default function Appointments() {
             type="date"
             value={selectedDate}
             onChange={(e) => {
-              setSelectedDate(e.target.value);
               if (e.target.value) {
                 setSearchParams({ startDate: e.target.value, endDate: e.target.value });
               } else {
@@ -153,20 +154,14 @@ export default function Appointments() {
           />
         </div>
         <button
-          onClick={() => {
-            setSelectedDate(getTodayString());
-            setSearchParams({ filter: 'today' });
-          }}
+          onClick={() => setSearchParams({ filter: 'today' })}
           className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${isTodayActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
         >
           Today
         </button>
         <button
-          onClick={() => {
-            setSelectedDate('');
-            setSearchParams({});
-          }}
-          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${!selectedDate && !filterParam ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          onClick={() => setSearchParams({})}
+          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${!selectedDate && !searchParams.get('filter') ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
         >
           Show All
         </button>
@@ -336,7 +331,7 @@ export default function Appointments() {
           appointments={allAppointments || []} 
           currentMonth={currentMonth}
           onMonthChange={setCurrentMonth}
-          onDateClick={(date) => setSelectedDate(date)}
+          onDateClick={(date) => setSearchParams({ startDate: date, endDate: date })}
         />
       )}
 

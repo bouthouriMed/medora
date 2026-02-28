@@ -229,7 +229,7 @@ async function main() {
   console.log('Created', appointments.length, 'appointments');
 
   // Create Invoices
-  const completedAppointments = appointments.filter((a: any) => a.status === 'COMPLETED');
+  const completedAppointments = appointments.filter((a) => a.status === 'COMPLETED');
   
   const invoices = await Promise.all([
     prisma.invoice.create({
