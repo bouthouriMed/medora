@@ -15,7 +15,7 @@
     "prisma:studio": "prisma studio",
     "db:up": "docker-compose up -d",
     "db:down": "docker-compose down",
-    "db:seed": "npx ts-node prisma/seed.ts",
+    "db:seed": "npx ts-node -P prisma/tsconfig.json prisma/seed.ts",
     "db:reset": "npx prisma migrate reset --force --seed",
     "db:dev": "npm run db:up && npm run prisma:migrate && npm run db:seed"
   },
