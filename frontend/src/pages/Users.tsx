@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useGetUsersQuery, useCreateUserMutation, useUpdateUserMutation, useDeleteUserMutation, useMeQuery } from '../api';
 import { showToast } from '../components/Toast';
+import type { User } from '../types';
 
 export default function Users() {
   const { data: currentUser } = useMeQuery(undefined);
   const [showModal, setShowModal] = useState(false);
-  const [editingUser, setEditingUser] = useState<any>(null);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
   const { data: users, isLoading } = useGetUsersQuery(undefined);
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
@@ -37,12 +38,12 @@ export default function Users() {
       setShowModal(false);
       setEditingUser(null);
       setFormData({ email: '', password: '', firstName: '', lastName: '', role: 'STAFF' });
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to save user', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to save user', 'error');
     }
   };
 
-  const handleEdit = (user: any) => {
+  const handleEdit = (user: User) => {
     setEditingUser(user);
     setFormData({
       email: user.email,
@@ -59,8 +60,8 @@ export default function Users() {
       try {
         await deleteUser(id).unwrap();
         showToast('User removed successfully', 'success');
-      } catch (error: any) {
-        showToast(error?.data?.error || 'Failed to remove user', 'error');
+      } catch (error) {
+        showToast(error instanceof Error ? error.message : 'Failed to remove user', 'error');
       }
     }
   };
@@ -114,7 +115,7 @@ export default function Users() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users?.map((user: any) => (
+              {users?.map((user: User) => (
                 <tr key={user.id} className="hover:bg-blue-50/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">

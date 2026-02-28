@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useGetPatientsQuery, useGetPatientAppointmentsQuery, useCreatePatientMutation, useDeletePatientMutation } from '../api';
 import { showToast } from '../components/Toast';
+import type { Patient, Appointment } from '../types';
 
 export default function Patients() {
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const { data: patients, isLoading } = useGetPatientsQuery(search);
   const { data: patientAppointments } = useGetPatientAppointmentsQuery(selectedPatient?.id || '', { 
     skip: !selectedPatient?.id 
@@ -33,8 +34,8 @@ export default function Patients() {
       setShowModal(false);
       setFormData({ firstName: '', lastName: '', email: '', phone: '', dateOfBirth: '', address: '', notes: '' });
       showToast('Patient created successfully!', 'success');
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to create patient', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to create patient', 'error');
     }
   };
 
@@ -43,13 +44,13 @@ export default function Patients() {
       try {
         await deletePatient(id).unwrap();
         showToast('Patient archived successfully', 'success');
-      } catch (error: any) {
-        showToast(error?.data?.error || 'Failed to archive patient', 'error');
+      } catch (error) {
+        showToast(error instanceof Error ? error.message : 'Failed to archive patient', 'error');
       }
     }
   };
 
-  const handleViewPatient = (patient: any) => {
+  const handleViewPatient = (patient: Patient) => {
     setSelectedPatient(patient);
   };
 
@@ -116,7 +117,7 @@ export default function Patients() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {patients?.map((patient: any) => (
+                {patients?.map((patient: Patient) => (
                   <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
@@ -158,7 +159,7 @@ export default function Patients() {
       {/* Mobile Cards View */}
       {patients && patients.length > 0 && (
         <div className="md:hidden grid grid-cols-1 gap-4">
-          {patients?.map((patient: any) => (
+          {patients?.map((patient: Patient) => (
             <div 
               key={patient.id} 
               className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 hover-lift"
@@ -244,7 +245,7 @@ export default function Patients() {
                 <p className="text-gray-500 text-sm">No appointments found</p>
               ) : (
                 <div className="space-y-2">
-                  {patientAppointments?.slice(0, 5).map((apt: any) => (
+                  {patientAppointments?.slice(0, 5).map((apt: Appointment) => (
                     <div key={apt.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                       <div>
                         <p className="font-medium text-gray-900 text-sm">{new Date(apt.dateTime).toLocaleDateString()}</p>

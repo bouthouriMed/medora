@@ -1,5 +1,7 @@
+import type { Appointment } from '../types';
+
 function CalendarView({ appointments, currentMonth, onMonthChange, onDateClick }: {
-  appointments: any[];
+  appointments: Appointment[];
   currentMonth: Date;
   onMonthChange: (date: Date) => void;
   onDateClick: (date: string) => void;
@@ -32,7 +34,7 @@ function CalendarView({ appointments, currentMonth, onMonthChange, onDateClick }
     const month = currentMonth.getMonth();
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     
-    return appointments.filter((apt: any) => {
+    return appointments.filter((apt: Appointment) => {
       const aptDate = new Date(apt.dateTime).toISOString().split('T')[0];
       return aptDate === dateStr;
     });
@@ -94,7 +96,7 @@ function CalendarView({ appointments, currentMonth, onMonthChange, onDateClick }
             >
               <div className={`text-sm font-medium ${isToday ? 'text-blue-600' : ''}`}>{day}</div>
               <div className="space-y-1 mt-1">
-                {dayAppointments.slice(0, 3).map((apt: any) => (
+                {dayAppointments.slice(0, 3).map((apt: Appointment) => (
                   <div
                     key={apt.id}
                     className={`text-xs truncate px-1 py-0.5 rounded ${

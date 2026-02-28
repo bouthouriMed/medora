@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation } from '../api';
 import { showToast } from '../components/Toast';
+import type { Invoice, Patient, Appointment } from '../types';
 
 export default function Invoices() {
   const [showModal, setShowModal] = useState(false);
@@ -34,8 +35,8 @@ export default function Invoices() {
       setShowModal(false);
       setFormData({ appointmentId: '', patientId: '', amount: '', dueDate: '' });
       showToast('Invoice created successfully!', 'success');
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to create invoice', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to create invoice', 'error');
     }
   };
 
@@ -43,8 +44,8 @@ export default function Invoices() {
     try {
       await markAsPaid(id).unwrap();
       showToast('Invoice marked as paid!', 'success');
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to update invoice', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to update invoice', 'error');
     }
   };
 
@@ -52,8 +53,8 @@ export default function Invoices() {
     try {
       await markAsUnpaid(id).unwrap();
       showToast('Invoice marked as unpaid', 'success');
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to update invoice', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to update invoice', 'error');
     }
   };
 
@@ -61,8 +62,8 @@ export default function Invoices() {
     return status === 'PAID' ? 'status-paid' : 'status-unpaid';
   };
 
-  const totalUnpaid = invoices?.filter((i: any) => i.status === 'UNPAID').reduce((sum: number, i: any) => sum + Number(i.amount), 0) || 0;
-  const totalPaid = invoices?.filter((i: any) => i.status === 'PAID').reduce((sum: number, i: any) => sum + Number(i.amount), 0) || 0;
+  const totalUnpaid = invoices?.filter((i: Invoice) => i.status === 'UNPAID').reduce((sum: number, i: Invoice) => sum + Number(i.amount), 0) || 0;
+  const totalPaid = invoices?.filter((i: Invoice) => i.status === 'PAID').reduce((sum: number, i: Invoice) => sum + Number(i.amount), 0) || 0;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -161,7 +162,7 @@ export default function Invoices() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {invoices?.map((invoice: any) => (
+                  {invoices?.map((invoice: Invoice) => (
                     <tr key={invoice.id} className="hover:bg-blue-50/50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-gray-600">
                         #{invoice.id.slice(0, 8).toUpperCase()}
@@ -216,7 +217,7 @@ export default function Invoices() {
 
           {/* Mobile Cards */}
           <div className="md:hidden space-y-4">
-            {invoices?.map((invoice: any) => (
+            {invoices?.map((invoice: Invoice) => (
               <div key={invoice.id} className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 hover-lift">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
@@ -277,7 +278,7 @@ export default function Invoices() {
                   required
                 >
                   <option value="">Select patient</option>
-                  {patients?.map((p: any) => (
+                  {patients?.map((p: Patient) => (
                     <option key={p.id} value={p.id}>
                       {p.firstName} {p.lastName}
                     </option>
@@ -293,7 +294,7 @@ export default function Invoices() {
                   required
                 >
                   <option value="">Select appointment</option>
-                  {appointments?.filter((a: any) => a.status === 'COMPLETED').map((a: any) => (
+                  {appointments?.filter((a: Appointment) => a.status === 'COMPLETED').map((a: Appointment) => (
                     <option key={a.id} value={a.id}>
                       {new Date(a.dateTime).toLocaleDateString()} - {a.patient?.firstName} {a.patient?.lastName}
                     </option>

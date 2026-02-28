@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useGetDashboardQuery } from '../api';
+import type { Appointment } from '../types';
 
 export default function Dashboard() {
   const { data, isLoading, error } = useGetDashboardQuery(undefined);
@@ -113,17 +114,17 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {data?.todayAppointments?.slice(0, 5).map((apt: any) => (
+                {data?.todayAppointments?.slice(0, 5).map((apt: Appointment) => (
                   <div 
                     key={apt.id} 
                     className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl hover:from-gray-100 hover:to-blue-100 transition-all"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                        {apt.patient.firstName[0]}{apt.patient.lastName[0]}
+                        {apt.patient?.firstName?.[0]}{apt.patient?.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{apt.patient.firstName} {apt.patient.lastName}</p>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
                         <p className="text-xs sm:text-sm text-gray-500">{new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                       </div>
                     </div>
@@ -158,17 +159,17 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {data?.upcomingAppointments?.slice(0, 5).map((apt: any) => (
+                {data?.upcomingAppointments?.slice(0, 5).map((apt: Appointment) => (
                   <div 
                     key={apt.id} 
                     className="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl hover:from-gray-100 hover:to-purple-100 transition-all"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                        {apt.patient.firstName[0]}{apt.patient.lastName[0]}
+                        {apt.patient?.firstName?.[0]}{apt.patient?.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{apt.patient.firstName} {apt.patient.lastName}</p>
+                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
                         <p className="text-xs sm:text-sm text-gray-500">
                           {new Date(apt.dateTime).toLocaleDateString()} • {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>

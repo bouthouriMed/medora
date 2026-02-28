@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation } from '../api';
 import { showToast } from '../components/Toast';
 import CalendarView from '../components/CalendarView';
+import type { Appointment, Patient, User } from '../types';
 
 export default function Appointments() {
   const [showModal, setShowModal] = useState(false);
@@ -64,7 +65,7 @@ export default function Appointments() {
   const [cancelAppointment] = useCancelAppointmentMutation();
   const [updateAppointment] = useUpdateAppointmentMutation();
 
-  const doctors = users?.filter((u: any) => u.role === 'DOCTOR') || [];
+  const doctors = users?.filter((u: User) => u.role === 'DOCTOR') || [];
 
   const [formData, setFormData] = useState({
     patientId: '',
@@ -83,8 +84,8 @@ export default function Appointments() {
       setShowModal(false);
       setFormData({ patientId: '', doctorId: '', dateTime: '', notes: '' });
       showToast('Appointment created successfully!', 'success');
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to create appointment', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to create appointment', 'error');
     }
   };
 
@@ -92,8 +93,8 @@ export default function Appointments() {
     try {
       await updateAppointment({ id, status }).unwrap();
       showToast(`Appointment marked as ${status}`, 'success');
-    } catch (error: any) {
-      showToast(error?.data?.error || 'Failed to update appointment', 'error');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to update appointment', 'error');
     }
   };
 
@@ -102,8 +103,8 @@ export default function Appointments() {
       try {
         await cancelAppointment(id).unwrap();
         showToast('Appointment cancelled', 'success');
-      } catch (error: any) {
-        showToast(error?.data?.error || 'Failed to cancel appointment', 'error');
+      } catch (error) {
+        showToast(error instanceof Error ? error.message : 'Failed to cancel appointment', 'error');
       }
     }
   };
@@ -219,7 +220,7 @@ export default function Appointments() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                      {appointments?.map((apt: any) => (
+                      {appointments?.map((apt: Appointment) => (
                         <tr key={apt.id} className="hover:bg-blue-50/50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-semibold text-gray-900">
@@ -283,7 +284,7 @@ export default function Appointments() {
 
               {/* Mobile Cards */}
               <div className="md:hidden space-y-4">
-                {appointments?.map((apt: any) => (
+                {appointments?.map((apt: Appointment) => (
                   <div key={apt.id} className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 hover-lift">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
@@ -357,7 +358,7 @@ export default function Appointments() {
                   required
                 >
                   <option value="">Select patient</option>
-                  {patients?.map((p: any) => (
+                  {patients?.map((p: Patient) => (
                     <option key={p.id} value={p.id}>
                       {p.firstName} {p.lastName}
                     </option>
@@ -373,7 +374,7 @@ export default function Appointments() {
                   required
                 >
                   <option value="">Select doctor</option>
-                  {doctors.map((d: any) => (
+                  {doctors.map((d: User) => (
                     <option key={d.id} value={d.id}>
                       Dr. {d.firstName} {d.lastName}
                     </option>
