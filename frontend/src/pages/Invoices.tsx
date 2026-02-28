@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation } from '../api';
 import { showToast } from '../components/Toast';
@@ -6,16 +6,28 @@ import type { Invoice, Patient, Appointment } from '../types';
 
 export default function Invoices() {
   const [showModal, setShowModal] = useState(false);
-  const [searchParams] = useSearchParams();
-  const statusParam = searchParams.get('status') || '';
-  const [statusFilter, setStatusFilter] = useState<string>(statusParam);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const statusFilter = useMemo(() => {
+    return searchParams.get('status') || '';
+  }, [searchParams]);
   
-  const { data: invoices, isLoading } = useGetInvoicesQuery(statusFilter || '');
+  const { data: invoices, isLoading } = useGetInvoicesQuery(statusFilter);
   const { data: appointments } = useGetAppointmentsQuery({});
   const { data: patients } = useGetPatientsQuery('');
   const [createInvoice, { isLoading: isCreating }] = useCreateInvoiceMutation();
   const [markAsPaid] = useMarkInvoiceAsPaidMutation();
   const [markAsUnpaid] = useMarkInvoiceAsUnpaidMutation();
+
+  const handleStatusChange = (status: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (status) {
+      newParams.set('status', status);
+    } else {
+      newParams.delete('status');
+    }
+    setSearchParams(newParams);
+  };
 
   const [formData, setFormData] = useState({
     appointmentId: '',
@@ -116,7 +128,7 @@ export default function Invoices() {
       <div className="flex gap-3">
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => handleStatusChange(e.target.value)}
           className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
         >
           <option value="">All Invoices</option>
