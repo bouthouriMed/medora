@@ -14,7 +14,7 @@ export class AppointmentController {
 
   async getAll(req: AuthRequest, res: Response) {
     try {
-      const { startDate, endDate } = req.query;
+      const { startDate, endDate, filter } = req.query;
       
       const parseLocalDate = (dateStr: string) => {
         const [year, month, day] = dateStr.split('-').map(Number);
@@ -22,10 +22,27 @@ export class AppointmentController {
         return date;
       };
 
+      let start: Date | undefined;
+      let end: Date | undefined;
+
+      if (filter === 'upcoming') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        start = today;
+      } else if (startDate && endDate) {
+        start = parseLocalDate(startDate as string);
+        end = parseLocalDate(endDate as string);
+      } else if (startDate) {
+        start = parseLocalDate(startDate as string);
+        const endDateSingle = parseLocalDate(startDate as string);
+        endDateSingle.setHours(23, 59, 59, 999);
+        end = endDateSingle;
+      }
+
       const appointments = await appointmentService.getAll(
         req.user!.clinicId,
-        startDate ? parseLocalDate(startDate as string) : undefined,
-        endDate ? parseLocalDate(endDate as string) : undefined
+        start,
+        end
       );
       res.json(appointments);
     } catch (error) {
