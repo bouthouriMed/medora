@@ -16,6 +16,11 @@ export class AppointmentController {
     try {
       const { startDate, endDate, filter } = req.query;
       
+      console.log('==== APPOINTMENT GETALL ====');
+      console.log('filter param:', filter);
+      console.log('startDate param:', startDate);
+      console.log('endDate param:', endDate);
+      
       const parseLocalDate = (dateStr: string) => {
         const [year, month, day] = dateStr.split('-').map(Number);
         const date = new Date(year, month - 1, day);
@@ -26,9 +31,11 @@ export class AppointmentController {
       let end: Date | undefined;
 
       if (filter === 'upcoming') {
+        console.log('>>> APPLYING UPCOMING FILTER');
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         start = today;
+        console.log('>>> start set to:', start);
       } else if (startDate && endDate) {
         start = parseLocalDate(startDate as string);
         end = parseLocalDate(endDate as string);

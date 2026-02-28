@@ -15,6 +15,9 @@ export class AppointmentService {
   }
 
   async getAll(clinicId: string, startDate?: Date, endDate?: Date) {
+    console.log('==== SERVICE getAll ====');
+    console.log('startDate:', startDate);
+    console.log('endDate:', endDate);
     return appointmentRepository.findByClinic(clinicId, startDate, endDate);
   }
 
