@@ -25,7 +25,10 @@ export class UserRepository {
   }
 
   async findByClinic(clinicId: string) {
-    return prisma.user.findMany({ where: { clinicId, deletedAt: null } });
+    return prisma.user.findMany({ 
+      where: { clinicId, deletedAt: null },
+      orderBy: { createdAt: 'desc' }
+    });
   }
 
   async update(id: string, data: {
