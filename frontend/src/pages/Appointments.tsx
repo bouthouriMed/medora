@@ -27,7 +27,7 @@ export default function Appointments() {
       const today = getTodayString();
       return { startDate: today, endDate: today };
     }
-    if (filter === 'upcoming' || !filter) {
+    if (filter === 'upcoming' || (!startDate && !endDate)) {
       return { startDate: '', endDate: '' };
     }
     return { 
