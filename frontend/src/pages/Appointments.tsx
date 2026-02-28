@@ -53,6 +53,9 @@ export default function Appointments() {
       if (field === 'startDate' && !searchParams.get('endDate')) {
         newParams.set('endDate', getDefaultEndDate());
       }
+      if (field === 'endDate' && !searchParams.get('startDate')) {
+        newParams.set('startDate', getTodayString());
+      }
       newParams.delete('filter');
     } else {
       newParams.delete(field);
