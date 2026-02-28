@@ -9,7 +9,7 @@ export default function Appointments() {
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState('');
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const filterParam = searchParams.get('filter');
 
   const getTodayString = () => {
@@ -17,19 +17,40 @@ export default function Appointments() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
 
+  const isTodayActive = () => {
+    const filter = searchParams.get('filter');
+    const startDate = searchParams.get('startDate');
+    return filter === 'today' || (startDate && startDate === getTodayString());
+  };
+
   useEffect(() => {
     if (filterParam === 'today') {
       setSelectedDate(getTodayString());
     } else if (filterParam === 'upcoming') {
+      setSelectedDate('');
+    } else if (!filterParam) {
       setSelectedDate('');
     }
   }, [filterParam]);
   
   const { data: allAppointments } = useGetAppointmentsQuery({});
   
-  const queryParams = filterParam === 'upcoming' 
-    ? { filter: 'upcoming' }
-    : selectedDate ? { startDate: selectedDate, endDate: selectedDate } : {};
+  const queryParams = (() => {
+    const filter = searchParams.get('filter');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+    
+    if (filter === 'upcoming') {
+      return { filter: 'upcoming' };
+    }
+    if (filter === 'today' || (startDate && endDate)) {
+      return { startDate: startDate || getTodayString(), endDate: endDate || getTodayString() };
+    }
+    if (startDate) {
+      return { startDate, endDate };
+    }
+    return {};
+  })();
   
   const { data: appointments, isLoading, isFetching } = useGetAppointmentsQuery(
     queryParams, 
@@ -119,19 +140,32 @@ export default function Appointments() {
           <input
             type="date"
             value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
+            onChange={(e) => {
+              setSelectedDate(e.target.value);
+              if (e.target.value) {
+                setSearchParams({ startDate: e.target.value, endDate: e.target.value });
+              } else {
+                setSearchParams({});
+              }
+            }}
             className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
           />
         </div>
         <button
-          onClick={() => setSelectedDate(getTodayString())}
-          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${selectedDate === getTodayString() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          onClick={() => {
+            setSelectedDate(getTodayString());
+            setSearchParams({ filter: 'today' });
+          }}
+          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${isTodayActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
         >
           Today
         </button>
         <button
-          onClick={() => setSelectedDate('')}
-          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${!selectedDate ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          onClick={() => {
+            setSelectedDate('');
+            setSearchParams({});
+          }}
+          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${!selectedDate && !filterParam ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
         >
           Show All
         </button>
