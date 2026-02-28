@@ -46,7 +46,7 @@ export default function Register() {
       }).unwrap();
       dispatch(setCredentials(result));
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Registration failed. Please try again.');
     }
   };

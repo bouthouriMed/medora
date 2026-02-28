@@ -1,4 +1,4 @@
-import { render, screen, waitFor, vi } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { showToast, ToastContainer } from '../components/Toast';
 
 describe('Toast Component', () => {

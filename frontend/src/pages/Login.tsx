@@ -19,7 +19,7 @@ export default function Login() {
       const result = await login({ email, password }).unwrap();
       dispatch(setCredentials(result));
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Invalid email or password');
     }
   };

@@ -32,7 +32,7 @@ export const api = createApi({
       query: () => '/auth/me',
     }),
     getUsers: builder.query({
-      query: (_arg) => '/auth/users',
+      query: () => '/auth/users',
     }),
     createUser: builder.mutation({
       query: (body) => ({
