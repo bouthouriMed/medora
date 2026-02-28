@@ -173,7 +173,7 @@ export default function Appointments() {
             <input
               type="date"
               value={dateRange.startDate}
-              max={dateRange.endDate || getTodayString()}
+              max={dateRange.endDate || undefined}
               onChange={(e) => handleDateChange('startDate', e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
             />
@@ -184,8 +184,7 @@ export default function Appointments() {
             <input
               type="date"
               value={dateRange.endDate}
-              min={dateRange.startDate}
-              max={getTodayString()}
+              min={dateRange.startDate || undefined}
               onChange={(e) => handleDateChange('endDate', e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
             />
