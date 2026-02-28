@@ -28,7 +28,7 @@ export default function Appointments() {
   const { data: allAppointments } = useGetAppointmentsQuery({});
   
   const queryParams = filterParam === 'upcoming' 
-    ? { filter: 'upcoming' }
+    ? { filter: 'upcoming', _t: Date.now() }
     : selectedDate ? { startDate: selectedDate, endDate: selectedDate } : {};
   
   const { data: appointments, isLoading } = useGetAppointmentsQuery(queryParams);

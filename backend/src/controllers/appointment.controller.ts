@@ -44,6 +44,9 @@ export class AppointmentController {
         start,
         end
       );
+      res.set('X-Debug-Filter', filter as string || 'none');
+      res.set('X-Debug-Start', start?.toISOString() || 'none');
+      res.set('X-Debug-End', end?.toISOString() || 'none');
       res.json(appointments);
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
