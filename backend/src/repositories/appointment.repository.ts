@@ -30,6 +30,12 @@ export class AppointmentRepository {
         gte: start,
         lte: end,
       };
+    } else if (startDate && !endDate) {
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      where.dateTime = {
+        gte: start,
+      };
     } else if (startDate) {
       const start = new Date(startDate);
       start.setHours(0, 0, 0, 0);
