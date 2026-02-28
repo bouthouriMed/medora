@@ -28,10 +28,15 @@ export default function Appointments() {
   const { data: allAppointments } = useGetAppointmentsQuery({});
   
   const queryParams = filterParam === 'upcoming' 
-    ? { filter: 'upcoming', _t: Date.now() }
+    ? { filter: 'upcoming' }
     : selectedDate ? { startDate: selectedDate, endDate: selectedDate } : {};
   
-  const { data: appointments, isLoading } = useGetAppointmentsQuery(queryParams);
+  const { data: appointments, isLoading, isFetching } = useGetAppointmentsQuery(
+    queryParams, 
+    { pollingInterval: 0 }
+  );
+  
+  const loading = isLoading || isFetching;
   const { data: patients } = useGetPatientsQuery('');
   const { data: users } = useGetUsersQuery(null);
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation();
@@ -151,7 +156,7 @@ export default function Appointments() {
       {/* List View */}
       {view === 'list' && (
         <>
-          {isLoading ? (
+          {loading ? (
             <div className="grid gap-4">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="h-24 skeleton rounded-2xl"></div>

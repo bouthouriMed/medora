@@ -51,6 +51,8 @@ export class AppointmentController {
         start,
         end
       );
+      console.log('Returning appointments count:', appointments.length);
+      res.set('X-Debug-Count', appointments.length.toString());
       res.set('X-Debug-Filter', filter as string || 'none');
       res.set('X-Debug-Start', start?.toISOString() || 'none');
       res.set('X-Debug-End', end?.toISOString() || 'none');
