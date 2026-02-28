@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, expect } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { showToast, ToastContainer } from '../components/Toast';
 
 describe('Toast Component', () => {

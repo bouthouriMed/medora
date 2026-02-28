@@ -1,4 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+import { expect, describe, it } from 'vitest';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';

@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import CalendarView from '../components/CalendarView';
 
 const mockAppointments = [
@@ -8,7 +9,7 @@ const mockAppointments = [
     doctorId: 'd1',
     clinicId: 'c1',
     dateTime: '2026-02-15T10:00:00Z',
-    status: 'SCHEDULED',
+    status: 'SCHEDULED' as const,
     notes: null,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
@@ -21,7 +22,7 @@ const mockAppointments = [
     doctorId: 'd1',
     clinicId: 'c1',
     dateTime: '2026-02-15T14:00:00Z',
-    status: 'COMPLETED',
+    status: 'COMPLETED' as const,
     notes: null,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
@@ -34,7 +35,7 @@ const mockAppointments = [
     doctorId: 'd1',
     clinicId: 'c1',
     dateTime: '2026-02-20T09:00:00Z',
-    status: 'CANCELLED',
+    status: 'CANCELLED' as const,
     notes: null,
     createdAt: '2026-01-01T00:00:00Z',
     updatedAt: '2026-01-01T00:00:00Z',
