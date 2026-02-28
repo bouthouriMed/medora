@@ -16,23 +16,48 @@ export default function Appointments() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   };
 
-  const selectedDate = useMemo(() => {
+  const getDefaultEndDate = () => getTodayString();
+
+  const dateRange = useMemo(() => {
     const filter = searchParams.get('filter');
     const startDate = searchParams.get('startDate');
-    
+    const endDate = searchParams.get('endDate');
+
     if (filter === 'today') {
-      return getTodayString();
+      const today = getTodayString();
+      return { startDate: today, endDate: today };
     }
     if (filter === 'upcoming' || !filter) {
-      return '';
+      return { startDate: '', endDate: '' };
     }
-    return startDate || '';
+    return { 
+      startDate: startDate || '', 
+      endDate: endDate || getDefaultEndDate() 
+    };
   }, [searchParams]);
 
   const isTodayActive = () => {
     const filter = searchParams.get('filter');
-    const startDate = searchParams.get('startDate');
-    return filter === 'today' || (startDate && startDate === getTodayString());
+    return filter === 'today';
+  };
+
+  const isUpcomingActive = () => {
+    const filter = searchParams.get('filter');
+    return filter === 'upcoming';
+  };
+
+  const handleDateChange = (field: 'startDate' | 'endDate', value: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (value) {
+      newParams.set(field, value);
+      if (field === 'startDate' && !searchParams.get('endDate')) {
+        newParams.set('endDate', getDefaultEndDate());
+      }
+      newParams.delete('filter');
+    } else {
+      newParams.delete(field);
+    }
+    setSearchParams(newParams);
   };
   
   const { data: allAppointments } = useGetAppointmentsQuery({});
@@ -45,12 +70,12 @@ export default function Appointments() {
     if (filter === 'upcoming') {
       return { filter: 'upcoming' };
     }
-    if (filter === 'today' || (startDate && endDate)) {
-      const date = startDate || getTodayString();
-      return { startDate: date, endDate: date };
+    if (filter === 'today') {
+      const today = getTodayString();
+      return { startDate: today, endDate: today };
     }
     if (startDate) {
-      return { startDate, endDate };
+      return { startDate, endDate: endDate || getDefaultEndDate() };
     }
     return {};
   })();
@@ -139,43 +164,59 @@ export default function Appointments() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
-        <div className="flex-1 min-w-[180px] max-w-xs">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => {
-              if (e.target.value) {
-                setSearchParams({ startDate: e.target.value, endDate: e.target.value });
-              } else {
-                setSearchParams({});
-              }
-            }}
-            className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
-          />
+        <div className="flex gap-2 items-center flex-1 min-w-[280px]">
+          <div className="flex-1 min-w-[130px]">
+            <label className="block text-xs text-gray-500 mb-1">From</label>
+            <input
+              type="date"
+              value={dateRange.startDate}
+              max={dateRange.endDate || getTodayString()}
+              onChange={(e) => handleDateChange('startDate', e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
+            />
+          </div>
+          <span className="text-gray-400 mt-5">→</span>
+          <div className="flex-1 min-w-[130px]">
+            <label className="block text-xs text-gray-500 mb-1">To</label>
+            <input
+              type="date"
+              value={dateRange.endDate}
+              min={dateRange.startDate}
+              max={getTodayString()}
+              onChange={(e) => handleDateChange('endDate', e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
+            />
+          </div>
         </div>
         <button
           onClick={() => setSearchParams({ filter: 'today' })}
-          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${isTodayActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          className={`px-4 py-2 rounded-xl font-medium transition-colors ${isTodayActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
         >
           Today
         </button>
         <button
+          onClick={() => setSearchParams({ filter: 'upcoming' })}
+          className={`px-4 py-2 rounded-xl font-medium transition-colors ${isUpcomingActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+        >
+          Upcoming
+        </button>
+        <button
           onClick={() => setSearchParams({})}
-          className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${!selectedDate && !searchParams.get('filter') ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          className={`px-4 py-2 rounded-xl font-medium transition-colors ${!dateRange.startDate && !searchParams.get('filter') ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
         >
           Show All
         </button>
         <div className="flex rounded-xl overflow-hidden border border-gray-200 shadow-sm">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-2.5 font-medium transition-all ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`px-4 py-2 font-medium transition-all ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
           >
             <span className="sm:hidden">📋</span>
             <span className="hidden sm:inline">List</span>
           </button>
           <button
             onClick={() => setView('calendar')}
-            className={`px-4 py-2.5 font-medium transition-all ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`px-4 py-2 font-medium transition-all ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
           >
             <span className="sm:hidden">📅</span>
             <span className="hidden sm:inline">Calendar</span>
