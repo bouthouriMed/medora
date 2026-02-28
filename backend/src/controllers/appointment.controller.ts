@@ -31,11 +31,11 @@ export class AppointmentController {
       let end: Date | undefined;
 
       if (filter === 'upcoming') {
-        console.log('>>> APPLYING UPCOMING FILTER');
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        start = today;
-        console.log('>>> start set to:', start);
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        start = tomorrow;
       } else if (startDate && endDate) {
         start = parseLocalDate(startDate as string);
         end = parseLocalDate(endDate as string);
