@@ -21,30 +21,17 @@ export class AppointmentRepository {
   async findByClinic(clinicId: string, startDate?: Date, endDate?: Date) {
     const where: Record<string, unknown> = { clinicId, deletedAt: null };
 
-    if (startDate && endDate) {
+    if (startDate) {
       const start = new Date(startDate);
       start.setHours(0, 0, 0, 0);
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
-      where.dateTime = {
-        gte: start,
-        lte: end,
-      };
-    } else if (startDate && !endDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      where.dateTime = {
-        gte: start,
-      };
-    } else if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(startDate);
-      end.setHours(23, 59, 59, 999);
-      where.dateTime = {
-        gte: start,
-        lte: end,
-      };
+      
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.dateTime = { gte: start, lte: end };
+      } else {
+        where.dateTime = { gte: start };
+      }
     }
 
     return prisma.appointment.findMany({
