@@ -26,9 +26,12 @@ export default function Appointments() {
   }, [filterParam]);
   
   const { data: allAppointments } = useGetAppointmentsQuery({});
-  const { data: appointments, isLoading } = useGetAppointmentsQuery(
-    selectedDate ? { startDate: selectedDate, endDate: selectedDate } : {}
-  );
+  
+  const queryParams = filterParam === 'upcoming' 
+    ? { filter: 'upcoming' }
+    : selectedDate ? { startDate: selectedDate, endDate: selectedDate } : {};
+  
+  const { data: appointments, isLoading } = useGetAppointmentsQuery(queryParams);
   const { data: patients } = useGetPatientsQuery('');
   const { data: users } = useGetUsersQuery(null);
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation();
