@@ -130,8 +130,8 @@ export default function Tasks() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Tasks</h1>
-          <p className="text-gray-500 mt-1">Manage your clinic tasks and follow-ups</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.tasks')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.manageTasks')}</p>
         </div>
         <button
           onClick={() => {
@@ -141,22 +141,22 @@ export default function Tasks() {
           }}
           className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine flex items-center gap-2"
         >
-          <Icons.plus size={18} /> New Task
+          <Icons.plus size={18} /> {t('other.newTask')}
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-3">
           <div className="min-w-[150px]">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
-              <option value="">All Statuses</option>
+              <option value="">{t('other.allStatuses')}</option>
               {STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
+                <option key={s.value} value={s.value}>{t(`other.${s.value.toLowerCase() === 'pending' ? 'pending' : s.value.toLowerCase() === 'in_progress' ? 'inProgress' : s.value.toLowerCase()}`)}</option>
               ))}
             </select>
           </div>
@@ -164,11 +164,11 @@ export default function Tasks() {
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
-              <option value="">All Priorities</option>
+              <option value="">{t('other.allPriorities')}</option>
               {PRIORITIES.map((p) => (
-                <option key={p.value} value={p.value}>{p.label}</option>
+                <option key={p.value} value={p.value}>{t(`other.${p.value.toLowerCase()}`)}</option>
               ))}
             </select>
           </div>

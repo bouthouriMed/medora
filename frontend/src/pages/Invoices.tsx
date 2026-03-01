@@ -87,52 +87,52 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-gray-500 mt-1">Manage billing and payments</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('invoices.title')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('invoices.manageBilling')}</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => exportInvoices(statusFilter)}
-            className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
           >
-            📥 Export
+            📥 {t('common.export')}
           </button>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
           >
-            + Create Invoice
+            + {t('invoices.createInvoice')}
           </button>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 hover-lift">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover-lift">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Total Invoices</p>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{invoices?.length || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('invoices.totalInvoices')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{invoices?.length || 0}</p>
             </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center text-2xl">📋</div>
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-xl flex items-center justify-center text-2xl">📋</div>
           </div>
         </div>
-        <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 hover-lift">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover-lift">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Paid</p>
-              <p className="text-2xl sm:text-3xl font-bold text-green-600 mt-1">${totalPaid.toFixed(2)}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('invoices.paid')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mt-1">${totalPaid.toFixed(2)}</p>
             </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center text-2xl">✅</div>
+            <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 rounded-xl flex items-center justify-center text-2xl">✅</div>
           </div>
         </div>
-        <div className="bg-white p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 hover-lift">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover-lift">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 font-medium">Unpaid</p>
-              <p className="text-2xl sm:text-3xl font-bold text-orange-500 mt-1">${totalUnpaid.toFixed(2)}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('invoices.unpaid')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-orange-500 dark:text-orange-400 mt-1">${totalUnpaid.toFixed(2)}</p>
             </div>
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 rounded-xl flex items-center justify-center text-2xl">⏳</div>
+            <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 rounded-xl flex items-center justify-center text-2xl">⏳</div>
           </div>
         </div>
       </div>

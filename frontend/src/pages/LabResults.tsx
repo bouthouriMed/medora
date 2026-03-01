@@ -102,8 +102,8 @@ export default function LabResults() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Lab Results</h1>
-          <p className="text-gray-500 mt-1">Track and manage patient lab results</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.labResults')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.trackLabResults')}</p>
         </div>
         <button
           onClick={() => {
@@ -113,7 +113,7 @@ export default function LabResults() {
           }}
           className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
         >
-          + Add Lab Result
+          + {t('other.addLabResult')}
         </button>
       </div>
 

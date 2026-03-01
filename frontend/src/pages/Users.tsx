@@ -90,14 +90,14 @@ export default function Users() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Staff & Users</h1>
-          <p className="text-gray-500 mt-1">Manage your clinic team</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('other.staffTitle')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.manageTeam')}</p>
         </div>
         <button
           onClick={openCreateModal}
           className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
         >
-          + Add User
+          + {t('other.addUser')}
         </button>
       </div>
 

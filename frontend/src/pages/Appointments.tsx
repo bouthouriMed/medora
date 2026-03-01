@@ -194,27 +194,27 @@ export default function Appointments() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Appointments</h1>
-          <p className="text-gray-500 mt-1">Manage your clinic appointments</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('appointments.title')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('appointments.manageAppointments')}</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => generateICS(allAppointments || [], 'all_appointments')}
-            className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
           >
-            📅 Export ICS
+            📅 {t('appointments.exportICS')}
           </button>
           <button
             onClick={() => exportAppointments(dateRange.startDate, dateRange.endDate)}
-            className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
           >
-            📥 Export
+            📥 {t('common.export')}
           </button>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
           >
-            + New Appointment
+            + {t('appointments.newAppointment')}
           </button>
         </div>
       </div>
@@ -223,44 +223,44 @@ export default function Appointments() {
       <div className="flex flex-wrap gap-3 items-center">
         <div className="flex gap-2 items-center flex-1 min-w-[280px]">
           <div className="flex-1 min-w-[130px]">
-            <label className="block text-xs text-gray-500 mb-1">From</label>
+            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('appointments.from')}</label>
             <input
               type="date"
               value={dateRange.startDate}
               max={dateRange.endDate || undefined}
               onChange={(e) => handleDateChange('startDate', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
+              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all"
             />
           </div>
-          <span className="text-gray-400 mt-5">→</span>
+          <span className="text-gray-400 dark:text-gray-500 mt-5">→</span>
           <div className="flex-1 min-w-[130px]">
-            <label className="block text-xs text-gray-500 mb-1">To</label>
+            <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{t('appointments.to')}</label>
             <input
               type="date"
               value={dateRange.endDate}
               min={dateRange.startDate || undefined}
               onChange={(e) => handleDateChange('endDate', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
+              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all"
             />
           </div>
         </div>
         <button
           onClick={() => setSearchParams({ filter: 'today' })}
-          className={`px-4 py-2 rounded-xl font-medium transition-colors ${isTodayActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          className={`px-4 py-2 rounded-xl font-medium transition-colors ${isTodayActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
         >
-          Today
+          {t('appointments.today')}
         </button>
         <button
           onClick={() => setSearchParams({ filter: 'upcoming' })}
-          className={`px-4 py-2 rounded-xl font-medium transition-colors ${isUpcomingActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          className={`px-4 py-2 rounded-xl font-medium transition-colors ${isUpcomingActive() ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
         >
-          Upcoming
+          {t('appointments.upcoming')}
         </button>
         <button
           onClick={() => setSearchParams({})}
-          className={`px-4 py-2 rounded-xl font-medium transition-colors ${!dateRange.startDate && !searchParams.get('filter') ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}`}
+          className={`px-4 py-2 rounded-xl font-medium transition-colors ${!dateRange.startDate && !searchParams.get('filter') ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
         >
-          Show All
+          {t('appointments.showAll')}
         </button>
         <div className="flex rounded-xl overflow-hidden border border-gray-200 shadow-sm">
           <button

@@ -62,11 +62,11 @@ export default function EmailSettings() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Email Settings</h1>
-        <p className="text-gray-500 mt-1">Configure email notifications for your clinic</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('settings.emailSettings')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">{t('settings.configureClinic')}</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
         <div className="mb-6">
           <label className="flex items-center gap-3">
             <input
@@ -75,7 +75,7 @@ export default function EmailSettings() {
               onChange={(e) => setFormData({ ...formData, emailNotifications: e.target.checked })}
               className="w-5 h-5 text-blue-600 rounded"
             />
-            <span className="font-medium text-gray-700">Enable email notifications</span>
+            <span className="font-medium text-gray-700 dark:text-gray-300">{t('settings.enableEmailNotifications')}</span>
           </label>
         </div>
 

@@ -61,7 +61,7 @@ export default function Register() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Medora
             </h1>
-            <p className="text-gray-500 mt-2">Create your account</p>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">{t('auth.registerSubtitle')}</p>
           </div>
           
           {error && (
@@ -73,8 +73,8 @@ export default function Register() {
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="firstName">
-                  First Name
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="firstName">
+                  {t('auth.firstName')}
                 </label>
                 <input
                   id="firstName"
@@ -82,13 +82,13 @@ export default function Register() {
                   type="text"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="lastName">
-                  Last Name
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="lastName">
+                  {t('auth.lastName')}
                 </label>
                 <input
                   id="lastName"
@@ -96,15 +96,15 @@ export default function Register() {
                   type="text"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
                   required
                 />
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="clinicName">
-                Clinic Name
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="clinicName">
+                {t('auth.clinicName')}
               </label>
               <input
                 id="clinicName"
@@ -112,15 +112,15 @@ export default function Register() {
                 type="text"
                 value={formData.clinicName}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
                 placeholder="Your Clinic Name"
                 required
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="email">
-                Email
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="email">
+                {t('auth.email')}
               </label>
               <input
                 id="email"
@@ -128,15 +128,15 @@ export default function Register() {
                 type="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="password">
-                Password
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="password">
+                {t('auth.password')}
               </label>
               <input
                 id="password"
@@ -144,15 +144,15 @@ export default function Register() {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
                 placeholder="Min 6 characters"
                 required
               />
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="confirmPassword">
-                Confirm Password
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5" htmlFor="confirmPassword">
+                {t('auth.confirmPassword')}
               </label>
               <input
                 id="confirmPassword"
@@ -160,7 +160,7 @@ export default function Register() {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
                 placeholder="••••••••"
                 required
               />
@@ -177,16 +177,16 @@ export default function Register() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Creating account...
+                  {t('auth.signingIn')}
                 </span>
-              ) : 'Create Account'}
+              ) : t('auth.createAccount')}
             </button>
           </form>
 
-          <p className="mt-6 text-center text-gray-600">
-            Already have an account?{' '}
+          <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
+            {t('auth.alreadyHaveAccount')}{' '}
             <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
-              Sign in
+              {t('auth.signIn')}
             </Link>
           </p>
         </div>

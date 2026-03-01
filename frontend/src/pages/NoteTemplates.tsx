@@ -51,14 +51,14 @@ export default function NoteTemplates() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Note Templates</h1>
-          <p className="text-gray-500 mt-1">Create quick templates for notes</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.noteTemplates')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.noteTemplatesDesc')}</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
         >
-          + New Template
+          + {t('other.newTemplate')}
         </button>
       </div>
 

@@ -25,6 +25,7 @@ const DEFAULT_PRESETS: { name: string; type: PresetType; description?: string; p
 ];
 
 export default function Presets() {
+  const { t } = useTranslation();
   const [filterType, setFilterType] = useState<PresetType | ''>('');
   const [showModal, setShowModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
@@ -92,21 +93,21 @@ export default function Presets() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Quick Presets</h1>
-          <p className="text-gray-500 mt-1">Manage common diagnoses, prescriptions, and procedures</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.quickPresets')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.managePresets')}</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => setShowBulkModal(true)}
-            className="px-4 py-2.5 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+            className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
           >
-            Seed Defaults
+            {t('other.seedDefaults')}
           </button>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
           >
-            + Add Preset
+            + {t('other.addPreset')}
           </button>
         </div>
       </div>

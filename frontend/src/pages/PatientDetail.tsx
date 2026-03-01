@@ -65,6 +65,7 @@ export default function PatientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showVitalModal, setShowVitalModal] = useState(false);
   const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
@@ -198,13 +199,13 @@ export default function PatientDetail() {
   };
 
   const tabs = [
-    { id: 'overview', label: 'Overview', icon: Icons.user },
-    { id: 'vitals', label: 'Vitals', icon: Icons.activity },
-    { id: 'diagnoses', label: 'Diagnoses', icon: Icons.stethoscope },
-    { id: 'prescriptions', label: 'Prescriptions', icon: Icons.pill },
-    { id: 'allergies', label: 'Allergies', icon: Icons.alert },
-    { id: 'conditions', label: 'Conditions', icon: Icons.heart },
-    { id: 'timeline', label: 'Timeline', icon: Icons.clock },
+    { id: 'overview', label: t('patients.overview'), icon: Icons.user },
+    { id: 'vitals', label: t('patients.vitals'), icon: Icons.activity },
+    { id: 'diagnoses', label: t('patients.diagnoses'), icon: Icons.stethoscope },
+    { id: 'prescriptions', label: t('patients.prescriptions'), icon: Icons.pill },
+    { id: 'allergies', label: t('patients.allergies'), icon: Icons.alert },
+    { id: 'conditions', label: t('patients.conditions'), icon: Icons.heart },
+    { id: 'timeline', label: t('patients.timeline'), icon: Icons.clock },
   ];
 
   const latestVitals = history?.vitals?.[0];
@@ -225,18 +226,18 @@ export default function PatientDetail() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/patients')} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={() => navigate('/patients')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
             <Icons.arrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{patient?.firstName} {patient?.lastName}</h1>
-            <p className="text-gray-500">Patient ID: {patient?.id?.slice(0, 8)}</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{patient?.firstName} {patient?.lastName}</h1>
+            <p className="text-gray-500 dark:text-gray-400">{t('patients.patientID')}: {patient?.id?.slice(0, 8)}</p>
           </div>
         </div>
         <div className="flex gap-2">
           {hasPermission(user, 'create_medical_records') && (
             <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-              + Record Vitals
+              + {t('medical.recordVitals')}
             </button>
           )}
         </div>

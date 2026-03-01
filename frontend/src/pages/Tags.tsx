@@ -47,14 +47,14 @@ export default function Tags() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Patient Tags</h1>
-          <p className="text-gray-500 mt-1">Organize patients with custom tags</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.patientTags')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.organizePatients')}</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
           className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
         >
-          + New Tag
+          + {t('other.newTag')}
         </button>
       </div>
 
