@@ -73,7 +73,7 @@ export default function Dashboard() {
     { 
       label: t('dashboard.pendingInvoices'), 
       value: data?.unpaidInvoices || 0, 
-      subtext: 'needs attention',
+      subtext: t('dashboard.needsAttention'),
       color: 'red',
       icon: '⚠️',
       gradient: 'from-orange-400 to-red-500',
@@ -96,8 +96,8 @@ export default function Dashboard() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500 mt-1 sm:mt-2">Here's what's happening at your clinic today.</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcome')}</p>
       </div>
 
       {/* Stats Grid */}
