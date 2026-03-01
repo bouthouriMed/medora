@@ -488,9 +488,9 @@ export default function PatientDetail() {
                           if (confirm(t('other.confirmDelete') + ' diagnosis?')) {
                             try {
                               await deleteDiagnosis({ id: diagnosis.id, patientId: id! }).unwrap();
-                              showToast('Diagnosis deleted', 'success');
+                              showToast(t('medical.diagnosisDeleted'), 'success');
                             } catch (err) {
-                              showToast('Failed to delete diagnosis', 'error');
+                              showToast(t('medical.failedToDeleteDiagnosis'), 'error');
                             }
                           }
                         }}

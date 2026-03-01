@@ -24,10 +24,10 @@ export default function Tags() {
       await createTag(newTag).unwrap();
       setShowModal(false);
       setNewTag({ name: '', color: TAG_COLORS[0] });
-      showToast('Tag created successfully!', 'success');
+      showToast(t('other.tagCreated'), 'success');
       refetch();
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to create tag', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToCreateTag'), 'error');
     }
   };
 
@@ -35,10 +35,10 @@ export default function Tags() {
     if (confirm(`Are you sure you want to delete "${tag.name}"?`)) {
       try {
         await deleteTag(tag.id).unwrap();
-        showToast('Tag deleted', 'success');
+        showToast(t('other.tagDeleted'), 'success');
         refetch();
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to delete tag', 'error');
+        showToast(error instanceof Error ? error.message : t('other.failedToDeleteTag'), 'error');
       }
     }
   };

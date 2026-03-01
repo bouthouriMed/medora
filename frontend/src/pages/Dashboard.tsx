@@ -83,9 +83,9 @@ export default function Dashboard() {
   ];
 
   const pieData = data?.appointmentsByMonth ? [
-    { name: 'Completed', value: data.appointmentsByMonth.reduce((sum: number, m: any) => sum + m.completed, 0) },
-    { name: 'Cancelled', value: data.appointmentsByMonth.reduce((sum: number, m: any) => sum + m.cancelled, 0) },
-    { name: 'No Show', value: data.appointmentsByMonth.reduce((sum: number, m: any) => sum + m.noShow, 0) },
+    { name: t('other.chartCompleted'), value: data.appointmentsByMonth.reduce((sum: number, m: any) => sum + m.completed, 0) },
+    { name: t('other.chartCancelled'), value: data.appointmentsByMonth.reduce((sum: number, m: any) => sum + m.cancelled, 0) },
+    { name: t('other.chartNoShow'), value: data.appointmentsByMonth.reduce((sum: number, m: any) => sum + m.noShow, 0) },
   ] : [];
 
   const completionRate = pieData.length > 0 && pieData.reduce((sum, d) => sum + d.value, 0) > 0
@@ -126,8 +126,8 @@ export default function Dashboard() {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: t('dashboard.newAppointment'), icon: '➕', path: '/appointments', color: 'blue' },
-          { label: t('dashboard.addPatient'), icon: '👤', path: '/patients', color: 'purple' },
+          { label: t('appointments.newAppointment'), icon: '➕', path: '/appointments', color: 'blue' },
+          { label: t('patients.addPatient'), icon: '👤', path: '/patients', color: 'purple' },
           { label: t('dashboard.createInvoice'), icon: '📝', path: '/invoices', color: 'green' },
           { label: t('dashboard.viewCalendar'), icon: '📅', path: '/appointments?view=calendar', color: 'orange' },
         ].map((action, i) => (
@@ -170,7 +170,7 @@ export default function Dashboard() {
                 <YAxis tick={{ fontSize: 12 }} stroke="#9ca3af" tickFormatter={formatCurrency} />
                 <Tooltip 
                   contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                  formatter={(value) => [`$${(value as number)?.toLocaleString() || 0}`, 'Revenue']}
+                  formatter={(value) => [`$${(value as number)?.toLocaleString() || 0}`, t('other.chartRevenue')]}
                 />
                 <Area type="monotone" dataKey="revenue" stroke="#22c55e" strokeWidth={3} fill="url(#revenueGradient)" />
               </AreaChart>
@@ -247,9 +247,9 @@ export default function Dashboard() {
                   contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                 />
                 <Legend />
-                <Bar dataKey="completed" stackId="a" fill="#22c55e" name="Completed" radius={[0, 0, 0, 0]} />
-                <Bar dataKey="cancelled" stackId="a" fill="#ef4444" name="Cancelled" radius={[0, 0, 0, 0]} />
-                <Bar dataKey="noShow" stackId="a" fill="#6b7280" name="No Show" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="completed" stackId="a" fill="#22c55e" name={t('other.chartCompleted')} radius={[0, 0, 0, 0]} />
+                <Bar dataKey="cancelled" stackId="a" fill="#ef4444" name={t('other.chartCancelled')} radius={[0, 0, 0, 0]} />
+                <Bar dataKey="noShow" stackId="a" fill="#6b7280" name={t('other.chartNoShow')} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -269,7 +269,7 @@ export default function Dashboard() {
                 <YAxis tick={{ fontSize: 12 }} stroke="#9ca3af" />
                 <Tooltip 
                   contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                  formatter={(value) => [value as number || 0, 'New Patients']}
+                  formatter={(value) => [value as number || 0, t('other.chartNewPatients')]}
                 />
                 <Line type="monotone" dataKey="count" stroke="#8b5cf6" strokeWidth={3} dot={{ fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
               </LineChart>
@@ -372,7 +372,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
-                      Dr. {apt.doctor?.firstName}
+                      {t('appointments.dr')} {apt.doctor?.firstName}
                     </span>
                   </div>
                 ))}

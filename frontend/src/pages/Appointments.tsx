@@ -120,12 +120,12 @@ export default function Appointments() {
   });
 
   const handleDeleteRecurring = async (id: string) => {
-    if (confirm('Delete this recurring appointment series?')) {
+    if (confirm(t('other.confirmDeleteSeries'))) {
       try {
         await deleteRecurringAppointment(id).unwrap();
-        showToast('Recurring appointment deleted', 'success');
+        showToast(t('other.recurringDeleted'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to delete', 'error');
+        showToast(error instanceof Error ? error.message : t('other.failedToDeleteRecurring'), 'error');
       }
     }
   };
@@ -142,7 +142,7 @@ export default function Appointments() {
           interval: formData.repeatInterval,
           endDate: formData.repeatEndDate || undefined,
         }).unwrap();
-        showToast('Recurring appointment created!', 'success');
+        showToast(t('other.recurringCreated'), 'success');
       } else {
         await createAppointment({
           patientId: formData.patientId,
@@ -150,12 +150,12 @@ export default function Appointments() {
           dateTime: new Date(formData.dateTime).toISOString(),
           notes: formData.notes,
         }).unwrap();
-        showToast('Appointment created successfully!', 'success');
+        showToast(t('other.appointmentCreated'), 'success');
       }
       setShowModal(false);
       setFormData({ patientId: '', doctorId: '', dateTime: '', notes: '', isRecurring: false, repeatFrequency: 'WEEKLY', repeatInterval: 1, repeatEndDate: '' });
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to create appointment', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToCreateAppointment'), 'error');
     }
   };
 
@@ -164,17 +164,17 @@ export default function Appointments() {
       await updateAppointment({ id, status }).unwrap();
       showToast(`Appointment marked as ${status}`, 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to update appointment', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToUpdateAppointment'), 'error');
     }
   };
 
   const handleCancel = async (id: string) => {
-    if (confirm('Are you sure you want to cancel this appointment?')) {
+    if (confirm(t('other.confirmCancelAppointment'))) {
       try {
         await cancelAppointment(id).unwrap();
-        showToast('Appointment cancelled', 'success');
+        showToast(t('other.appointmentCancelled'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to cancel appointment', 'error');
+        showToast(error instanceof Error ? error.message : t('other.failedToCancelAppointment'), 'error');
       }
     }
   };

@@ -24,10 +24,10 @@ export default function NoteTemplates() {
       await createTemplate(newTemplate).unwrap();
       setShowModal(false);
       setNewTemplate({ name: '', content: '', type: 'APPOINTMENT' });
-      showToast('Template created!', 'success');
+      showToast(t('other.templateCreated'), 'success');
       refetch();
     } catch (error) {
-      showToast('Failed to create template', 'error');
+      showToast(t('other.failedToCreateTemplate'), 'error');
     }
   };
 
@@ -35,10 +35,10 @@ export default function NoteTemplates() {
     if (confirm(`Delete "${template.name}"?`)) {
       try {
         await deleteTemplate(template.id).unwrap();
-        showToast('Template deleted', 'success');
+        showToast(t('other.templateDeleted'), 'success');
         refetch();
       } catch (error) {
-        showToast('Failed to delete template', 'error');
+        showToast(t('other.failedToDeleteTemplate'), 'error');
       }
     }
   };
@@ -156,7 +156,7 @@ export default function NoteTemplates() {
                   Cancel
                 </button>
                 <button type="submit" disabled={isCreating} className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg disabled:opacity-50">
-                  {isCreating ? 'Creating...' : 'Create Template'}
+                  {isCreating ? t('other.creatingButton') : t('other.createTemplate')}
                 </button>
               </div>
             </form>

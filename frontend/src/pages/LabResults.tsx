@@ -18,6 +18,16 @@ const LAB_CATEGORIES = [
 
 export default function LabResults() {
   const { t } = useTranslation();
+  const labCategoryLabels: Record<string, string> = {
+    'Blood Test': t('other.labBloodTest'),
+    'Urine Test': t('other.labUrineTest'),
+    'Imaging': t('other.labImaging'),
+    'Biopsy': t('other.labBiopsy'),
+    'Pathology': t('other.labPathology'),
+    'Chemistry': t('other.labChemistry'),
+    'Microbiology': t('other.labMicrobiology'),
+    'Other': t('other.labOther'),
+  };
   const [showModal, setShowModal] = useState(false);
   const [editingResult, setEditingResult] = useState<LabResult | null>(null);
   const [filterPatient, setFilterPatient] = useState('');
@@ -273,7 +283,7 @@ export default function LabResults() {
                   >
                     <option value="">{t('other.selectCategory')}</option>
                     {LAB_CATEGORIES.map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat}>{labCategoryLabels[cat]}</option>
                     ))}
                   </select>
                 </div>

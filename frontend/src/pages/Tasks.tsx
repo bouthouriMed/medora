@@ -7,19 +7,29 @@ import type { Task, User, Patient } from '../types';
 import { useTranslation } from 'react-i18next';
 
 const PRIORITIES = [
-  { value: 'HIGH', label: 'High', color: 'red' },
-  { value: 'MEDIUM', label: 'Medium', color: 'yellow' },
-  { value: 'LOW', label: 'Low', color: 'green' },
+  { value: 'HIGH', label: 'HIGH', color: 'red' },
+  { value: 'MEDIUM', label: 'MEDIUM', color: 'yellow' },
+  { value: 'LOW', label: 'LOW', color: 'green' },
 ];
 
 const STATUSES = [
-  { value: 'PENDING', label: 'Pending', color: 'gray' },
-  { value: 'IN_PROGRESS', label: 'In Progress', color: 'blue' },
-  { value: 'COMPLETED', label: 'Completed', color: 'green' },
+  { value: 'PENDING', label: 'PENDING', color: 'gray' },
+  { value: 'IN_PROGRESS', label: 'IN_PROGRESS', color: 'blue' },
+  { value: 'COMPLETED', label: 'COMPLETED', color: 'green' },
 ];
 
 export default function Tasks() {
   const { t } = useTranslation();
+  const priorityLabels: Record<string, string> = {
+    HIGH: t('other.priorityHigh'),
+    MEDIUM: t('other.priorityMedium'),
+    LOW: t('other.priorityLow'),
+  };
+  const statusLabels: Record<string, string> = {
+    PENDING: t('other.statusPending'),
+    IN_PROGRESS: t('other.statusInProgress'),
+    COMPLETED: t('other.statusCompleted'),
+  };
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [filterStatus, setFilterStatus] = useState('');
@@ -156,7 +166,7 @@ export default function Tasks() {
             >
               <option value="">{t('other.allStatuses')}</option>
               {STATUSES.map((s) => (
-                <option key={s.value} value={s.value}>{t(`other.${s.value.toLowerCase() === 'pending' ? 'pending' : s.value.toLowerCase() === 'in_progress' ? 'inProgress' : s.value.toLowerCase()}`)}</option>
+                <option key={s.value} value={s.value}>{statusLabels[s.label]}</option>
               ))}
             </select>
           </div>
@@ -168,7 +178,7 @@ export default function Tasks() {
             >
               <option value="">{t('other.allPriorities')}</option>
               {PRIORITIES.map((p) => (
-                <option key={p.value} value={p.value}>{t(`other.${p.value.toLowerCase()}`)}</option>
+                <option key={p.value} value={p.value}>{priorityLabels[p.label]}</option>
               ))}
             </select>
           </div>
@@ -332,7 +342,7 @@ export default function Tasks() {
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     {PRIORITIES.map((p) => (
-                      <option key={p.value} value={p.value}>{t(`other.${p.value.toLowerCase()}`)}</option>
+                      <option key={p.value} value={p.value}>{priorityLabels[p.label]}</option>
                     ))}
                   </select>
                 </div>
@@ -344,7 +354,7 @@ export default function Tasks() {
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     {STATUSES.map((s) => (
-                      <option key={s.value} value={s.value}>{t(`other.${s.value.toLowerCase() === 'pending' ? 'pending' : s.value.toLowerCase() === 'in_progress' ? 'inProgress' : s.value.toLowerCase()}`)}</option>
+                      <option key={s.value} value={s.value}>{statusLabels[s.label]}</option>
                     ))}
                   </select>
                 </div>

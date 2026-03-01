@@ -6,9 +6,9 @@ import type { Preset, PresetType } from '../types';
 import { useTranslation } from 'react-i18next';
 
 const PRESET_TYPES: { value: PresetType; label: string; color: string }[] = [
-  { value: 'DIAGNOSIS', label: 'Diagnosis', color: 'bg-blue-100 text-blue-700' },
-  { value: 'PRESCRIPTION', label: 'Prescription', color: 'bg-purple-100 text-purple-700' },
-  { value: 'PROCEDURE', label: 'Procedure', color: 'bg-green-100 text-green-700' },
+  { value: 'DIAGNOSIS', label: 'DIAGNOSIS', color: 'bg-blue-100 text-blue-700' },
+  { value: 'PRESCRIPTION', label: 'PRESCRIPTION', color: 'bg-purple-100 text-purple-700' },
+  { value: 'PROCEDURE', label: 'PROCEDURE', color: 'bg-green-100 text-green-700' },
 ];
 
 const DEFAULT_PRESETS: { name: string; type: PresetType; description?: string; price?: number }[] = [
@@ -26,6 +26,11 @@ const DEFAULT_PRESETS: { name: string; type: PresetType; description?: string; p
 
 export default function Presets() {
   const { t } = useTranslation();
+  const presetTypeLabels: Record<string, string> = {
+    DIAGNOSIS: t('other.presetDiagnosis'),
+    PRESCRIPTION: t('other.presetPrescription'),
+    PROCEDURE: t('other.presetProcedure'),
+  };
   const [filterType, setFilterType] = useState<PresetType | ''>('');
   const [showModal, setShowModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
@@ -54,9 +59,9 @@ export default function Presets() {
       }).unwrap();
       setShowModal(false);
       setFormData({ name: '', type: 'DIAGNOSIS', description: '', price: '' });
-      showToast('Preset created successfully!', 'success');
+      showToast(t('other.presetCreated'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to create preset', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToCreatePreset'), 'error');
     }
   };
 
@@ -64,19 +69,19 @@ export default function Presets() {
     try {
       await createPresetsBulk({ presets: DEFAULT_PRESETS }).unwrap();
       setShowBulkModal(false);
-      showToast('Default presets added successfully!', 'success');
+      showToast(t('other.defaultPresetsAdded'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to add presets', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToAddPresets'), 'error');
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this preset?')) {
+    if (confirm(t('other.confirmDeletePreset'))) {
       try {
         await deletePreset(id).unwrap();
-        showToast('Preset deleted successfully', 'success');
+        showToast(t('other.presetDeleted'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to delete preset', 'error');
+        showToast(error instanceof Error ? error.message : t('other.failedToDeletePreset'), 'error');
       }
     }
   };
@@ -142,7 +147,7 @@ export default function Presets() {
                   : 'bg-white text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'
               }`}
             >
-              {type.label}
+              {presetTypeLabels[type.label]}
             </button>
           ))}
         </div>
@@ -222,7 +227,7 @@ export default function Presets() {
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 >
                   {PRESET_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
+                    <option key={type.value} value={type.value}>{presetTypeLabels[type.label]}</option>
                   ))}
                 </select>
               </div>
@@ -263,7 +268,7 @@ export default function Presets() {
                   disabled={isCreating}
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all disabled:opacity-50 btn-shine"
                 >
-                  {isCreating ? 'Creating...' : 'Create Preset'}
+                  {isCreating ? t('other.creatingButton') : t('other.addPreset')}
                 </button>
               </div>
             </form>

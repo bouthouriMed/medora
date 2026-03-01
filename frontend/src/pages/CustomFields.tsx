@@ -6,14 +6,20 @@ import type { CustomField } from '../types';
 import { useTranslation } from 'react-i18next';
 
 const FIELD_TYPES = [
-  { value: 'TEXT', label: 'Text' },
-  { value: 'NUMBER', label: 'Number' },
-  { value: 'DATE', label: 'Date' },
-  { value: 'SELECT', label: 'Dropdown' },
+  { value: 'TEXT', label: 'TEXT' },
+  { value: 'NUMBER', label: 'NUMBER' },
+  { value: 'DATE', label: 'DATE' },
+  { value: 'SELECT', label: 'SELECT' },
 ];
 
 export default function CustomFields() {
   const { t } = useTranslation();
+  const fieldTypeLabels: Record<string, string> = {
+    TEXT: t('other.fieldTypeText'),
+    NUMBER: t('other.fieldTypeNumber'),
+    DATE: t('other.fieldTypeDate'),
+    SELECT: t('other.fieldTypeDropdown'),
+  };
   const { data: fields, isLoading, refetch } = useGetCustomFieldsQuery(undefined);
   const [createField, { isLoading: isCreating }] = useCreateCustomFieldMutation();
   const [deleteField] = useDeleteCustomFieldMutation();
@@ -34,10 +40,10 @@ export default function CustomFields() {
       }).unwrap();
       setShowModal(false);
       setNewField({ name: '', fieldType: 'TEXT', options: '', required: false });
-      showToast('Custom field created!', 'success');
+      showToast(t('other.customFieldCreated'), 'success');
       refetch();
     } catch (error) {
-      showToast('Failed to create field', 'error');
+      showToast(t('other.failedToCreateField'), 'error');
     }
   };
 
@@ -45,10 +51,10 @@ export default function CustomFields() {
     if (confirm(`Delete "${field.name}"? This will also delete all patient data for this field.`)) {
       try {
         await deleteField(field.id).unwrap();
-        showToast('Field deleted', 'success');
+        showToast(t('other.fieldDeleted'), 'success');
         refetch();
       } catch (error) {
-        showToast('Failed to delete field', 'error');
+        showToast(t('other.failedToDeleteField'), 'error');
       }
     }
   };
@@ -135,7 +141,7 @@ export default function CustomFields() {
                   onChange={(e) => setNewField({ ...newField, fieldType: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {FIELD_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                  {FIELD_TYPES.map(f => <option key={f.value} value={f.value}>{fieldTypeLabels[f.value]}</option>)}
                 </select>
               </div>
               {newField.fieldType === 'SELECT' && (

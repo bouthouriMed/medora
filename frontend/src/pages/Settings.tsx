@@ -34,23 +34,23 @@ export default function Settings() {
     e.preventDefault();
     try {
       await updateSettings(formData).unwrap();
-      showToast('Settings saved!', 'success');
+      showToast(t('other.settingsSaved'), 'success');
       refetch();
     } catch (error) {
-      showToast('Failed to save settings', 'error');
+      showToast(t('other.failedToSaveSettings'), 'error');
     }
   };
 
   const handleTestEmail = async () => {
     if (!formData.fromEmail) {
-      showToast('Please enter a test email address', 'error');
+      showToast(t('other.enterTestEmail'), 'error');
       return;
     }
     try {
       await sendTestEmail({ email: formData.fromEmail }).unwrap();
-      showToast('Test email sent!', 'success');
+      showToast(t('other.testEmailSent'), 'success');
     } catch (error) {
-      showToast('Failed to send test email', 'error');
+      showToast(t('other.failedToSendTestEmail'), 'error');
     }
   };
 

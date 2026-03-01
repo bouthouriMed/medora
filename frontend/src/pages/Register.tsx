@@ -29,12 +29,12 @@ export default function Register() {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('other.passwordsDoNotMatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('other.passwordMinLength'));
       return;
     }
 
@@ -49,12 +49,12 @@ export default function Register() {
       dispatch(setCredentials(result));
       navigate('/');
     } catch {
-      setError('Registration failed. Please try again.');
+      setError(t('other.registrationFailed'));
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 dark:via-gray-800 dark:to-gray-900 p-4">
       <div className="w-full max-w-md">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
           <div className="text-center mb-8">

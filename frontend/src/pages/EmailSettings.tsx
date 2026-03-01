@@ -35,23 +35,23 @@ export default function EmailSettings() {
     e.preventDefault();
     try {
       await updateSettings(formData).unwrap();
-      showToast('Settings saved!', 'success');
+      showToast(t('other.settingsSaved'), 'success');
       refetch();
     } catch (error) {
-      showToast('Failed to save settings', 'error');
+      showToast(t('other.failedToSaveSettings'), 'error');
     }
   };
 
   const handleTestEmail = async () => {
     if (!testEmail) {
-      showToast('Please enter a test email address', 'error');
+      showToast(t('other.enterTestEmail'), 'error');
       return;
     }
     try {
       await sendTestEmail({ email: testEmail }).unwrap();
-      showToast('Test email sent!', 'success');
+      showToast(t('other.testEmailSent'), 'success');
     } catch (error) {
-      showToast('Failed to send test email', 'error');
+      showToast(t('other.failedToSendTestEmail'), 'error');
     }
   };
 
@@ -156,7 +156,7 @@ export default function EmailSettings() {
             disabled={isSaving}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg font-medium disabled:opacity-50"
           >
-            {isSaving ? 'Saving...' : 'Save Settings'}
+            {isSaving ? t('other.savingButton') : t('settings.saveSettings')}
           </button>
         </div>
       </div>

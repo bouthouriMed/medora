@@ -97,9 +97,9 @@ export default function Patients() {
       }).unwrap();
       setShowModal(false);
       setFormData({ firstName: '', lastName: '', email: '', phone: '', dateOfBirth: '', address: '', notes: '' });
-      showToast('Patient created successfully!', 'success');
+      showToast(t('other.patientCreated'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to create patient', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToCreatePatient'), 'error');
     }
   };
 
@@ -321,8 +321,8 @@ export default function Patients() {
                   </div>
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.firstName} {patient.lastName}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{patient.email || 'No email'}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{patient.phone || 'No phone'}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{patient.email || t('other.noEmail')}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{patient.phone || t('other.noPhone')}</p>
                     {patient.patientTags && patient.patientTags.length > 0 && (
                       <div className="flex flex-wrap gap-1 mt-2">
                         {patient.patientTags.map(({ tag }) => (

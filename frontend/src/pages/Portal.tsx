@@ -117,7 +117,7 @@ export default function Portal() {
                       Invoice #{invoice.id.slice(0, 8).toUpperCase()}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
-                      Due: {invoice.dueDate ? formatDate(invoice.dueDate) : 'No due date'}
+                      {t('other.due')}: {invoice.dueDate ? formatDate(invoice.dueDate) : t('invoices.noDueDate')}
                     </p>
                   </div>
                   <span className="text-lg font-bold text-amber-600">
@@ -211,16 +211,16 @@ export default function Portal() {
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.email')}</p>
-                <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.email || 'Not provided'}</p>
+                <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.email || t('other.notProvided')}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.phone')}</p>
-                <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.phone || 'Not provided'}</p>
+                <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.phone || t('other.notProvided')}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.dateOfBirth')}</p>
                 <p className="font-semibold text-gray-900 dark:text-white dark:text-white">
-                  {patient.dateOfBirth ? formatDate(patient.dateOfBirth) : 'Not provided'}
+                  {patient.dateOfBirth ? formatDate(patient.dateOfBirth) : t('other.notProvided')}
                 </p>
               </div>
               {patient.address && (
