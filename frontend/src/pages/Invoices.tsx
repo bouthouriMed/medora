@@ -1,20 +1,23 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation } from '../api';
+import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation, useGetPresetsQuery } from '../api';
 import { showToast } from '../components/Toast';
+import { exportInvoices } from '../utils/export';
+import Modal from '../components/Modal';
 import type { Invoice, Patient, Appointment } from '../types';
 
 export default function Invoices() {
   const [showModal, setShowModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
+  const [showFilters, setShowFilters] = useState(false);
 
-  const statusFilter = useMemo(() => {
-    return searchParams.get('status') || '';
-  }, [searchParams]);
+  const statusFilter = searchParams.get('status') || '';
   
   const { data: invoices, isLoading } = useGetInvoicesQuery(statusFilter);
   const { data: appointments } = useGetAppointmentsQuery({});
   const { data: patients } = useGetPatientsQuery('');
+  const { data: presets } = useGetPresetsQuery('PROCEDURE');
   const [createInvoice, { isLoading: isCreating }] = useCreateInvoiceMutation();
   const [markAsPaid] = useMarkInvoiceAsPaidMutation();
   const [markAsUnpaid] = useMarkInvoiceAsUnpaidMutation();
@@ -85,12 +88,20 @@ export default function Invoices() {
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Invoices</h1>
           <p className="text-gray-500 mt-1">Manage billing and payments</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
-        >
-          + Create Invoice
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => exportInvoices(statusFilter)}
+            className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium"
+          >
+            📥 Export
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
+          >
+            + Create Invoice
+          </button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -124,17 +135,66 @@ export default function Invoices() {
         </div>
       </div>
 
-      {/* Filter */}
-      <div className="flex gap-3">
-        <select
-          value={statusFilter}
-          onChange={(e) => handleStatusChange(e.target.value)}
-          className="px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
+      {/* Filters */}
+      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-4">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 text-gray-700 font-medium hover:text-gray-900 transition-colors"
         >
-          <option value="">All Invoices</option>
-          <option value="PAID">Paid</option>
-          <option value="UNPAID">Unpaid</option>
-        </select>
+          <svg className={`w-5 h-5 transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filters
+          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+            {[statusFilter, dateRange.start, dateRange.end].filter(Boolean).length || 'All'}
+          </span>
+        </button>
+        
+        {showFilters && (
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="flex flex-wrap gap-3 items-end">
+              <div className="flex-1 min-w-[150px]">
+                <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => handleStatusChange(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="PAID">Paid</option>
+                  <option value="UNPAID">Unpaid</option>
+                </select>
+              </div>
+              <div className="flex-1 min-w-[150px]">
+                <label className="block text-xs font-medium text-gray-500 mb-1">From Date</label>
+                <input
+                  type="date"
+                  value={dateRange.start}
+                  onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex-1 min-w-[150px]">
+                <label className="block text-xs font-medium text-gray-500 mb-1">To Date</label>
+                <input
+                  type="date"
+                  value={dateRange.end}
+                  onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  handleStatusChange('');
+                  setDateRange({ start: '', end: '' });
+                }}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Clear
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Loading */}
@@ -273,30 +333,25 @@ export default function Invoices() {
       )}
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 modal-backdrop">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl modal-content max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900">Create Invoice</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Invoice">
+        <div className="p-6">
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Patient *</label>
+              <select
+                value={formData.patientId}
+                onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                required
+              >
+                <option value="">Select patient</option>
+                {patients?.map((p: Patient) => (
+                  <option key={p.id} value={p.id}>
+                    {p.firstName} {p.lastName}
+                  </option>
+                ))}
+              </select>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Patient *</label>
-                <select
-                  value={formData.patientId}
-                  onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
-                  required
-                >
-                  <option value="">Select patient</option>
-                  {patients?.map((p: Patient) => (
-                    <option key={p.id} value={p.id}>
-                      {p.firstName} {p.lastName}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Appointment *</label>
                 <select
@@ -315,6 +370,20 @@ export default function Invoices() {
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Amount ($) *</label>
+                {presets && presets.length > 0 && (
+                  <div className="mb-2 flex flex-wrap gap-1">
+                    {presets.slice(0, 5).map((preset: any) => (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, amount: String(preset.price || 0) })}
+                        className="text-xs px-2 py-1 bg-green-50 text-green-600 rounded-full hover:bg-green-100"
+                      >
+                        {preset.name} ${preset.price}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <input
                   type="number"
                   step="0.01"
@@ -351,9 +420,8 @@ export default function Invoices() {
                 </button>
               </div>
             </form>
-          </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

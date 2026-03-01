@@ -36,6 +36,11 @@ export class PatientService {
   async archive(id: string, clinicId: string) {
     return patientRepository.delete(id, clinicId);
   }
+
+  async regenerateToken(id: string, clinicId: string) {
+    await patientRepository.regeneratePortalToken(id, clinicId);
+    return patientRepository.findById(id, clinicId);
+  }
 }
 
 export default new PatientService();

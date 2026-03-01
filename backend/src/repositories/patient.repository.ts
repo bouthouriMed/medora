@@ -1,5 +1,9 @@
 import prisma from '../utils/prisma';
 
+function generatePortalToken(): string {
+  return crypto.randomUUID() + '-' + Date.now().toString(36);
+}
+
 export class PatientRepository {
   async create(data: {
     firstName: string;
@@ -11,7 +15,12 @@ export class PatientRepository {
     notes?: string;
     clinicId: string;
   }) {
-    return prisma.patient.create({ data });
+    return prisma.patient.create({ 
+      data: { 
+        ...data, 
+        portalToken: generatePortalToken() 
+      } 
+    });
   }
 
   async findById(id: string, clinicId: string) {
@@ -30,7 +39,39 @@ export class PatientRepository {
       ];
     }
 
-    return prisma.patient.findMany({ where, orderBy: { createdAt: 'desc' } });
+    return prisma.patient.findMany({ 
+      where, 
+      orderBy: { createdAt: 'desc' },
+      include: { patientTags: { include: { tag: true } } },
+    });
+  }
+
+  async findByPortalToken(token: string) {
+    return prisma.patient.findFirst({
+      where: { portalToken: token, deletedAt: null },
+      include: {
+        clinic: true,
+        appointments: {
+          orderBy: { dateTime: 'desc' },
+          include: {
+            doctor: { select: { firstName: true, lastName: true } },
+          },
+        },
+        invoices: {
+          orderBy: { createdAt: 'desc' },
+          include: {
+            appointment: true,
+          },
+        },
+      },
+    });
+  }
+
+  async regeneratePortalToken(id: string, clinicId: string) {
+    return prisma.patient.updateMany({
+      where: { id, clinicId },
+      data: { portalToken: generatePortalToken() },
+    });
   }
 
   async update(id: string, clinicId: string, data: {

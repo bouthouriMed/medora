@@ -13,13 +13,13 @@ export class InvoiceRepository {
 
   async findById(id: string, clinicId: string) {
     return prisma.invoice.findFirst({
-      where: { id, clinicId, deletedAt: null },
+      where: { id, clinicId },
       include: { patient: true, appointment: true },
     });
   }
 
   async findByClinic(clinicId: string, status?: 'PAID' | 'UNPAID') {
-    const where: Record<string, unknown> = { clinicId, deletedAt: null };
+    const where: Record<string, unknown> = { clinicId };
 
     if (status) {
       where.status = status;
@@ -34,7 +34,7 @@ export class InvoiceRepository {
 
   async findByPatient(patientId: string, clinicId: string) {
     return prisma.invoice.findMany({
-      where: { patientId, clinicId, deletedAt: null },
+      where: { patientId, clinicId },
       include: { appointment: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -42,7 +42,7 @@ export class InvoiceRepository {
 
   async findUnpaid(clinicId: string) {
     return prisma.invoice.findMany({
-      where: { clinicId, status: 'UNPAID', deletedAt: null },
+      where: { clinicId, status: 'UNPAID' },
       include: { patient: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -54,7 +54,6 @@ export class InvoiceRepository {
         clinicId,
         status: 'PAID',
         paidAt: { gte: startDate, lte: endDate },
-        deletedAt: null,
       },
       _sum: { amount: true },
       _count: true,
@@ -77,9 +76,8 @@ export class InvoiceRepository {
   }
 
   async delete(id: string, clinicId: string) {
-    return prisma.invoice.updateMany({
-      where: { id, clinicId },
-      data: { deletedAt: new Date() },
+    return prisma.invoice.delete({
+      where: { id },
     });
   }
 }

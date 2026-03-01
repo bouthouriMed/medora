@@ -12,7 +12,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Patient', 'Appointment', 'Invoice', 'Dashboard'],
+  tagTypes: ['Patient', 'Appointment', 'Invoice', 'Dashboard', 'Preset', 'Tag', 'CustomField', 'NoteTemplate', 'RecurringAppointment', 'LabResult', 'Task', 'PatientMedicalHistory'],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (body) => ({
@@ -92,6 +92,13 @@ export const api = createApi({
       }),
       invalidatesTags: ['Patient', 'Dashboard'],
     }),
+    regeneratePatientToken: builder.mutation({
+      query: (id) => ({
+        url: `/patients/${id}/regenerate-token`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Patient'],
+    }),
     getAppointments: builder.query({
       query: (params) => ({
         url: '/appointments',
@@ -167,6 +174,345 @@ export const api = createApi({
       }),
       invalidatesTags: ['Invoice', 'Dashboard'],
     }),
+    getPresets: builder.query({
+      query: (type) => ({
+        url: '/presets',
+        params: type ? { type } : undefined,
+      }),
+      providesTags: ['Preset'],
+    }),
+    createPreset: builder.mutation({
+      query: (body) => ({
+        url: '/presets',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Preset'],
+    }),
+    createPresetsBulk: builder.mutation({
+      query: (body) => ({
+        url: '/presets/bulk',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Preset'],
+    }),
+    deletePreset: builder.mutation({
+      query: (id) => ({
+        url: `/presets/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Preset'],
+    }),
+    getPortalData: builder.query({
+      query: (token) => `/public/patient/${token}`,
+    }),
+    getTags: builder.query({
+      query: () => '/tags',
+    }),
+    createTag: builder.mutation({
+      query: (body) => ({
+        url: '/tags',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Tag'],
+    }),
+    deleteTag: builder.mutation({
+      query: (id) => ({
+        url: `/tags/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Tag'],
+    }),
+    getPatientTags: builder.query({
+      query: (patientId) => `/patients/${patientId}/tags`,
+    }),
+    addTagToPatient: builder.mutation({
+      query: (body) => ({
+        url: '/patients/tags',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Patient'],
+    }),
+    removeTagFromPatient: builder.mutation({
+      query: (args) => ({
+        url: `/patients/${args.patientId}/tags/${args.tagId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Patient'],
+    }),
+    getCustomFields: builder.query({
+      query: () => '/custom-fields',
+    }),
+    createCustomField: builder.mutation({
+      query: (body) => ({
+        url: '/custom-fields',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['CustomField'],
+    }),
+    deleteCustomField: builder.mutation({
+      query: (id) => ({
+        url: `/custom-fields/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['CustomField'],
+    }),
+    getPatientCustomFields: builder.query({
+      query: (patientId) => `/patients/${patientId}/custom-fields`,
+    }),
+    savePatientCustomField: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/custom-fields`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Patient'],
+    }),
+    getNoteTemplates: builder.query({
+      query: (type) => ({
+        url: '/note-templates',
+        params: type ? { type } : undefined,
+      }),
+    }),
+    createNoteTemplate: builder.mutation({
+      query: (body) => ({
+        url: '/note-templates',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['NoteTemplate'],
+    }),
+    deleteNoteTemplate: builder.mutation({
+      query: (id) => ({
+        url: `/note-templates/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['NoteTemplate'],
+    }),
+    getRecurringAppointments: builder.query({
+      query: () => '/recurring-appointments',
+      providesTags: ['RecurringAppointment'],
+    }),
+    createRecurringAppointment: builder.mutation({
+      query: (body) => ({
+        url: '/recurring-appointments',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['RecurringAppointment', 'Appointment'],
+    }),
+    deleteRecurringAppointment: builder.mutation({
+      query: (id) => ({
+        url: `/recurring-appointments/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['RecurringAppointment', 'Appointment'],
+    }),
+    getClinicSettings: builder.query({
+      query: () => '/settings',
+    }),
+    updateClinicSettings: builder.mutation({
+      query: (body) => ({
+        url: '/settings',
+        method: 'PUT',
+        body,
+      }),
+    }),
+    sendTestEmail: builder.mutation({
+      query: (body) => ({
+        url: '/settings/test-email',
+        method: 'POST',
+        body,
+      }),
+    }),
+    getLabResults: builder.query({
+      query: (params) => ({
+        url: '/lab-results',
+        params,
+      }),
+      providesTags: ['LabResult'],
+    }),
+    getLabResult: builder.query({
+      query: (id) => `/lab-results/${id}`,
+    }),
+    createLabResult: builder.mutation({
+      query: (body) => ({
+        url: '/lab-results',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['LabResult'],
+    }),
+    updateLabResult: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/lab-results/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['LabResult'],
+    }),
+    deleteLabResult: builder.mutation({
+      query: (id) => ({
+        url: `/lab-results/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['LabResult'],
+    }),
+    getTasks: builder.query({
+      query: (params) => ({
+        url: '/tasks',
+        params,
+      }),
+      providesTags: ['Task'],
+    }),
+    createTask: builder.mutation({
+      query: (body) => ({
+        url: '/tasks',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Task'],
+    }),
+    updateTask: builder.mutation({
+      query: ({ id, ...body }) => ({
+        url: `/tasks/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Task'],
+    }),
+    deleteTask: builder.mutation({
+      query: (id) => ({
+        url: `/tasks/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Task'],
+    }),
+    getPatientMedicalHistory: builder.query({
+      query: (patientId) => `/patients/${patientId}/medical-history`,
+      providesTags: (result, error, patientId) => [{ type: 'PatientMedicalHistory', id: patientId }],
+    }),
+    createVital: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/vitals`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    createDiagnosis: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/diagnoses`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    updateDiagnosis: builder.mutation({
+      query: ({ id, patientId, ...body }) => ({
+        url: `/diagnoses/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    deleteDiagnosis: builder.mutation({
+      query: ({ id, patientId }) => ({
+        url: `/diagnoses/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    createPrescription: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/prescriptions`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    updatePrescription: builder.mutation({
+      query: ({ id, patientId, ...body }) => ({
+        url: `/prescriptions/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    deletePrescription: builder.mutation({
+      query: ({ id, patientId }) => ({
+        url: `/prescriptions/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    createAllergy: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/allergies`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    deleteAllergy: builder.mutation({
+      query: ({ id, patientId }) => ({
+        url: `/allergies/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    createCondition: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/conditions`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
+    deleteCondition: builder.mutation({
+      query: ({ id, patientId }) => ({
+        url: `/conditions/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        'Patient',
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
   }),
 });
 
@@ -184,6 +530,7 @@ export const {
   useCreatePatientMutation,
   useUpdatePatientMutation,
   useDeletePatientMutation,
+  useRegeneratePatientTokenMutation,
   useGetAppointmentsQuery,
   useGetAppointmentQuery,
   useGetPatientAppointmentsQuery,
@@ -196,4 +543,50 @@ export const {
   useCreateInvoiceMutation,
   useMarkInvoiceAsPaidMutation,
   useMarkInvoiceAsUnpaidMutation,
+  useGetPresetsQuery,
+  useCreatePresetMutation,
+  useCreatePresetsBulkMutation,
+  useDeletePresetMutation,
+  useGetPortalDataQuery,
+  useGetTagsQuery,
+  useCreateTagMutation,
+  useDeleteTagMutation,
+  useGetPatientTagsQuery,
+  useAddTagToPatientMutation,
+  useRemoveTagFromPatientMutation,
+  useGetCustomFieldsQuery,
+  useCreateCustomFieldMutation,
+  useDeleteCustomFieldMutation,
+  useGetPatientCustomFieldsQuery,
+  useSavePatientCustomFieldMutation,
+  useGetNoteTemplatesQuery,
+  useCreateNoteTemplateMutation,
+  useDeleteNoteTemplateMutation,
+  useGetRecurringAppointmentsQuery,
+  useCreateRecurringAppointmentMutation,
+  useDeleteRecurringAppointmentMutation,
+  useGetClinicSettingsQuery,
+  useUpdateClinicSettingsMutation,
+  useSendTestEmailMutation,
+  useGetLabResultsQuery,
+  useGetLabResultQuery,
+  useCreateLabResultMutation,
+  useUpdateLabResultMutation,
+  useDeleteLabResultMutation,
+  useGetTasksQuery,
+  useCreateTaskMutation,
+  useUpdateTaskMutation,
+  useDeleteTaskMutation,
+  useGetPatientMedicalHistoryQuery,
+  useCreateVitalMutation,
+  useCreateDiagnosisMutation,
+  useUpdateDiagnosisMutation,
+  useDeleteDiagnosisMutation,
+  useCreatePrescriptionMutation,
+  useUpdatePrescriptionMutation,
+  useDeletePrescriptionMutation,
+  useCreateAllergyMutation,
+  useDeleteAllergyMutation,
+  useCreateConditionMutation,
+  useDeleteConditionMutation,
 } = api;

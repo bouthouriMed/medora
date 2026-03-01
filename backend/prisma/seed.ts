@@ -7,11 +7,19 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting seed...');
 
-  // Clean existing data
+  // Clean existing data (in correct order to handle foreign keys)
+  await prisma.patientCustomFieldValue.deleteMany({});
+  await prisma.customField.deleteMany({});
+  await prisma.noteTemplate.deleteMany({});
+  await prisma.preset.deleteMany({});
+  await prisma.recurringAppointment.deleteMany({});
+  await prisma.patientTag.deleteMany({});
+  await prisma.tag.deleteMany({});
   await prisma.invoice.deleteMany({});
   await prisma.appointment.deleteMany({});
   await prisma.patient.deleteMany({});
   await prisma.user.deleteMany({});
+  await prisma.clinicSettings.deleteMany({});
   await prisma.clinic.deleteMany({});
 
   console.log('Cleaned existing data');
@@ -27,7 +35,7 @@ async function main() {
   });
   console.log('Created clinic:', clinic.name);
 
-  // Create Users (Doctor and Staff)
+  // Create Users (Doctor, Staff, Admin)
   const hashedPassword = await bcrypt.hash('password123', 10);
 
   const doctor = await prisma.user.create({
@@ -54,6 +62,122 @@ async function main() {
   });
   console.log('Created staff:', staff.email);
 
+  const admin = await prisma.user.create({
+    data: {
+      email: 'admin@medora.com',
+      password: hashedPassword,
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'ADMIN',
+      clinicId: clinic.id,
+    },
+  });
+  console.log('Created admin:', admin.email);
+
+  const nurse = await prisma.user.create({
+    data: {
+      email: 'nurse@medora.com',
+      password: hashedPassword,
+      firstName: 'Emily',
+      lastName: 'Johnson',
+      role: 'NURSE',
+      clinicId: clinic.id,
+    },
+  });
+  console.log('Created nurse:', nurse.email);
+
+  // Create Tags
+  const tags = await Promise.all([
+    prisma.tag.create({
+      data: { name: 'VIP', color: '#f59e0b', clinicId: clinic.id },
+    }),
+    prisma.tag.create({
+      data: { name: 'New Patient', color: '#10b981', clinicId: clinic.id },
+    }),
+    prisma.tag.create({
+      data: { name: 'Chronic Condition', color: '#ef4444', clinicId: clinic.id },
+    }),
+    prisma.tag.create({
+      data: { name: 'Follow-up Required', color: '#8b5cf6', clinicId: clinic.id },
+    }),
+    prisma.tag.create({
+      data: { name: 'Insurance', color: '#3b82f6', clinicId: clinic.id },
+    }),
+  ]);
+  console.log('Created', tags.length, 'tags');
+
+  // Create Custom Fields
+  const customFields = await Promise.all([
+    prisma.customField.create({
+      data: { name: 'Insurance ID', fieldType: 'TEXT', clinicId: clinic.id },
+    }),
+    prisma.customField.create({
+      data: { name: 'Emergency Contact', fieldType: 'TEXT', clinicId: clinic.id },
+    }),
+    prisma.customField.create({
+      data: { name: 'Blood Type', fieldType: 'SELECT', options: 'A+,A-,B+,B-,AB+,AB-,O+,O-', clinicId: clinic.id },
+    }),
+    prisma.customField.create({
+      data: { name: 'Allergies', fieldType: 'TEXT', clinicId: clinic.id },
+    }),
+  ]);
+  console.log('Created', customFields.length, 'custom fields');
+
+  // Create Presets
+  const presets = await Promise.all([
+    prisma.preset.create({
+      data: { name: 'Annual Checkup', type: 'PROCEDURE', price: 150, description: 'Yearly health examination', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Follow-up Visit', type: 'PROCEDURE', price: 75, description: 'Follow-up consultation', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Flu Vaccination', type: 'PROCEDURE', price: 50, description: 'Influenza vaccine', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Blood Work', type: 'PROCEDURE', price: 100, description: 'Basic blood panel', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Consultation', type: 'PROCEDURE', price: 120, description: 'General consultation', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Hypertension', type: 'DIAGNOSIS', description: 'High blood pressure', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Type 2 Diabetes', type: 'DIAGNOSIS', description: 'Diabetes mellitus type 2', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Common Cold', type: 'DIAGNOSIS', description: 'Upper respiratory infection', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Amoxicillin 500mg', type: 'PRESCRIPTION', description: 'Take twice daily for 7 days', clinicId: clinic.id },
+    }),
+    prisma.preset.create({
+      data: { name: 'Paracetamol 500mg', type: 'PRESCRIPTION', description: 'Take as needed for pain/fever', clinicId: clinic.id },
+    }),
+  ]);
+  console.log('Created', presets.length, 'presets');
+
+  // Create Note Templates
+  const noteTemplates = await Promise.all([
+    prisma.noteTemplate.create({
+      data: { name: 'Follow-up in 2 weeks', content: 'Patient advised to return in 2 weeks for follow-up. Monitor symptoms.', clinicId: clinic.id },
+    }),
+    prisma.noteTemplate.create({
+      data: { name: 'Lab Tests Required', content: 'Patient requires blood work. Fasting for 12 hours before sample collection.', clinicId: clinic.id },
+    }),
+    prisma.noteTemplate.create({
+      data: { name: 'Medication Review', content: 'Reviewed current medications. No adverse reactions noted. Continue current dosage.', clinicId: clinic.id },
+    }),
+    prisma.noteTemplate.create({
+      data: { name: 'Referral Letter', content: 'Referral letter provided to patient for specialist consultation.', clinicId: clinic.id },
+    }),
+    prisma.noteTemplate.create({
+      data: { name: 'Payment Plan', content: 'Patient offered payment plan - 3 monthly installments.', clinicId: clinic.id },
+    }),
+  ]);
+  console.log('Created', noteTemplates.length, 'note templates');
+
   // Create Patients
   const patients = await Promise.all([
     prisma.patient.create({
@@ -66,6 +190,9 @@ async function main() {
         address: '456 Oak Street, Springfield, SP 12345',
         notes: 'Allergic to penicillin',
         clinicId: clinic.id,
+        patientTags: {
+          create: [{ tagId: tags[1].id }, { tagId: tags[4].id }],
+        },
       },
     }),
     prisma.patient.create({
@@ -78,6 +205,9 @@ async function main() {
         address: '789 Pine Avenue, Riverside, RV 23456',
         notes: 'Diabetic - monitoring blood sugar',
         clinicId: clinic.id,
+        patientTags: {
+          create: [{ tagId: tags[2].id }],
+        },
       },
     }),
     prisma.patient.create({
@@ -102,6 +232,9 @@ async function main() {
         address: '654 Maple Drive, Hillside, HS 45678',
         notes: 'High blood pressure - medication follow-up',
         clinicId: clinic.id,
+        patientTags: {
+          create: [{ tagId: tags[0].id }, { tagId: tags[3].id }],
+        },
       },
     }),
     prisma.patient.create({
@@ -118,6 +251,26 @@ async function main() {
     }),
   ]);
   console.log('Created', patients.length, 'patients');
+
+  // Create Custom Field Values for patients
+  await Promise.all([
+    prisma.patientCustomFieldValue.create({
+      data: { patientId: patients[0].id, customFieldId: customFields[0].id, value: 'INS-12345' },
+    }),
+    prisma.patientCustomFieldValue.create({
+      data: { patientId: patients[0].id, customFieldId: customFields[1].id, value: 'John Johnson - 555-1234' },
+    }),
+    prisma.patientCustomFieldValue.create({
+      data: { patientId: patients[0].id, customFieldId: customFields[2].id, value: 'O+' },
+    }),
+    prisma.patientCustomFieldValue.create({
+      data: { patientId: patients[1].id, customFieldId: customFields[3].id, value: 'Penicillin' },
+    }),
+    prisma.patientCustomFieldValue.create({
+      data: { patientId: patients[3].id, customFieldId: customFields[2].id, value: 'A+' },
+    }),
+  ]);
+  console.log('Created custom field values for patients');
 
   // Create Appointments
   const today = new Date();
@@ -322,6 +475,327 @@ async function main() {
   ]);
   console.log('Created', invoices.length, 'invoices');
 
+  // Create Medical Records for patients
+  const vitals = await Promise.all([
+    prisma.vital.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        bloodPressureSystolic: 120,
+        bloodPressureDiastolic: 80,
+        heartRate: 72,
+        temperature: 98.6,
+        weight: 70,
+        height: 175,
+        bmi: 22.9,
+        recordedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.vital.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        bloodPressureSystolic: 140,
+        bloodPressureDiastolic: 90,
+        heartRate: 80,
+        temperature: 98.4,
+        weight: 85,
+        height: 180,
+        bmi: 26.2,
+        notes: 'Elevated blood pressure - monitoring',
+        recordedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.vital.create({
+      data: {
+        patientId: patients[3].id,
+        clinicId: clinic.id,
+        bloodPressureSystolic: 135,
+        bloodPressureDiastolic: 88,
+        heartRate: 76,
+        temperature: 98.2,
+        weight: 92,
+        height: 178,
+        bmi: 29.0,
+        notes: 'BP slightly elevated',
+        recordedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+      },
+    }),
+  ]);
+  console.log('Created', vitals.length, 'vitals records');
+
+  // Create Diagnoses
+  const diagnoses = await Promise.all([
+    prisma.diagnosis.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        icdCode: 'E11.9',
+        description: 'Type 2 diabetes mellitus without complications',
+        status: 'ACTIVE',
+        diagnosedAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.diagnosis.create({
+      data: {
+        patientId: patients[3].id,
+        clinicId: clinic.id,
+        icdCode: 'I10',
+        description: 'Essential (primary) hypertension',
+        status: 'CHRONIC',
+        diagnosedAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.diagnosis.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        icdCode: 'J06.9',
+        description: 'Acute upper respiratory infection',
+        status: 'RESOLVED',
+        diagnosedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+      },
+    }),
+  ]);
+  console.log('Created', diagnoses.length, 'diagnoses');
+
+  // Create Prescriptions
+  const prescriptions = await Promise.all([
+    prisma.prescription.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        prescribedById: doctor.id,
+        medication: 'Metformin 500mg',
+        dosage: '500mg',
+        frequency: 'Twice daily',
+        duration: '90 days',
+        instructions: 'Take with meals',
+        refills: 3,
+        startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        endDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.prescription.create({
+      data: {
+        patientId: patients[3].id,
+        clinicId: clinic.id,
+        prescribedById: doctor.id,
+        medication: 'Lisinopril 10mg',
+        dosage: '10mg',
+        frequency: 'Once daily',
+        duration: '90 days',
+        instructions: 'Take in the morning',
+        refills: 3,
+        startDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+        endDate: new Date(Date.now() + 75 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.prescription.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        prescribedById: doctor.id,
+        medication: 'Paracetamol 500mg',
+        dosage: '500mg',
+        frequency: 'As needed',
+        duration: '7 days',
+        instructions: 'Take for fever or pain, max 4 times daily',
+        refills: 0,
+        startDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+        endDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        status: 'COMPLETED',
+      },
+    }),
+  ]);
+  console.log('Created', prescriptions.length, 'prescriptions');
+
+  // Create Allergies
+  const allergies = await Promise.all([
+    prisma.allergy.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        allergen: 'Penicillin',
+        severity: 'SEVERE',
+        reaction: 'Anaphylaxis, difficulty breathing',
+      },
+    }),
+    prisma.allergy.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        allergen: 'Sulfa drugs',
+        severity: 'MODERATE',
+        reaction: 'Skin rash, itching',
+      },
+    }),
+    prisma.allergy.create({
+      data: {
+        patientId: patients[2].id,
+        clinicId: clinic.id,
+        allergen: 'Latex',
+        severity: 'MILD',
+        reaction: 'Skin irritation',
+      },
+    }),
+  ]);
+  console.log('Created', allergies.length, 'allergies');
+
+  // Create Conditions
+  const conditions = await Promise.all([
+    prisma.condition.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        name: 'Type 2 Diabetes',
+        status: 'CHRONIC',
+        notes: 'Well-controlled with medication',
+        diagnosedAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.condition.create({
+      data: {
+        patientId: patients[3].id,
+        clinicId: clinic.id,
+        name: 'Hypertension',
+        status: 'CHRONIC',
+        notes: 'On medication, BP monitored weekly',
+        diagnosedAt: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000),
+      },
+    }),
+    prisma.condition.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        name: 'Asthma',
+        status: 'ACTIVE',
+        notes: 'Mild, uses rescue inhaler as needed',
+        diagnosedAt: new Date(Date.now() - 730 * 24 * 60 * 60 * 1000),
+      },
+    }),
+  ]);
+  console.log('Created', conditions.length, 'conditions');
+
+  // Create Tasks
+  const tasks = await Promise.all([
+    prisma.task.create({
+      data: {
+        title: 'Follow up with Alice Johnson',
+        description: 'Review lab results and adjust medication if needed',
+        status: 'PENDING',
+        priority: 'HIGH',
+        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        assignedTo: doctor.id,
+        clinicId: clinic.id,
+      },
+    }),
+    prisma.task.create({
+      data: {
+        title: 'Call Bob Williams insurance',
+        description: 'Verify insurance coverage for new medication',
+        status: 'IN_PROGRESS',
+        priority: 'MEDIUM',
+        dueDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        assignedTo: staff.id,
+        clinicId: clinic.id,
+      },
+    }),
+    prisma.task.create({
+      data: {
+        title: 'Schedule Carol Davis annual checkup',
+        description: 'Patient due for yearly physical examination',
+        status: 'PENDING',
+        priority: 'LOW',
+        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        assignedTo: staff.id,
+        clinicId: clinic.id,
+      },
+    }),
+    prisma.task.create({
+      data: {
+        title: 'Review David Brown blood pressure log',
+        description: 'Patient has been tracking BP at home',
+        status: 'COMPLETED',
+        priority: 'HIGH',
+        assignedTo: doctor.id,
+        clinicId: clinic.id,
+      },
+    }),
+  ]);
+  console.log('Created', tasks.length, 'tasks');
+
+  // Create Lab Results
+  const labResults = await Promise.all([
+    prisma.labResult.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        testName: 'Complete Blood Count (CBC)',
+        category: 'Blood Test',
+        status: 'COMPLETED',
+        result: 'WBC: 7.5, RBC: 4.8, Hemoglobin: 14.2, Platelets: 250',
+        normalRange: 'WBC: 4.5-11.0, RBC: 4.5-5.5, Hemoglobin: 12.0-16.0, Platelets: 150-400',
+        orderedBy: doctor.id,
+        completedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        notes: 'All values within normal range',
+      },
+    }),
+    prisma.labResult.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        testName: 'Hemoglobin A1C',
+        category: 'Blood Test',
+        status: 'COMPLETED',
+        result: 'HbA1c: 7.2%, Estimated Average Glucose: 156 mg/dL',
+        normalRange: 'HbA1c: <5.7%, Estimated Average Glucose: <100 mg/dL',
+        orderedBy: doctor.id,
+        completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        notes: 'Diabetes not well controlled - consider medication adjustment',
+      },
+    }),
+    prisma.labResult.create({
+      data: {
+        patientId: patients[3].id,
+        clinicId: clinic.id,
+        testName: 'Lipid Panel',
+        category: 'Blood Test',
+        status: 'COMPLETED',
+        result: 'Total Cholesterol: 210, LDL: 130, HDL: 45, Triglycerides: 175',
+        normalRange: 'Total Cholesterol: <200, LDL: <100, HDL: >40, Triglycerides: <150',
+        orderedBy: doctor.id,
+        completedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000),
+        notes: 'Elevated LDL - recommend dietary changes',
+      },
+    }),
+    prisma.labResult.create({
+      data: {
+        patientId: patients[2].id,
+        clinicId: clinic.id,
+        testName: 'Urinalysis',
+        category: 'Urine Test',
+        status: 'PENDING',
+        orderedBy: doctor.id,
+      },
+    }),
+  ]);
+  console.log('Created', labResults.length, 'lab results');
+
+  // Create Recurring Appointments
+  await prisma.recurringAppointment.create({
+    data: {
+      patientId: patients[1].id,
+      doctorId: doctor.id,
+      clinicId: clinic.id,
+      frequency: 'MONTHLY',
+      interval: 1,
+      startDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+    },
+  });
+  console.log('Created 1 recurring appointment');
+
   // Summary
   const totalRevenue = await prisma.invoice.aggregate({
     where: { status: 'PAID', clinicId: clinic.id },
@@ -334,14 +808,27 @@ async function main() {
 
   console.log('\n=== Seed Complete ===');
   console.log('Clinic:', clinic.name);
-  console.log('Users:', 2, '(1 Doctor, 1 Staff)');
+  console.log('Users:', 4, '(1 Doctor, 1 Nurse, 1 Staff, 1 Admin)');
   console.log('Patients:', patients.length);
   console.log('Appointments:', appointments.length);
   console.log('Invoices:', invoices.length, `(${invoices.length - unpaidCount} paid, ${unpaidCount} unpaid)`);
+  console.log('Tags:', tags.length);
+  console.log('Custom Fields:', customFields.length);
+  console.log('Presets:', presets.length);
+  console.log('Note Templates:', noteTemplates.length);
+  console.log('Vitals:', vitals.length);
+  console.log('Diagnoses:', diagnoses.length);
+  console.log('Prescriptions:', prescriptions.length);
+  console.log('Allergies:', allergies.length);
+  console.log('Conditions:', conditions.length);
+  console.log('Tasks:', tasks.length);
+  console.log('Lab Results:', labResults.length);
   console.log('Total Revenue: $' + (totalRevenue._sum.amount?.toFixed(2) || '0.00'));
   console.log('\nLogin credentials:');
   console.log('  Doctor: dr.smith@medora.com / password123');
+  console.log('  Nurse: nurse@medora.com / password123');
   console.log('  Staff: staff@medora.com / password123');
+  console.log('  Admin: admin@medora.com / password123');
 }
 
 main()

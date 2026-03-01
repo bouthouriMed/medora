@@ -339,5 +339,359 @@ describe('API Integration Tests', () => {
         });
       });
     });
+
+    describe('Tags CRUD', () => {
+      let tagId: string;
+
+      describe('POST /api/tags', () => {
+        it('should create a new tag', async () => {
+          const response = await request(app)
+            .post('/api/tags')
+            .set(authHeader())
+            .send({
+              name: 'VIP Patient',
+              color: '#ff0000',
+            });
+
+          expect(response.status).toBe(201);
+          expect(response.body.name).toBe('VIP Patient');
+          tagId = response.body.id;
+        });
+      });
+
+      describe('GET /api/tags', () => {
+        it('should return all tags', async () => {
+          const response = await request(app)
+            .get('/api/tags')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response.body)).toBe(true);
+        });
+      });
+
+      describe('DELETE /api/tags/:id', () => {
+        it('should delete a tag', async () => {
+          const response = await request(app)
+            .delete(`/api/tags/${tagId}`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+
+      describe('POST /api/patients/tags', () => {
+        it('should add tag to patient', async () => {
+          const tag = await request(app)
+            .post('/api/tags')
+            .set(authHeader())
+            .send({ name: 'Test Tag', color: '#00ff00' });
+
+          const response = await request(app)
+            .post('/api/patients/tags')
+            .set(authHeader())
+            .send({
+              patientId,
+              tagId: tag.body.id,
+            });
+
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
+    describe('Custom Fields CRUD', () => {
+      let customFieldId: string;
+
+      describe('POST /api/custom-fields', () => {
+        it('should create a custom field', async () => {
+          const response = await request(app)
+            .post('/api/custom-fields')
+            .set(authHeader())
+            .send({
+              name: 'Insurance ID',
+              fieldType: 'TEXT',
+              required: false,
+            });
+
+          expect(response.status).toBe(201);
+          expect(response.body.name).toBe('Insurance ID');
+          customFieldId = response.body.id;
+        });
+      });
+
+      describe('GET /api/custom-fields', () => {
+        it('should return all custom fields', async () => {
+          const response = await request(app)
+            .get('/api/custom-fields')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response.body)).toBe(true);
+        });
+      });
+
+      describe('GET /api/patients/:patientId/custom-fields', () => {
+        it('should return patient custom fields', async () => {
+          const response = await request(app)
+            .get(`/api/patients/${patientId}/custom-fields`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+
+      describe('DELETE /api/custom-fields/:id', () => {
+        it('should delete a custom field', async () => {
+          const response = await request(app)
+            .delete(`/api/custom-fields/${customFieldId}`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
+    describe('Note Templates CRUD', () => {
+      let noteTemplateId: string;
+
+      describe('POST /api/note-templates', () => {
+        it('should create a note template', async () => {
+          const response = await request(app)
+            .post('/api/note-templates')
+            .set(authHeader())
+            .send({
+              name: 'Follow-up Visit',
+              content: 'Patient should return in 2 weeks',
+              type: 'APPOINTMENT',
+            });
+
+          expect(response.status).toBe(201);
+          expect(response.body.name).toBe('Follow-up Visit');
+          noteTemplateId = response.body.id;
+        });
+      });
+
+      describe('GET /api/note-templates', () => {
+        it('should return all note templates', async () => {
+          const response = await request(app)
+            .get('/api/note-templates')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response.body)).toBe(true);
+        });
+
+        it('should filter by type', async () => {
+          const response = await request(app)
+            .get('/api/note-templates?type=APPOINTMENT')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+
+      describe('DELETE /api/note-templates/:id', () => {
+        it('should delete a note template', async () => {
+          const response = await request(app)
+            .delete(`/api/note-templates/${noteTemplateId}`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
+    describe('Recurring Appointments', () => {
+      let recurringId: string;
+
+      describe('POST /api/recurring-appointments', () => {
+        it('should create a recurring appointment', async () => {
+          const futureDate = new Date();
+          futureDate.setDate(futureDate.getDate() + 7);
+
+          const response = await request(app)
+            .post('/api/recurring-appointments')
+            .set(authHeader())
+            .send({
+              patientId,
+              doctorId,
+              frequency: 'WEEKLY',
+              interval: 1,
+              startDate: futureDate.toISOString(),
+            });
+
+          expect(response.status).toBe(201);
+          expect(response.body.frequency).toBe('WEEKLY');
+          recurringId = response.body.id;
+        });
+      });
+
+      describe('GET /api/recurring-appointments', () => {
+        it('should return all recurring appointments', async () => {
+          const response = await request(app)
+            .get('/api/recurring-appointments')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(Array.isArray(response.body)).toBe(true);
+        });
+      });
+
+      describe('DELETE /api/recurring-appointments/:id', () => {
+        it('should delete a recurring appointment', async () => {
+          const response = await request(app)
+            .delete(`/api/recurring-appointments/${recurringId}`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
+    describe('Settings', () => {
+      describe('GET /api/settings', () => {
+        it('should return clinic settings', async () => {
+          const response = await request(app)
+            .get('/api/settings')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(response.body).toHaveProperty('emailNotifications');
+        });
+      });
+
+      describe('PUT /api/settings', () => {
+        it('should update clinic settings', async () => {
+          const response = await request(app)
+            .put('/api/settings')
+            .set(authHeader())
+            .send({
+              emailNotifications: true,
+              smtpHost: 'smtp.gmail.com',
+              smtpPort: '587',
+            });
+
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
+    describe('Export CSV', () => {
+      describe('GET /api/export/patients', () => {
+        it('should export patients as CSV', async () => {
+          const response = await request(app)
+            .get('/api/export/patients')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(response.headers['content-type']).toContain('text/csv');
+        });
+      });
+
+      describe('GET /api/export/appointments', () => {
+        it('should export appointments as CSV', async () => {
+          const response = await request(app)
+            .get('/api/export/appointments')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(response.headers['content-type']).toContain('text/csv');
+        });
+      });
+
+      describe('GET /api/export/invoices', () => {
+        it('should export invoices as CSV', async () => {
+          const response = await request(app)
+            .get('/api/export/invoices')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(response.headers['content-type']).toContain('text/csv');
+        });
+      });
+    });
+
+    describe('Presets', () => {
+      let presetId: string;
+
+      describe('POST /api/presets', () => {
+        it('should create a preset', async () => {
+          const response = await request(app)
+            .post('/api/presets')
+            .set(authHeader())
+            .send({
+              name: 'Annual Checkup',
+              type: 'PROCEDURE',
+              price: 100,
+            });
+
+          expect(response.status).toBe(201);
+          presetId = response.body.id;
+        });
+      });
+
+      describe('GET /api/presets', () => {
+        it('should return all presets', async () => {
+          const response = await request(app)
+            .get('/api/presets')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+
+        it('should filter by type', async () => {
+          const response = await request(app)
+            .get('/api/presets?type=PROCEDURE')
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+
+      describe('DELETE /api/presets/:id', () => {
+        it('should delete a preset', async () => {
+          const response = await request(app)
+            .delete(`/api/presets/${presetId}`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+        });
+      });
+    });
+
+    describe('Patient Portal', () => {
+      let portalToken: string;
+
+      describe('POST /api/patients/:id/regenerate-token', () => {
+        it('should regenerate patient portal token', async () => {
+          const response = await request(app)
+            .post(`/api/patients/${patientId}/regenerate-token`)
+            .set(authHeader());
+
+          expect(response.status).toBe(200);
+          expect(response.body).toHaveProperty('portalToken');
+          portalToken = response.body.portalToken;
+        });
+      });
+
+      describe('GET /api/public/patient/:token', () => {
+        it('should return patient data for portal', async () => {
+          const response = await request(app)
+            .get(`/api/public/patient/${portalToken}`);
+
+          expect(response.status).toBe(200);
+          expect(response.body.patient).toHaveProperty('firstName');
+          expect(response.body.clinic).toHaveProperty('name');
+        });
+
+        it('should fail with invalid token', async () => {
+          const response = await request(app)
+            .get('/api/public/patient/invalid-token');
+
+          expect(response.status).toBe(404);
+        });
+      });
+    });
   });
 });

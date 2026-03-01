@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useGetUsersQuery, useCreateUserMutation, useUpdateUserMutation, useDeleteUserMutation, useMeQuery } from '../api';
 import { showToast } from '../components/Toast';
+import Modal from '../components/Modal';
 import type { User } from '../types';
 
 export default function Users() {
@@ -17,7 +18,7 @@ export default function Users() {
     password: '',
     firstName: '',
     lastName: '',
-    role: 'STAFF' as 'DOCTOR' | 'STAFF',
+    role: 'STAFF' as 'DOCTOR' | 'NURSE' | 'STAFF' | 'ADMIN',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -179,13 +180,12 @@ export default function Users() {
       )}
 
       {/* Create/Edit User Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
-            <h2 className="text-xl font-bold mb-6 text-gray-900">
-              {editingUser ? 'Edit User' : 'Add New User'}
-            </h2>
-            <form onSubmit={handleSubmit}>
+      <Modal 
+        isOpen={showModal} 
+        onClose={() => { setShowModal(false); setEditingUser(null); }} 
+        title={editingUser ? 'Edit User' : 'Add New User'}
+      >
+        <form onSubmit={handleSubmit} className="p-6">
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>
@@ -237,7 +237,7 @@ export default function Users() {
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
                 <select
                   value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'DOCTOR' | 'STAFF' })}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value as 'DOCTOR' | 'NURSE' | 'STAFF' | 'ADMIN' })}
                   className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 >
                   <option value="STAFF">Staff</option>
@@ -264,9 +264,7 @@ export default function Users() {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

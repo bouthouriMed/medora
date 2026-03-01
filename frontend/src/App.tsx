@@ -1,13 +1,33 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAppSelector } from './store/hooks';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Patients from './pages/Patients';
-import Appointments from './pages/Appointments';
-import Invoices from './pages/Invoices';
-import Users from './pages/Users';
 import Layout from './components/Layout';
+
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Patients = lazy(() => import('./pages/Patients'));
+const Appointments = lazy(() => import('./pages/Appointments'));
+const Invoices = lazy(() => import('./pages/Invoices'));
+const Presets = lazy(() => import('./pages/Presets'));
+const Tags = lazy(() => import('./pages/Tags'));
+const CustomFields = lazy(() => import('./pages/CustomFields'));
+const NoteTemplates = lazy(() => import('./pages/NoteTemplates'));
+const EmailSettings = lazy(() => import('./pages/EmailSettings'));
+const Settings = lazy(() => import('./pages/Settings'));
+const Users = lazy(() => import('./pages/Users'));
+const Portal = lazy(() => import('./pages/Portal'));
+const LabResults = lazy(() => import('./pages/LabResults'));
+const Tasks = lazy(() => import('./pages/Tasks'));
+const PatientDetail = lazy(() => import('./pages/PatientDetail'));
+
+function LoadingFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-[400px]">
+      <div className="animate-spin rounded-full h-10 w-10 border-4 border-blue-600 border-t-transparent"></div>
+    </div>
+  );
+}
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
@@ -18,26 +38,40 @@ function App() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   return (
-    <Routes>
-      <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
-      <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
-      <Route
-        path="/*"
-        element={
-          <PrivateRoute>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/patients" element={<Patients />} />
-                <Route path="/appointments" element={<Appointments />} />
-                <Route path="/invoices" element={<Invoices />} />
-                <Route path="/users" element={<Users />} />
-              </Routes>
-            </Layout>
-          </PrivateRoute>
-        }
-      />
-    </Routes>
+    <Suspense fallback={<LoadingFallback />}>
+      <Routes>
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
+        <Route path="/portal/:token" element={<Portal />} />
+        <Route
+          path="/*"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Suspense fallback={<LoadingFallback />}>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/patients" element={<Patients />} />
+                    <Route path="/patients/:id" element={<PatientDetail />} />
+                    <Route path="/appointments" element={<Appointments />} />
+                    <Route path="/invoices" element={<Invoices />} />
+                    <Route path="/presets" element={<Presets />} />
+                    <Route path="/tags" element={<Tags />} />
+                    <Route path="/custom-fields" element={<CustomFields />} />
+                    <Route path="/note-templates" element={<NoteTemplates />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/email-settings" element={<EmailSettings />} />
+                    <Route path="/lab-results" element={<LabResults />} />
+                    <Route path="/tasks" element={<Tasks />} />
+                    <Route path="/users" element={<Users />} />
+                  </Routes>
+                </Suspense>
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 }
 

@@ -51,6 +51,15 @@ export class PatientController {
       res.status(400).json({ error: (error as Error).message });
     }
   }
+
+  async regenerateToken(req: AuthRequest, res: Response) {
+    try {
+      const patient = await patientService.regenerateToken(req.params.id as string, req.user!.clinicId);
+      res.json(patient);
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
 }
 
 export default new PatientController();
