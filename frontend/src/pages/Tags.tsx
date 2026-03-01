@@ -47,8 +47,8 @@ export default function Tags() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('other.patientTags')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.organizePatients')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('other.patientTags')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.organizePatients')}</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -67,8 +67,8 @@ export default function Tags() {
       ) : tags?.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">🏷️</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No tags yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Create tags to categorize your patients</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No tags yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create tags to categorize your patients</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
@@ -86,7 +86,7 @@ export default function Tags() {
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: tag.color }}
                   ></div>
-                  <span className="font-medium text-gray-900 dark:text-white">{tag.name}</span>
+                  <span className="font-medium text-gray-900 dark:text-white dark:text-white">{tag.name}</span>
                 </div>
                 <button
                   onClick={() => handleDelete(tag)}
@@ -95,7 +95,7 @@ export default function Tags() {
                   ✕
                 </button>
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-2">
                 {tag.patientCount || 0} patient{tag.patientCount !== 1 ? 's' : ''}
               </p>
             </div>
@@ -112,8 +112,8 @@ export default function Tags() {
                   type="text"
                   value={newTag.name}
                   onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., VIP, New Patient, Chronic"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder=" e.g., VIP, New Patient, Chronic"
                   required
                 />
               </div>

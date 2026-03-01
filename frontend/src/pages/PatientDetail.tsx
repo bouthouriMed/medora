@@ -230,8 +230,8 @@ export default function PatientDetail() {
             <Icons.arrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{patient?.firstName} {patient?.lastName}</h1>
-            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('patients.patientID')}: {patient?.id?.slice(0, 8)}</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{patient?.firstName} {patient?.lastName}</h1>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{t('patients.patientID')}: {patient?.id?.slice(0, 8)}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -253,7 +253,7 @@ export default function PatientDetail() {
               className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
               }`}
             >
               <tab.icon size={18} />
@@ -271,19 +271,19 @@ export default function PatientDetail() {
             <h3 className="text-lg font-semibold mb-4">Patient Information</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Email</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Email</span>
                 <span className="font-medium">{patient?.email || '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Phone</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Phone</span>
                 <span className="font-medium">{patient?.phone || '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Date of Birth</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Date of Birth</span>
                 <span className="font-medium">{patient?.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString() : '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Address</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Address</span>
                 <span className="font-medium text-right">{patient?.address || '-'}</span>
               </div>
             </div>
@@ -320,49 +320,49 @@ export default function PatientDetail() {
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                 {latestVitals.bloodPressureSystolic && (
                   <div className="text-center p-3 bg-red-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Blood Pressure</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.bloodPressureSystolic}/{latestVitals.bloodPressureDiastolic}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Blood Pressure</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.bloodPressureSystolic}/{latestVitals.bloodPressureDiastolic}</p>
                     <p className="text-xs text-gray-400">mmHg</p>
                   </div>
                 )}
                 {latestVitals.heartRate && (
                   <div className="text-center p-3 bg-pink-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Heart Rate</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.heartRate}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Heart Rate</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.heartRate}</p>
                     <p className="text-xs text-gray-400">bpm</p>
                   </div>
                 )}
                 {latestVitals.temperature && (
                   <div className="text-center p-3 bg-orange-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Temperature</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.temperature}°</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Temperature</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.temperature}°</p>
                     <p className="text-xs text-gray-400">F</p>
                   </div>
                 )}
                 {latestVitals.weight && (
                   <div className="text-center p-3 bg-blue-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Weight</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.weight}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Weight</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.weight}</p>
                     <p className="text-xs text-gray-400">kg</p>
                   </div>
                 )}
                 {latestVitals.height && (
                   <div className="text-center p-3 bg-indigo-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Height</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.height}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Height</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.height}</p>
                     <p className="text-xs text-gray-400">cm</p>
                   </div>
                 )}
                 {latestVitals.bmi && (
                   <div className="text-center p-3 bg-purple-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">BMI</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.bmi.toFixed(1)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">BMI</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.bmi.toFixed(1)}</p>
                   </div>
                 )}
                 {latestVitals.oxygenSat && (
                   <div className="text-center p-3 bg-cyan-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">SpO2</p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.oxygenSat}%</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">SpO2</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.oxygenSat}%</p>
                   </div>
                 )}
               </div>
@@ -385,41 +385,41 @@ export default function PatientDetail() {
           {history?.vitals?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.activity size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No vital signs recorded yet</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No vital signs recorded yet</p>
             </div>
           ) : (
             <div className="space-y-3">
               {history?.vitals?.map((vital: Vitals) => (
                 <div key={vital.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{new Date(vital.recordedAt).toLocaleString()}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">{new Date(vital.recordedAt).toLocaleString()}</p>
                   <div className="flex flex-wrap gap-4">
                     {vital.bloodPressureSystolic && (
                       <div className="text-center px-3 py-1 bg-red-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">BP</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">BP</span>
                         <p className="font-semibold">{vital.bloodPressureSystolic}/{vital.bloodPressureDiastolic}</p>
                       </div>
                     )}
                     {vital.heartRate && (
                       <div className="text-center px-3 py-1 bg-pink-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">HR</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">HR</span>
                         <p className="font-semibold">{vital.heartRate}</p>
                       </div>
                     )}
                     {vital.temperature && (
                       <div className="text-center px-3 py-1 bg-orange-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Temp</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Temp</span>
                         <p className="font-semibold">{vital.temperature}°F</p>
                       </div>
                     )}
                     {vital.weight && (
                       <div className="text-center px-3 py-1 bg-blue-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">Wt</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Wt</span>
                         <p className="font-semibold">{vital.weight}kg</p>
                       </div>
                     )}
                     {vital.bmi && (
                       <div className="text-center px-3 py-1 bg-purple-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">BMI</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">BMI</span>
                         <p className="font-semibold">{vital.bmi.toFixed(1)}</p>
                       </div>
                     )}
@@ -444,7 +444,7 @@ export default function PatientDetail() {
           {history?.diagnoses?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.stethoscope size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No diagnoses recorded</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No diagnoses recorded</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -460,7 +460,7 @@ export default function PatientDetail() {
                       }`}>{diagnosis.status}</span>
                     </div>
                     <p className="font-medium mt-1">{diagnosis.description}</p>
-                    {diagnosis.notes && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{diagnosis.notes}</p>}
+                    {diagnosis.notes && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{diagnosis.notes}</p>}
                     <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(diagnosis.diagnosedAt).toLocaleDateString()}</p>
                   </div>
                   <div className="flex gap-2">
@@ -520,7 +520,7 @@ export default function PatientDetail() {
           {history?.prescriptions?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.pill size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No prescriptions</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No prescriptions</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -535,9 +535,9 @@ export default function PatientDetail() {
                           'bg-gray-100 text-gray-700 dark:text-gray-300'
                         }`}>{rx.status}</span>
                       </div>
-                      <p className="text-gray-600">{rx.dosage} - {rx.frequency}</p>
-                      {rx.duration && <p className="text-sm text-gray-500 dark:text-gray-400">Duration: {rx.duration}</p>}
-                      {rx.instructions && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Instructions: {rx.instructions}</p>}
+                      <p className="text-gray-600 dark:text-gray-400">{rx.dosage} - {rx.frequency}</p>
+                      {rx.duration && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Duration: {rx.duration}</p>}
+                      {rx.instructions && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">Instructions: {rx.instructions}</p>}
                       <p className="text-xs text-gray-400 mt-2">
                         Started: {new Date(rx.startDate).toLocaleDateString()}
                         {rx.endDate && ` - Ended: ${new Date(rx.endDate).toLocaleDateString()}`}
@@ -598,7 +598,7 @@ export default function PatientDetail() {
           {history?.allergies?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.alert size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No allergies recorded</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No allergies recorded</p>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -613,7 +613,7 @@ export default function PatientDetail() {
                         'bg-green-100 text-green-700'
                       }`}>{allergy.severity}</span>
                     </div>
-                    {allergy.reaction && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Reaction: {allergy.reaction}</p>}
+                    {allergy.reaction && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">Reaction: {allergy.reaction}</p>}
                   </div>
                   {hasPermission(user, 'create_medical_records') && (
                     <button
@@ -652,7 +652,7 @@ export default function PatientDetail() {
           {history?.conditions?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.heart size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400">No conditions recorded</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No conditions recorded</p>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -667,7 +667,7 @@ export default function PatientDetail() {
                         'bg-green-100 text-green-700'
                       }`}>{condition.status}</span>
                     </div>
-                    {condition.notes && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{condition.notes}</p>}
+                    {condition.notes && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{condition.notes}</p>}
                     {condition.diagnosedAt && <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(condition.diagnosedAt).toLocaleDateString()}</p>}
                   </div>
                   {hasPermission(user, 'create_medical_records') && (
@@ -706,7 +706,7 @@ export default function PatientDetail() {
                   <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
                     <span className="text-xs text-gray-400">{new Date(record.date).toLocaleString()}</span>
                     <h4 className="font-semibold">{record.title}</h4>
-                    {record.description && <p className="text-sm text-gray-600 mt-1">{record.description}</p>}
+                    {record.description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{record.description}</p>}
                   </div>
                 </div>
               ))}
@@ -716,7 +716,7 @@ export default function PatientDetail() {
                   <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
                     <span className="text-xs text-gray-400">{new Date(lab.orderedAt).toLocaleString()}</span>
                     <h4 className="font-semibold">Lab: {lab.testName}</h4>
-                    <p className="text-sm text-gray-600">{lab.status} {lab.result && `- ${lab.result}`}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{lab.status} {lab.result && `- ${lab.result}`}</p>
                   </div>
                 </div>
               ))}
@@ -731,37 +731,37 @@ export default function PatientDetail() {
           <form onSubmit={handleVitalSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">BP Systolic</label>
-                  <input type="number" value={vitalForm.bloodPressureSystolic} onChange={e => setVitalForm({...vitalForm, bloodPressureSystolic: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="120" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">BP Systolic</label>
+                  <input type="number" value={vitalForm.bloodPressureSystolic} onChange={e => setVitalForm({...vitalForm, bloodPressureSystolic: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="120" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">BP Diastolic</label>
-                  <input type="number" value={vitalForm.bloodPressureDiastolic} onChange={e => setVitalForm({...vitalForm, bloodPressureDiastolic: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="80" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">BP Diastolic</label>
+                  <input type="number" value={vitalForm.bloodPressureDiastolic} onChange={e => setVitalForm({...vitalForm, bloodPressureDiastolic: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="80" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Heart Rate (bpm)</label>
-                  <input type="number" value={vitalForm.heartRate} onChange={e => setVitalForm({...vitalForm, heartRate: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="72" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Heart Rate (bpm)</label>
+                  <input type="number" value={vitalForm.heartRate} onChange={e => setVitalForm({...vitalForm, heartRate: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="72" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Temperature (°F)</label>
-                  <input type="number" step="0.1" value={vitalForm.temperature} onChange={e => setVitalForm({...vitalForm, temperature: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="98.6" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Temperature (°F)</label>
+                  <input type="number" step="0.1" value={vitalForm.temperature} onChange={e => setVitalForm({...vitalForm, temperature: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="98.6" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Weight (kg)</label>
-                  <input type="number" step="0.1" value={vitalForm.weight} onChange={e => setVitalForm({...vitalForm, weight: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="70" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Weight (kg)</label>
+                  <input type="number" step="0.1" value={vitalForm.weight} onChange={e => setVitalForm({...vitalForm, weight: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="70" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Height (cm)</label>
-                  <input type="number" value={vitalForm.height} onChange={e => setVitalForm({...vitalForm, height: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="170" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Height (cm)</label>
+                  <input type="number" value={vitalForm.height} onChange={e => setVitalForm({...vitalForm, height: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="170" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">SpO2 (%)</label>
-                  <input type="number" value={vitalForm.oxygenSat} onChange={e => setVitalForm({...vitalForm, oxygenSat: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="98" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">SpO2 (%)</label>
+                  <input type="number" value={vitalForm.oxygenSat} onChange={e => setVitalForm({...vitalForm, oxygenSat: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="98" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Notes</label>
-                <textarea value={vitalForm.notes} onChange={e => setVitalForm({...vitalForm, notes: e.target.value})} className="w-full border rounded-lg px-3 py-2" rows={2} />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Notes</label>
+                <textarea value={vitalForm.notes} onChange={e => setVitalForm({...vitalForm, notes: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowVitalModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
@@ -775,24 +775,24 @@ export default function PatientDetail() {
         <div className="p-6">
           <form onSubmit={handleDiagnosisSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">ICD-10 Code</label>
-                <input type="text" value={diagnosisForm.icdCode} onChange={e => setDiagnosisForm({...diagnosisForm, icdCode: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="J06.9" required />
+                <label className="block text-sm font-medium mb-1 dark:text-white">ICD-10 Code</label>
+                <input type="text" value={diagnosisForm.icdCode} onChange={e => setDiagnosisForm({...diagnosisForm, icdCode: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" J06.9" required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <input type="text" value={diagnosisForm.description} onChange={e => setDiagnosisForm({...diagnosisForm, description: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="Acute upper respiratory infection" required />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Description</label>
+                <input type="text" value={diagnosisForm.description} onChange={e => setDiagnosisForm({...diagnosisForm, description: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" Acute upper respiratory infection" required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Status</label>
-                <select value={diagnosisForm.status} onChange={e => setDiagnosisForm({...diagnosisForm, status: e.target.value})} className="w-full border rounded-lg px-3 py-2">
+                <label className="block text-sm font-medium mb-1 dark:text-white">Status</label>
+                <select value={diagnosisForm.status} onChange={e => setDiagnosisForm({...diagnosisForm, status: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
                   <option value="ACTIVE">Active</option>
                   <option value="CHRONIC">Chronic</option>
                   <option value="RESOLVED">Resolved</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Notes</label>
-                <textarea value={diagnosisForm.notes} onChange={e => setDiagnosisForm({...diagnosisForm, notes: e.target.value})} className="w-full border rounded-lg px-3 py-2" rows={2} />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Notes</label>
+                <textarea value={diagnosisForm.notes} onChange={e => setDiagnosisForm({...diagnosisForm, notes: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowDiagnosisModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
@@ -806,32 +806,32 @@ export default function PatientDetail() {
         <div className="p-6">
           <form onSubmit={handlePrescriptionSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Medication</label>
-                <input type="text" value={prescriptionForm.medication} onChange={e => setPrescriptionForm({...prescriptionForm, medication: e.target.value})} className="w-full border rounded-lg px-3 py-2" required />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Medication</label>
+                <input type="text" value={prescriptionForm.medication} onChange={e => setPrescriptionForm({...prescriptionForm, medication: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Dosage</label>
-                  <input type="text" value={prescriptionForm.dosage} onChange={e => setPrescriptionForm({...prescriptionForm, dosage: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="500mg" required />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Dosage</label>
+                  <input type="text" value={prescriptionForm.dosage} onChange={e => setPrescriptionForm({...prescriptionForm, dosage: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" 500mg" required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Frequency</label>
-                  <input type="text" value={prescriptionForm.frequency} onChange={e => setPrescriptionForm({...prescriptionForm, frequency: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="3 times daily" required />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Frequency</label>
+                  <input type="text" value={prescriptionForm.frequency} onChange={e => setPrescriptionForm({...prescriptionForm, frequency: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" 3 times daily" required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Duration</label>
-                  <input type="text" value={prescriptionForm.duration} onChange={e => setPrescriptionForm({...prescriptionForm, duration: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="7 days" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Duration</label>
+                  <input type="text" value={prescriptionForm.duration} onChange={e => setPrescriptionForm({...prescriptionForm, duration: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" 7 days" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Refills</label>
-                  <input type="number" value={prescriptionForm.refills} onChange={e => setPrescriptionForm({...prescriptionForm, refills: e.target.value})} className="w-full border rounded-lg px-3 py-2" />
+                  <label className="block text-sm font-medium mb-1 dark:text-white">Refills</label>
+                  <input type="number" value={prescriptionForm.refills} onChange={e => setPrescriptionForm({...prescriptionForm, refills: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Instructions</label>
-                <textarea value={prescriptionForm.instructions} onChange={e => setPrescriptionForm({...prescriptionForm, instructions: e.target.value})} className="w-full border rounded-lg px-3 py-2" rows={2} />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Instructions</label>
+                <textarea value={prescriptionForm.instructions} onChange={e => setPrescriptionForm({...prescriptionForm, instructions: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowPrescriptionModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
@@ -845,20 +845,20 @@ export default function PatientDetail() {
         <div className="p-6">
           <form onSubmit={handleAllergySubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Allergen</label>
-                <input type="text" value={allergyForm.allergen} onChange={e => setAllergyForm({...allergyForm, allergen: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="Penicillin" required />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Allergen</label>
+                <input type="text" value={allergyForm.allergen} onChange={e => setAllergyForm({...allergyForm, allergen: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" Penicillin" required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Severity</label>
-                <select value={allergyForm.severity} onChange={e => setAllergyForm({...allergyForm, severity: e.target.value})} className="w-full border rounded-lg px-3 py-2">
+                <label className="block text-sm font-medium mb-1 dark:text-white">Severity</label>
+                <select value={allergyForm.severity} onChange={e => setAllergyForm({...allergyForm, severity: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
                   <option value="MILD">Mild</option>
                   <option value="MODERATE">Moderate</option>
                   <option value="SEVERE">Severe</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Reaction</label>
-                <input type="text" value={allergyForm.reaction} onChange={e => setAllergyForm({...allergyForm, reaction: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="Rash, swelling" />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Reaction</label>
+                <input type="text" value={allergyForm.reaction} onChange={e => setAllergyForm({...allergyForm, reaction: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" Rash, swelling" />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowAllergyModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
@@ -872,20 +872,20 @@ export default function PatientDetail() {
         <div className="p-6">
           <form onSubmit={handleConditionSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Condition Name</label>
-                <input type="text" value={conditionForm.name} onChange={e => setConditionForm({...conditionForm, name: e.target.value})} className="w-full border rounded-lg px-3 py-2" placeholder="Diabetes Type 2" required />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Condition Name</label>
+                <input type="text" value={conditionForm.name} onChange={e => setConditionForm({...conditionForm, name: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder=" Diabetes Type 2" required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Status</label>
-                <select value={conditionForm.status} onChange={e => setConditionForm({...conditionForm, status: e.target.value})} className="w-full border rounded-lg px-3 py-2">
+                <label className="block text-sm font-medium mb-1 dark:text-white">Status</label>
+                <select value={conditionForm.status} onChange={e => setConditionForm({...conditionForm, status: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
                   <option value="ACTIVE">Active</option>
                   <option value="CHRONIC">Chronic</option>
                   <option value="RESOLVED">Resolved</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Notes</label>
-                <textarea value={conditionForm.notes} onChange={e => setConditionForm({...conditionForm, notes: e.target.value})} className="w-full border rounded-lg px-3 py-2" rows={2} />
+                <label className="block text-sm font-medium mb-1 dark:text-white">Notes</label>
+                <textarea value={conditionForm.notes} onChange={e => setConditionForm({...conditionForm, notes: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
                 <button type="button" onClick={() => setShowConditionModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>

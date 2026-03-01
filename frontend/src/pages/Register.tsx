@@ -61,7 +61,7 @@ export default function Register() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Medora
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-2">{t('auth.registerSubtitle')}</p>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-2">{t('auth.registerSubtitle')}</p>
           </div>
           
           {error && (
@@ -113,7 +113,7 @@ export default function Register() {
                 value={formData.clinicName}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder="Your Clinic Name"
+                placeholder=" Your Clinic Name"
                 required
               />
             </div>
@@ -129,7 +129,7 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder="you@example.com"
+                placeholder=" you@example.com"
                 required
               />
             </div>
@@ -145,7 +145,7 @@ export default function Register() {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder="Min 6 characters"
+                placeholder=" Min 6 characters"
                 required
               />
             </div>
@@ -161,7 +161,7 @@ export default function Register() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder="••••••••"
+                placeholder=" ••••••••"
                 required
               />
             </div>
@@ -183,7 +183,7 @@ export default function Register() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
+          <p className="mt-6 text-center text-gray-600 dark:text-gray-400 dark:text-gray-400">
             {t('auth.alreadyHaveAccount')}{' '}
             <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
               {t('auth.signIn')}

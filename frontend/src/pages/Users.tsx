@@ -90,8 +90,8 @@ export default function Users() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('other.staffTitle')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.manageTeam')}</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('other.staffTitle')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.manageTeam')}</p>
         </div>
         <button
           onClick={openCreateModal}
@@ -108,18 +108,18 @@ export default function Users() {
       ) : (
         <div className="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-800">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">User</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Added</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">User</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Added</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {users?.map((user: User) => (
-                <tr key={user.id} className="hover:bg-blue-50/50 transition-colors">
+                <tr key={user.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold ${
@@ -130,7 +130,7 @@ export default function Users() {
                         {user.firstName[0]}{user.lastName[0]}
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-semibold text-gray-900 dark:text-white dark:text-white">
                           {user.firstName} {user.lastName}
                           {user.id === currentUser?.user?.id && (
                             <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">You</span>
@@ -139,7 +139,7 @@ export default function Users() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-400">
                     {user.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -147,7 +147,7 @@ export default function Users() {
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -195,7 +195,7 @@ export default function Users() {
                     type="text"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required
                   />
                 </div>
@@ -205,7 +205,7 @@ export default function Users() {
                     type="text"
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required
                   />
                 </div>
@@ -216,7 +216,7 @@ export default function Users() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   required
                   disabled={!!editingUser}
                 />
@@ -228,10 +228,10 @@ export default function Users() {
                     type="password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required={!editingUser}
                     minLength={6}
-                    placeholder="Min 6 characters"
+                    placeholder=" Min 6 characters"
                   />
                 </div>
               )}
@@ -240,7 +240,7 @@ export default function Users() {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as 'DOCTOR' | 'NURSE' | 'STAFF' | 'ADMIN' })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 >
                   <option value="STAFF">Staff</option>
                   <option value="DOCTOR">Doctor</option>

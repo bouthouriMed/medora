@@ -61,12 +61,12 @@ export default function Settings() {
   return (
     <div className="space-y-4 sm:space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('settings.title')}</h1>
-        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('settings.configureClinic')}</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('settings.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('settings.configureClinic')}</p>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white dark:text-white mb-4">{t('settings.emailNotifications')}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white dark:text-white dark:text-white mb-4">{t('settings.emailNotifications')}</h2>
         
         <div className="mb-6">
           <label className="flex items-center gap-3">
@@ -88,8 +88,8 @@ export default function Settings() {
                 type="text"
                 value={formData.smtpHost}
                 onChange={(e) => setFormData({ ...formData, smtpHost: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
-                placeholder="smtp.gmail.com"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                placeholder=" smtp.gmail.com"
               />
             </div>
             <div>
@@ -98,8 +98,8 @@ export default function Settings() {
                 type="text"
                 value={formData.smtpPort}
                 onChange={(e) => setFormData({ ...formData, smtpPort: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
-                placeholder="587"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                placeholder=" 587"
               />
             </div>
             <div>
@@ -108,8 +108,8 @@ export default function Settings() {
                 type="text"
                 value={formData.smtpUser}
                 onChange={(e) => setFormData({ ...formData, smtpUser: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
-                placeholder="your email"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                placeholder=" your email"
               />
             </div>
             <div>
@@ -118,8 +118,8 @@ export default function Settings() {
                 type="password"
                 value={formData.smtpPassword}
                 onChange={(e) => setFormData({ ...formData, smtpPassword: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
-                placeholder="app password"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                placeholder=" app password"
               />
             </div>
             <div>
@@ -128,8 +128,8 @@ export default function Settings() {
                 type="email"
                 value={formData.fromEmail}
                 onChange={(e) => setFormData({ ...formData, fromEmail: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
-                placeholder="noreply@yourclinic.com"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                placeholder=" noreply@yourclinic.com"
               />
             </div>
             <button

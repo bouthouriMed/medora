@@ -34,7 +34,7 @@ export default function Login() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Medora
             </h1>
-            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-2">{t('auth.loginSubtitle')}</p>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-2">{t('auth.loginSubtitle')}</p>
           </div>
           
           {error && (
@@ -54,7 +54,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="you@example.com"
+                placeholder=" you@example.com"
                 required
               />
             </div>
@@ -69,7 +69,7 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                placeholder="••••••••"
+                placeholder=" ••••••••"
                 required
               />
             </div>
@@ -91,7 +91,7 @@ export default function Login() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-gray-600 dark:text-gray-400">
+          <p className="mt-6 text-center text-gray-600 dark:text-gray-400 dark:text-gray-400">
             {t('auth.dontHaveAccount')}{' '}
             <Link to="/register" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium transition-colors">
               {t('auth.register')}
@@ -99,7 +99,7 @@ export default function Login() {
           </p>
         </div>
         
-        <p className="text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 text-sm mt-6">
+        <p className="text-center text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm mt-6">
           Demo: dr.smith@medora.com / password123
         </p>
       </div>

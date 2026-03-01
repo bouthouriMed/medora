@@ -130,8 +130,8 @@ export default function Tasks() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('other.tasks')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.manageTasks')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('other.tasks')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.manageTasks')}</p>
         </div>
         <button
           onClick={() => {
@@ -152,7 +152,7 @@ export default function Tasks() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
               <option value="">{t('other.allStatuses')}</option>
               {STATUSES.map((s) => (
@@ -164,7 +164,7 @@ export default function Tasks() {
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
               <option value="">{t('other.allPriorities')}</option>
               {PRIORITIES.map((p) => (
@@ -183,8 +183,8 @@ export default function Tasks() {
               <Icons.clock size={20} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{pendingTasks.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Tasks</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{pendingTasks.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Pending Tasks</p>
             </div>
           </div>
         </div>
@@ -194,8 +194,8 @@ export default function Tasks() {
               <Icons.alert size={20} className="text-yellow-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasks?.filter((t: Task) => t.priority === 'HIGH' && t.status !== 'COMPLETED').length || 0}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">High Priority</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{tasks?.filter((t: Task) => t.priority === 'HIGH' && t.status !== 'COMPLETED').length || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">High Priority</p>
             </div>
           </div>
         </div>
@@ -205,8 +205,8 @@ export default function Tasks() {
               <Icons.checkCircle size={20} className="text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{completedTasks.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{completedTasks.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Completed</p>
             </div>
           </div>
         </div>
@@ -224,8 +224,8 @@ export default function Tasks() {
           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
             <Icons.task size={40} className="text-blue-600" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No tasks yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Create your first task to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No tasks yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create your first task to get started</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
@@ -249,7 +249,7 @@ export default function Tasks() {
                   </button>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className={`font-semibold text-gray-900 dark:text-white ${task.status === 'COMPLETED' ? 'line-through opacity-60' : ''}`}>
+                      <h3 className={`font-semibold text-gray-900 dark:text-white dark:text-white ${task.status === 'COMPLETED' ? 'line-through opacity-60' : ''}`}>
                         {task.title}
                       </h3>
                       <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getPriorityColor(task.priority)}`}>
@@ -260,7 +260,7 @@ export default function Tasks() {
                       </span>
                     </div>
                     {task.description && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{task.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{task.description}</p>
                     )}
                     <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                       {task.dueDate && (
@@ -308,8 +308,8 @@ export default function Tasks() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Task title"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder=" Task title"
                   required
                 />
               </div>
@@ -319,8 +319,8 @@ export default function Tasks() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder="Task description..."
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder=" Task description..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -329,7 +329,7 @@ export default function Tasks() {
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     {PRIORITIES.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -341,7 +341,7 @@ export default function Tasks() {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     {STATUSES.map((s) => (
                       <option key={s.value} value={s.value}>{s.label}</option>
@@ -355,7 +355,7 @@ export default function Tasks() {
                   type="date"
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -364,7 +364,7 @@ export default function Tasks() {
                   <select
                     value={formData.assignedTo}
                     onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     <option value="">Unassigned</option>
                     {users?.map((u: User) => (
@@ -377,7 +377,7 @@ export default function Tasks() {
                   <select
                     value={formData.patientId}
                     onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     <option value="">None</option>
                     {patients?.map((p: Patient) => (

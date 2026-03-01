@@ -51,8 +51,8 @@ export default function NoteTemplates() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('other.noteTemplates')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.noteTemplatesDesc')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('other.noteTemplates')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.noteTemplatesDesc')}</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -90,8 +90,8 @@ export default function NoteTemplates() {
       ) : filteredTemplates.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📋</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No templates</h3>
-          <p className="text-gray-500 dark:text-gray-400 mb-6">Create templates for quick note entry</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No templates</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create templates for quick note entry</p>
           <button onClick={() => setShowModal(true)} className="btn-gradient text-white px-6 py-3 rounded-xl">
             + Create Template
           </button>
@@ -102,14 +102,14 @@ export default function NoteTemplates() {
             <div key={template.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 hover-lift">
               <div className="flex items-start justify-between mb-2">
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white">{template.name}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white dark:text-white">{template.name}</h3>
                   <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">{template.type}</span>
                 </div>
                 <button onClick={() => handleDelete(template)} className="text-gray-400 hover:text-red-500">
                   ✕
                 </button>
               </div>
-              <p className="text-sm text-gray-600 line-clamp-3 whitespace-pre-wrap">{template.content}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3 whitespace-pre-wrap">{template.content}</p>
             </div>
           ))}
         </div>
@@ -124,8 +124,8 @@ export default function NoteTemplates() {
                   type="text"
                   value={newTemplate.name}
                   onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="e.g., Follow-up Visit"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder=" e.g., Follow-up Visit"
                   required
                 />
               </div>
@@ -134,7 +134,7 @@ export default function NoteTemplates() {
                 <select
                   value={newTemplate.type}
                   onChange={(e) => setNewTemplate({ ...newTemplate, type: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="APPOINTMENT">Appointment</option>
                   <option value="INVOICE">Invoice</option>
@@ -146,8 +146,8 @@ export default function NoteTemplates() {
                   value={newTemplate.content}
                   onChange={(e) => setNewTemplate({ ...newTemplate, content: e.target.value })}
                   rows={5}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder="Template content..."
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder=" Template content..."
                   required
                 />
               </div>
