@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, use{t('appointments.cancel')}AppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation } from '../api';
+import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportAppointments, generateICS } from '../utils/export';
 import CalendarView from '../components/CalendarView';
@@ -100,7 +100,7 @@ export default function Appointments() {
   const { data: patients } = useGetPatientsQuery('');
   const { data: users } = useGetUsersQuery(null);
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation();
-  const [cancelAppointment] = use{t('appointments.cancel')}AppointmentMutation();
+  const [cancelAppointment] = useCancelAppointmentMutation();
   const [updateAppointment] = useUpdateAppointmentMutation();
   const { data: recurringAppointments } = useGetRecurringAppointmentsQuery(undefined);
   const [createRecurringAppointment] = useCreateRecurringAppointmentMutation();
@@ -168,7 +168,7 @@ export default function Appointments() {
     }
   };
 
-  const handle{t('appointments.cancel')} = async (id: string) => {
+  const handleCancel = async (id: string) => {
     if (confirm('Are you sure you want to cancel this appointment?')) {
       try {
         await cancelAppointment(id).unwrap();
@@ -436,7 +436,7 @@ export default function Appointments() {
                                   {t('appointments.noShow')}
                                 </button>
                                 <button
-                                  onClick={() => handle{t('appointments.cancel')}(apt.id)}
+                                  onClick={() => handleCancel(apt.id)}
                                   className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
                                 >
                                   {t('appointments.cancel')}
@@ -484,7 +484,7 @@ export default function Appointments() {
                           ✓ {t('appointments.complete')}
                         </button>
                         <button
-                          onClick={() => handle{t('appointments.cancel')}(apt.id)}
+                          onClick={() => handleCancel(apt.id)}
                           className="flex-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
                         >
                           ✕ {t('appointments.cancel')}
@@ -577,7 +577,7 @@ export default function Appointments() {
                   </button>
                   <button
                     onClick={() => {
-                      handle{t('appointments.cancel')}(selectedAppointment!.id);
+                      handleCancel(selectedAppointment!.id);
                       setSelectedAppointment(null);
                     }}
                     className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
