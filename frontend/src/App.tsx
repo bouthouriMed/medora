@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from './store/hooks';
 import { setCredentials } from './store/slices/authSlice';
 import { useMeQuery } from './api';
+import { useTheme } from './hooks/useTheme';
 import Layout from './components/Layout';
 
 const Login = lazy(() => import('./pages/Login'));
@@ -40,6 +41,7 @@ function App() {
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { data: meData } = useMeQuery(undefined, { skip: !isAuthenticated || !!user });
+  useTheme();
 
   useEffect(() => {
     if (meData?.user) {

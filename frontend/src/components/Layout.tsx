@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
+import { useTheme } from '../hooks/useTheme';
 import { Icons } from './Icons';
 import { hasPermission } from '../utils/permissions';
+import { useTranslation } from 'react-i18next';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const dispatch = useAppDispatch();
@@ -11,6 +13,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
+  const { theme, language, setTheme, setLanguage } = useTheme();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -82,7 +86,59 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <button className="p-2 rounded-lg text-blue-100 hover:bg-white/10 hover:text-white transition-all duration-200">
                   {Icons.settings({ size: 20 })}
                 </button>
-                <div className="absolute right-0 mt-1 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-1 hidden group-hover:block z-50">
+                <div className="absolute right-0 mt-1 w-64 bg-white rounded-xl shadow-lg border border-gray-100 py-2 hidden group-hover:block z-50">
+                  {/* Theme Toggle */}
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs font-medium text-gray-400 uppercase mb-2">{t('settings.theme')}</p>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setTheme('light')}
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                          theme === 'light' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {t('settings.lightTheme')}
+                      </button>
+                      <button
+                        onClick={() => setTheme('dark')}
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                          theme === 'dark' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        {t('settings.darkTheme')}
+                      </button>
+                    </div>
+                  </div>
+                  {/* Language Toggle */}
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-xs font-medium text-gray-400 uppercase mb-2">{t('settings.language')}</p>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => setLanguage('en')}
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                          language === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        English
+                      </button>
+                      <button
+                        onClick={() => setLanguage('fr')}
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                          language === 'fr' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        Français
+                      </button>
+                      <button
+                        onClick={() => setLanguage('ar')}
+                        className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                          language === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                      >
+                        العربية
+                      </button>
+                    </div>
+                  </div>
                   {settingsItems.map((item) => (
                     <button
                       key={item.path}

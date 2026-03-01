@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   * {
     @apply transition-all duration-200;
+  }
+  
+  html {
+    @apply scroll-smooth;
+  }
+  
+  html[dir="rtl"] {
+    direction: rtl;
   }
 }
 
