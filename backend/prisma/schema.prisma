@@ -8,18 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  password  String
-  firstName String
-  lastName  String
-  role      String    @default("DOCTOR")
-  specialty String?
-  phone     String?
-  clinicId  String
-  createdAt DateTime  @default(now())
+  id         String    @id @default(uuid())
+  email      String    @unique
+  password   String
+  firstName  String
+  lastName   String
+  role       String    @default("DOCTOR")
+  specialty  String?
+  phone      String?
+  clinicId   String
+  permissions String[] @default([])
+  createdAt  DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  deletedAt  DateTime?
 
   clinic                Clinic                 @relation(fields: [clinicId], references: [id])
   appointments          Appointment[]

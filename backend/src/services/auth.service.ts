@@ -13,6 +13,7 @@ interface SessionUser {
   lastName: string;
   role: string;
   clinicId: string;
+  permissions: string[];
 }
 
 export class AuthService {
@@ -55,6 +56,7 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
         clinicId: user.clinicId,
+        permissions: user.permissions || [],
       },
       token,
     };
@@ -81,6 +83,7 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
         clinicId: user.clinicId,
+        permissions: user.permissions || [],
       },
       token,
     };
@@ -105,7 +108,7 @@ export class AuthService {
     }
   }
 
-  private async createSession(user: { id: string; email: string; firstName: string; lastName: string; role: string; clinicId: string }) {
+  private async createSession(user: { id: string; email: string; firstName: string; lastName: string; role: string; clinicId: string; permissions?: string[] }) {
     const token = uuidv4();
     const sessionUser: SessionUser = {
       id: user.id,
@@ -114,6 +117,7 @@ export class AuthService {
       lastName: user.lastName,
       role: user.role,
       clinicId: user.clinicId,
+      permissions: user.permissions || [],
     };
     
     await sessionStore.set(token, JSON.stringify(sessionUser), SESSION_TTL);

@@ -36,64 +36,67 @@ export type Permission =
   | 'view_settings'
   | 'edit_settings';
 
-const rolePermissions: Record<string, Permission[]> = {
-  DOCTOR: [
-    'view_patients', 'create_patients', 'edit_patients',
-    'view_medical_records', 'create_medical_records',
-    'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
-    'view_invoices', 'create_invoices', 'edit_invoices',
-    'view_tasks', 'create_tasks', 'edit_tasks',
-    'view_lab_results', 'create_lab_results',
-    'view_presets', 'create_presets',
-    'view_tags', 'create_tags',
-    'view_custom_fields', 'create_custom_fields',
-    'view_note_templates', 'create_note_templates',
-    'view_users', 'create_users', 'edit_users',
-    'view_settings', 'edit_settings',
-  ],
-  NURSE: [
-    'view_patients', 'create_patients', 'edit_patients',
-    'view_medical_records', 'create_medical_records',
-    'view_appointments', 'create_appointments',
-    'view_tasks', 'create_tasks', 'edit_tasks',
-    'view_lab_results', 'create_lab_results',
-    'view_presets',
-    'view_tags', 'create_tags',
-    'view_custom_fields',
-    'view_note_templates',
-  ],
-  STAFF: [
-    'view_patients', 'create_patients',
-    'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
-    'view_invoices', 'create_invoices', 'edit_invoices',
-    'view_tasks', 'create_tasks',
-    'view_lab_results',
-    'view_presets',
-    'view_tags', 'create_tags',
-    'view_custom_fields',
-    'view_note_templates',
-  ],
-  ADMIN: [
-    'view_patients', 'create_patients', 'edit_patients', 'delete_patients',
-    'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
-    'view_invoices', 'create_invoices', 'edit_invoices',
-    'view_tasks', 'create_tasks', 'edit_tasks',
-    'view_lab_results', 'create_lab_results',
-    'view_presets', 'create_presets',
-    'view_tags', 'create_tags',
-    'view_custom_fields', 'create_custom_fields',
-    'view_note_templates', 'create_note_templates',
-    'view_users', 'create_users', 'edit_users', 'delete_users',
-    'view_settings', 'edit_settings',
-  ],
-};
-
 interface PermissionUser {
+  permissions?: string[];
   role?: string;
 }
 
 export function hasPermission(user: PermissionUser | null, permission: Permission): boolean {
   if (!user) return false;
+  if (user.permissions && user.permissions.length > 0) {
+    return user.permissions.includes(permission);
+  }
+  const rolePermissions: Record<string, Permission[]> = {
+    DOCTOR: [
+      'view_patients', 'create_patients', 'edit_patients',
+      'view_medical_records', 'create_medical_records',
+      'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+      'view_invoices', 'create_invoices', 'edit_invoices',
+      'view_tasks', 'create_tasks', 'edit_tasks',
+      'view_lab_results', 'create_lab_results',
+      'view_presets', 'create_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields', 'create_custom_fields',
+      'view_note_templates', 'create_note_templates',
+      'view_users', 'create_users', 'edit_users',
+      'view_settings', 'edit_settings',
+    ],
+    NURSE: [
+      'view_patients', 'create_patients', 'edit_patients',
+      'view_medical_records', 'create_medical_records',
+      'view_appointments', 'create_appointments',
+      'view_tasks', 'create_tasks', 'edit_tasks',
+      'view_lab_results', 'create_lab_results',
+      'view_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields',
+      'view_note_templates',
+    ],
+    STAFF: [
+      'view_patients', 'create_patients',
+      'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+      'view_invoices', 'create_invoices', 'edit_invoices',
+      'view_tasks', 'create_tasks',
+      'view_lab_results',
+      'view_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields',
+      'view_note_templates',
+    ],
+    ADMIN: [
+      'view_patients', 'create_patients', 'edit_patients', 'delete_patients',
+      'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+      'view_invoices', 'create_invoices', 'edit_invoices',
+      'view_tasks', 'create_tasks', 'edit_tasks',
+      'view_lab_results', 'create_lab_results',
+      'view_presets', 'create_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields', 'create_custom_fields',
+      'view_note_templates', 'create_note_templates',
+      'view_users', 'create_users', 'edit_users', 'delete_users',
+      'view_settings', 'edit_settings',
+    ],
+  };
   const permissions = rolePermissions[user.role || ''] || [];
   return permissions.includes(permission);
 }
@@ -105,6 +108,60 @@ export function hasAnyPermission(user: PermissionUser | null, permissions: Permi
 
 export function getPermissions(user: PermissionUser | null): Permission[] {
   if (!user) return [];
+  if (user.permissions && user.permissions.length > 0) {
+    return user.permissions as Permission[];
+  }
+  const rolePermissions: Record<string, Permission[]> = {
+    DOCTOR: [
+      'view_patients', 'create_patients', 'edit_patients',
+      'view_medical_records', 'create_medical_records',
+      'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+      'view_invoices', 'create_invoices', 'edit_invoices',
+      'view_tasks', 'create_tasks', 'edit_tasks',
+      'view_lab_results', 'create_lab_results',
+      'view_presets', 'create_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields', 'create_custom_fields',
+      'view_note_templates', 'create_note_templates',
+      'view_users', 'create_users', 'edit_users',
+      'view_settings', 'edit_settings',
+    ],
+    NURSE: [
+      'view_patients', 'create_patients', 'edit_patients',
+      'view_medical_records', 'create_medical_records',
+      'view_appointments', 'create_appointments',
+      'view_tasks', 'create_tasks', 'edit_tasks',
+      'view_lab_results', 'create_lab_results',
+      'view_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields',
+      'view_note_templates',
+    ],
+    STAFF: [
+      'view_patients', 'create_patients',
+      'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+      'view_invoices', 'create_invoices', 'edit_invoices',
+      'view_tasks', 'create_tasks',
+      'view_lab_results',
+      'view_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields',
+      'view_note_templates',
+    ],
+    ADMIN: [
+      'view_patients', 'create_patients', 'edit_patients', 'delete_patients',
+      'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+      'view_invoices', 'create_invoices', 'edit_invoices',
+      'view_tasks', 'create_tasks', 'edit_tasks',
+      'view_lab_results', 'create_lab_results',
+      'view_presets', 'create_presets',
+      'view_tags', 'create_tags',
+      'view_custom_fields', 'create_custom_fields',
+      'view_note_templates', 'create_note_templates',
+      'view_users', 'create_users', 'edit_users', 'delete_users',
+      'view_settings', 'edit_settings',
+    ],
+  };
   return rolePermissions[user.role || ''] || [];
 }
 

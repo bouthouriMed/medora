@@ -7,6 +7,7 @@ interface User {
   lastName: string;
   role: string;
   clinicId: string;
+  permissions: string[];
 }
 
 interface AuthState {

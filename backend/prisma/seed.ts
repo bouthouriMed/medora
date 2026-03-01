@@ -38,6 +38,59 @@ async function main() {
   // Create Users (Doctor, Staff, Admin)
   const hashedPassword = await bcrypt.hash('password123', 10);
 
+  const doctorPermissions = [
+    'view_patients', 'create_patients', 'edit_patients',
+    'view_medical_records', 'create_medical_records',
+    'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+    'view_invoices', 'create_invoices', 'edit_invoices',
+    'view_tasks', 'create_tasks', 'edit_tasks',
+    'view_lab_results', 'create_lab_results',
+    'view_presets', 'create_presets',
+    'view_tags', 'create_tags',
+    'view_custom_fields', 'create_custom_fields',
+    'view_note_templates', 'create_note_templates',
+    'view_users', 'create_users', 'edit_users',
+    'view_settings', 'edit_settings',
+  ];
+
+  const nursePermissions = [
+    'view_patients', 'create_patients', 'edit_patients',
+    'view_medical_records', 'create_medical_records',
+    'view_appointments', 'create_appointments',
+    'view_tasks', 'create_tasks', 'edit_tasks',
+    'view_lab_results', 'create_lab_results',
+    'view_presets',
+    'view_tags', 'create_tags',
+    'view_custom_fields',
+    'view_note_templates',
+  ];
+
+  const staffPermissions = [
+    'view_patients', 'create_patients',
+    'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+    'view_invoices', 'create_invoices', 'edit_invoices',
+    'view_tasks', 'create_tasks',
+    'view_lab_results',
+    'view_presets',
+    'view_tags', 'create_tags',
+    'view_custom_fields',
+    'view_note_templates',
+  ];
+
+  const adminPermissions = [
+    'view_patients', 'create_patients', 'edit_patients', 'delete_patients',
+    'view_appointments', 'create_appointments', 'edit_appointments', 'cancel_appointments',
+    'view_invoices', 'create_invoices', 'edit_invoices',
+    'view_tasks', 'create_tasks', 'edit_tasks',
+    'view_lab_results', 'create_lab_results',
+    'view_presets', 'create_presets',
+    'view_tags', 'create_tags',
+    'view_custom_fields', 'create_custom_fields',
+    'view_note_templates', 'create_note_templates',
+    'view_users', 'create_users', 'edit_users', 'delete_users',
+    'view_settings', 'edit_settings',
+  ];
+
   const doctor = await prisma.user.create({
     data: {
       email: 'dr.smith@medora.com',
@@ -46,6 +99,7 @@ async function main() {
       lastName: 'Smith',
       role: 'DOCTOR',
       clinicId: clinic.id,
+      permissions: doctorPermissions,
     },
   });
   console.log('Created doctor:', doctor.email);
@@ -58,6 +112,7 @@ async function main() {
       lastName: 'Doe',
       role: 'STAFF',
       clinicId: clinic.id,
+      permissions: staffPermissions,
     },
   });
   console.log('Created staff:', staff.email);
@@ -70,6 +125,7 @@ async function main() {
       lastName: 'User',
       role: 'ADMIN',
       clinicId: clinic.id,
+      permissions: adminPermissions,
     },
   });
   console.log('Created admin:', admin.email);
@@ -82,6 +138,7 @@ async function main() {
       lastName: 'Johnson',
       role: 'NURSE',
       clinicId: clinic.id,
+      permissions: nursePermissions,
     },
   });
   console.log('Created nurse:', nurse.email);

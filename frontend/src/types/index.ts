@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   role: 'DOCTOR' | 'NURSE' | 'STAFF' | 'ADMIN';
   clinicId: string;
+  permissions?: string[];
   createdAt: string;
   updatedAt: string;
 }

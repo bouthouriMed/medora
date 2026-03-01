@@ -9,6 +9,7 @@ export class UserRepository {
     lastName: string;
     role?: 'DOCTOR' | 'STAFF';
     clinicId: string;
+    permissions?: string[];
   }) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
     return prisma.user.create({
@@ -35,6 +36,7 @@ export class UserRepository {
     firstName?: string;
     lastName?: string;
     role?: 'DOCTOR' | 'STAFF';
+    permissions?: string[];
   }) {
     return prisma.user.update({ where: { id }, data });
   }
