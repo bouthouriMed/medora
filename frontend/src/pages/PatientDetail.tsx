@@ -233,9 +233,11 @@ export default function PatientDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-            + Record Vitals
-          </button>
+          {hasPermission(user, 'create_medical_records') && (
+            <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
+              + Record Vitals
+            </button>
+          )}
         </div>
       </div>
 
@@ -372,9 +374,11 @@ export default function PatientDetail() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Vital Signs History</h3>
-            <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-              + Record Vitals
-            </button>
+            {hasPermission(user, 'create_medical_records') && (
+              <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
+                + Record Vitals
+              </button>
+            )}
           </div>
           {history?.vitals?.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -429,9 +433,11 @@ export default function PatientDetail() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Diagnoses (ICD-10)</h3>
-            <button onClick={() => setShowDiagnosisModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-              + Add Diagnosis
-            </button>
+            {hasPermission(user, 'create_medical_records') && (
+              <button onClick={() => setShowDiagnosisModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
+                + Add Diagnosis
+              </button>
+            )}
           </div>
           {history?.diagnoses?.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -456,37 +462,41 @@ export default function PatientDetail() {
                     <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(diagnosis.diagnosedAt).toLocaleDateString()}</p>
                   </div>
                   <div className="flex gap-2">
-                    <select
-                      value={diagnosis.status}
-                      onChange={async (e) => {
-                        try {
-                          await updateDiagnosis({ id: diagnosis.id, status: e.target.value }).unwrap();
-                          showToast('Diagnosis updated', 'success');
-                        } catch (error) {
-                          showToast('Failed to update', 'error');
-                        }
-                      }}
-                      className="text-sm border rounded-lg px-2 py-1"
-                    >
-                      <option value="ACTIVE">Active</option>
-                      <option value="CHRONIC">Chronic</option>
-                      <option value="RESOLVED">Resolved</option>
-                    </select>
-                    <button
-                      onClick={async () => {
-                        if (confirm('Delete this diagnosis?')) {
+                    {hasPermission(user, 'create_medical_records') && (
+                      <select
+                        value={diagnosis.status}
+                        onChange={async (e) => {
                           try {
-                            await deleteDiagnosis({ id: diagnosis.id, patientId: id! }).unwrap();
-                            showToast('Diagnosis deleted', 'success');
-                          } catch (err) {
-                            showToast('Failed to delete diagnosis', 'error');
+                            await updateDiagnosis({ id: diagnosis.id, status: e.target.value }).unwrap();
+                            showToast('Diagnosis updated', 'success');
+                          } catch (error) {
+                            showToast('Failed to update', 'error');
                           }
-                        }
-                      }}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Icons.trash size={18} />
-                    </button>
+                        }}
+                        className="text-sm border rounded-lg px-2 py-1"
+                      >
+                        <option value="ACTIVE">Active</option>
+                        <option value="CHRONIC">Chronic</option>
+                        <option value="RESOLVED">Resolved</option>
+                      </select>
+                    )}
+                    {hasPermission(user, 'create_medical_records') && (
+                      <button
+                        onClick={async () => {
+                          if (confirm('Delete this diagnosis?')) {
+                            try {
+                              await deleteDiagnosis({ id: diagnosis.id, patientId: id! }).unwrap();
+                              showToast('Diagnosis deleted', 'success');
+                            } catch (err) {
+                              showToast('Failed to delete diagnosis', 'error');
+                            }
+                          }
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Icons.trash size={18} />
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -499,9 +509,11 @@ export default function PatientDetail() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Prescriptions</h3>
-            <button onClick={() => setShowPrescriptionModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-              + Add Prescription
-            </button>
+            {hasPermission(user, 'create_medical_records') && (
+              <button onClick={() => setShowPrescriptionModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
+                + Add Prescription
+              </button>
+            )}
           </div>
           {history?.prescriptions?.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -544,22 +556,24 @@ export default function PatientDetail() {
                         >
                           Mark Complete
                         </button>
-                      )}
-                      <button
-                        onClick={async () => {
-                          if (confirm('Delete this prescription?')) {
-                            try {
-                              await deletePrescription({ id: rx.id, patientId: id }).unwrap();
-                              showToast('Prescription deleted', 'success');
-                            } catch (err) {
-                              showToast('Failed to delete prescription', 'error');
-                            }
-                          }
-                        }}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Icons.trash size={18} />
-                      </button>
+                        )}
+                        {hasPermission(user, 'create_medical_records') && (
+                          <button
+                            onClick={async () => {
+                              if (confirm('Delete this prescription?')) {
+                                try {
+                                  await deletePrescription({ id: rx.id, patientId: id }).unwrap();
+                                  showToast('Prescription deleted', 'success');
+                                } catch (err) {
+                                  showToast('Failed to delete prescription', 'error');
+                                }
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <Icons.trash size={18} />
+                          </button>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -573,9 +587,11 @@ export default function PatientDetail() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Allergies</h3>
-            <button onClick={() => setShowAllergyModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-              + Add Allergy
-            </button>
+            {hasPermission(user, 'create_medical_records') && (
+              <button onClick={() => setShowAllergyModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
+                + Add Allergy
+              </button>
+            )}
           </div>
           {history?.allergies?.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -597,21 +613,23 @@ export default function PatientDetail() {
                     </div>
                     {allergy.reaction && <p className="text-sm text-gray-500 mt-1">Reaction: {allergy.reaction}</p>}
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (confirm('Delete this allergy?')) {
-                        try {
-                          await deleteAllergy({ id: allergy.id, patientId: id }).unwrap();
-                          showToast('Allergy deleted', 'success');
-                        } catch (err) {
-                          showToast('Failed to delete allergy', 'error');
+                  {hasPermission(user, 'create_medical_records') && (
+                    <button
+                      onClick={async () => {
+                        if (confirm('Delete this allergy?')) {
+                          try {
+                            await deleteAllergy({ id: allergy.id, patientId: id }).unwrap();
+                            showToast('Allergy deleted', 'success');
+                          } catch (err) {
+                            showToast('Failed to delete allergy', 'error');
+                          }
                         }
-                      }
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Icons.trash size={18} />
-                  </button>
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Icons.trash size={18} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -623,9 +641,11 @@ export default function PatientDetail() {
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Medical Conditions</h3>
-            <button onClick={() => setShowConditionModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-              + Add Condition
-            </button>
+            {hasPermission(user, 'create_medical_records') && (
+              <button onClick={() => setShowConditionModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
+                + Add Condition
+              </button>
+            )}
           </div>
           {history?.conditions?.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
@@ -648,21 +668,23 @@ export default function PatientDetail() {
                     {condition.notes && <p className="text-sm text-gray-500 mt-1">{condition.notes}</p>}
                     {condition.diagnosedAt && <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(condition.diagnosedAt).toLocaleDateString()}</p>}
                   </div>
-                  <button
-                    onClick={async () => {
-                      if (confirm('Delete this condition?')) {
-                        try {
-                          await deleteCondition({ id: condition.id, patientId: id }).unwrap();
-                          showToast('Condition deleted', 'success');
-                        } catch (err) {
-                          showToast('Failed to delete condition', 'error');
+                  {hasPermission(user, 'create_medical_records') && (
+                    <button
+                      onClick={async () => {
+                        if (confirm('Delete this condition?')) {
+                          try {
+                            await deleteCondition({ id: condition.id, patientId: id }).unwrap();
+                            showToast('Condition deleted', 'success');
+                          } catch (err) {
+                            showToast('Failed to delete condition', 'error');
+                          }
                         }
-                      }
-                    }}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    <Icons.trash size={18} />
-                  </button>
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Icons.trash size={18} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
