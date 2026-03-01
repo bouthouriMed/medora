@@ -57,7 +57,7 @@ export default function QuickSelect({ type, onSelect, placeholder = 'Select...',
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search presets..."
+              placeholder="Search presets..." placeholder-gray-500
               className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm bg-white dark:bg-gray-700 dark:text-white"
               autoFocus
             />

@@ -716,7 +716,7 @@ export default function Appointments() {
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder=" Add notes..."
+                  placeholder="Add notes..." placeholder-gray-500
                 />
               </div>
               <div className="flex gap-3 pt-2">
