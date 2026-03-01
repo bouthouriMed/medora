@@ -513,7 +513,7 @@ export default function Appointments() {
           onEventClick={(apt) => {
             setSelectedAppointment(apt);
           }}
-          onEventDrop={(apt, newDate) => {
+          onEventDrop={(apt) => {
             handleStatusChange(apt.id, apt.status);
           }}
         />
