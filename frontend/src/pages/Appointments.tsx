@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation } from '../api';
+import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, use{t('appointments.cancel')}AppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportAppointments, generateICS } from '../utils/export';
 import CalendarView from '../components/CalendarView';
@@ -100,7 +100,7 @@ export default function Appointments() {
   const { data: patients } = useGetPatientsQuery('');
   const { data: users } = useGetUsersQuery(null);
   const [createAppointment, { isLoading: isCreating }] = useCreateAppointmentMutation();
-  const [cancelAppointment] = useCancelAppointmentMutation();
+  const [cancelAppointment] = use{t('appointments.cancel')}AppointmentMutation();
   const [updateAppointment] = useUpdateAppointmentMutation();
   const { data: recurringAppointments } = useGetRecurringAppointmentsQuery(undefined);
   const [createRecurringAppointment] = useCreateRecurringAppointmentMutation();
@@ -168,7 +168,7 @@ export default function Appointments() {
     }
   };
 
-  const handleCancel = async (id: string) => {
+  const handle{t('appointments.cancel')} = async (id: string) => {
     if (confirm('Are you sure you want to cancel this appointment?')) {
       try {
         await cancelAppointment(id).unwrap();
@@ -229,7 +229,7 @@ export default function Appointments() {
               value={dateRange.startDate}
               max={dateRange.endDate || undefined}
               onChange={(e) => handleDateChange('startDate', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all"
+              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm transition-all"
             />
           </div>
           <span className="text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-5">→</span>
@@ -240,7 +240,7 @@ export default function Appointments() {
               value={dateRange.endDate}
               min={dateRange.startDate || undefined}
               onChange={(e) => handleDateChange('endDate', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all"
+              className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm transition-all"
             />
           </div>
         </div>
@@ -265,17 +265,17 @@ export default function Appointments() {
         <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-2 font-medium transition-all ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'}`}
+            className={`px-4 py-2 font-medium transition-all ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
           >
             <span className="sm:hidden">📋</span>
-            <span className="hidden sm:inline">List</span>
+            <span className="hidden sm:inline">{t('other.list')}</span>
           </button>
           <button
             onClick={() => setView('calendar')}
-            className={`px-4 py-2 font-medium transition-all ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'}`}
+            className={`px-4 py-2 font-medium transition-all ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}
           >
             <span className="sm:hidden">📅</span>
-            <span className="hidden sm:inline">Calendar</span>
+            <span className="hidden sm:inline">{t('other.calendar')}</span>
           </button>
         </div>
       </div>
@@ -289,8 +289,8 @@ export default function Appointments() {
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-lg">🔄</div>
             <div className="text-left">
-              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">Recurring Appointments</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{recurringAppointments?.length || 0} active series</p>
+              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{t('appointments.recurringAppointments')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{recurringAppointments?.length || 0} {t('appointments.activeSeries')}</p>
             </div>
           </div>
           <svg 
@@ -308,43 +308,43 @@ export default function Appointments() {
                 onClick={() => setShowModal(true)}
                 className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center gap-2"
               >
-                <span>+</span> New Recurring
+                <span>+</span> {t('appointments.newRecurring')}
               </button>
             </div>
             
             {recurringAppointments?.length === 0 ? (
               <div className="text-center py-8">
                 <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-2xl mx-auto mb-3">🔄</div>
-                <h3 className="font-semibold text-gray-900 dark:text-white dark:text-white mb-1">No recurring appointments</h3>
-                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm mb-3">Create appointments that repeat on a schedule</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white dark:text-white mb-1">{t('appointments.noRecurringAppointments')}</h3>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm mb-3">{t('appointments.createRecurringAppointment')}</p>
                 <button
                   onClick={() => setShowModal(true)}
-                  className="text-purple-600 font-medium hover:underline text-sm"
+                  className="text-purple-600 dark:text-purple-400 font-medium hover:underline text-sm"
                 >
-                  Create your first recurring appointment →
+                  {t('appointments.createFirstRecurring')}
                 </button>
               </div>
             ) : (
               <div className="grid gap-3">
                 {recurringAppointments?.map((ra: RecurringAppointment) => (
-                  <div key={ra.id} className="flex items-center justify-between p-3 hover:bg-purple-50 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-purple-200 transition-all group">
+                  <div key={ra.id} className="flex items-center justify-between p-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-purple-200 transition-all group">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">🔄</div>
+                      <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center">🔄</div>
                       <div>
                         <p className="font-semibold text-gray-900 dark:text-white dark:text-white text-sm">{ra.patient?.firstName} {ra.patient?.lastName}</p>
                         <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400">
-                          <span className="font-medium text-purple-600">{ra.frequency === 'DAILY' ? 'Daily' : ra.frequency === 'WEEKLY' ? 'Weekly' : 'Monthly'}</span>
-                          <span>• Every {ra.interval}</span>
-                          <span>• Starting {new Date(ra.startDate).toLocaleDateString()}</span>
+                          <span className="font-medium text-purple-600 dark:text-purple-400">{ra.frequency === 'DAILY' ? t('appointments.daily') : ra.frequency === 'WEEKLY' ? t('appointments.weekly') : t('appointments.monthly')}</span>
+                          <span>• {t('appointments.every')} {ra.interval}</span>
+                          <span>• {t('appointments.starting')} {new Date(ra.startDate).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Dr. {ra.doctor?.firstName} {ra.doctor?.lastName}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('appointments.dr')} {ra.doctor?.firstName} {ra.doctor?.lastName}</span>
                       <button
                         onClick={() => handleDeleteRecurring(ra.id)}
-                        className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 p-1.5 rounded-lg hover:bg-red-50 transition-all"
-                        title="Delete series"
+                        className="opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                        title={t('appointments.deleteSeries')}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -368,9 +368,9 @@ export default function Appointments() {
             </div>
           ) : appointments?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📅</div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No appointments found</h3>
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Create your first appointment to get started</p>
+              <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📅</div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('appointments.noAppointments')}</h3>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('appointments.manageAppointments')}</p>
             </div>
           ) : (
             <>
@@ -380,12 +380,12 @@ export default function Appointments() {
                   <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700">
                       <tr>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Time</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Patient</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Doctor</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Notes</th>
-                        <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.time')}</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.patient')}</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.doctor')}</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.status')}</th>
+                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.notes')}</th>
+                        <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.actions')}</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -410,7 +410,7 @@ export default function Appointments() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-400">
-                            Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}
+                            {t('appointments.dr')} {apt.doctor?.firstName} {apt.doctor?.lastName}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(apt.status)}`}>
@@ -425,21 +425,21 @@ export default function Appointments() {
                               <div className="flex justify-end gap-2 flex-wrap">
                                 <button
                                   onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
-                                  className="text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                                  className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
                                 >
-                                  Complete
+                                  {t('appointments.complete')}
                                 </button>
                                 <button
                                   onClick={() => handleStatusChange(apt.id, 'NO_SHOW')}
-                                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1.5 rounded-lg transition-colors font-medium"
                                 >
-                                  No Show
+                                  {t('appointments.noShow')}
                                 </button>
                                 <button
-                                  onClick={() => handleCancel(apt.id)}
-                                  className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                                  onClick={() => handle{t('appointments.cancel')}(apt.id)}
+                                  className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
                                 >
-                                  Cancel
+                                  {t('appointments.cancel')}
                                 </button>
                               </div>
                             )}
@@ -462,7 +462,7 @@ export default function Appointments() {
                         </div>
                         <div>
                           <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{apt.patient?.firstName} {apt.patient?.lastName}</p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('appointments.dr')} {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
                         </div>
                       </div>
                       <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(apt.status)}`}>
@@ -481,13 +481,13 @@ export default function Appointments() {
                           onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
                           className="flex-1 text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
                         >
-                          ✓ Complete
+                          ✓ {t('appointments.complete')}
                         </button>
                         <button
-                          onClick={() => handleCancel(apt.id)}
+                          onClick={() => handle{t('appointments.cancel')}(apt.id)}
                           className="flex-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
                         >
-                          ✕ Cancel
+                          ✕ {t('appointments.cancel')}
                         </button>
                       </div>
                     )}
@@ -522,25 +522,25 @@ export default function Appointments() {
       )}
 
       {/* Appointment Details Modal */}
-      <Modal isOpen={!!selectedAppointment} onClose={() => setSelectedAppointment(null)} title="Appointment Details">
+      <Modal isOpen={!!selectedAppointment} onClose={() => setSelectedAppointment(null)} title={t('appointments.appointmentDetails')}>
         <div className="p-6">
           <div className="space-y-4">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Patient</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.patient')}</p>
               <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{selectedAppointment?.patient?.firstName} {selectedAppointment?.patient?.lastName}</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Doctor</p>
-              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">Dr. {selectedAppointment?.doctor?.firstName} {selectedAppointment?.doctor?.lastName}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.doctor')}</p>
+              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{t('appointments.dr')} {selectedAppointment?.doctor?.firstName} {selectedAppointment?.doctor?.lastName}</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Date & Time</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.dateTime')}</p>
               <p className="font-semibold text-gray-900 dark:text-white dark:text-white">
                 {selectedAppointment && new Date(selectedAppointment.dateTime).toLocaleDateString()} at {selectedAppointment && new Date(selectedAppointment.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Status</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.status')}</p>
                 <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
                   selectedAppointment?.status === 'COMPLETED' ? 'status-completed' :
                   selectedAppointment?.status === 'CANCELLED' ? 'status-cancelled' :
@@ -551,7 +551,7 @@ export default function Appointments() {
               </div>
               {selectedAppointment?.notes && (
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Notes</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.notes')}</p>
                   <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedAppointment?.notes}</p>
                 </div>
               )}
@@ -564,7 +564,7 @@ export default function Appointments() {
                     }}
                     className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
                   >
-                    ✓ Complete
+                    ✓ {t('appointments.complete')}
                   </button>
                   <button
                     onClick={() => {
@@ -573,16 +573,16 @@ export default function Appointments() {
                     }}
                     className="flex-1 px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors"
                   >
-                    No Show
+                    {t('appointments.noShow')}
                   </button>
                   <button
                     onClick={() => {
-                      handleCancel(selectedAppointment!.id);
+                      handle{t('appointments.cancel')}(selectedAppointment!.id);
                       setSelectedAppointment(null);
                     }}
                     className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
                   >
-                    Cancel
+                    {t('appointments.cancel')}
                   </button>
                 </div>
               )}
@@ -590,25 +590,25 @@ export default function Appointments() {
                 onClick={() => setSelectedAppointment(null)}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
               >
-                Close
+{t('common.close')}
               </button>
             </div>
           </div>
         </Modal>
 
       {/* Create Appointment Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="New Appointment">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('appointments.newAppointment')}>
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Patient *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('appointments.patient')} *</label>
                 <select
                   value={formData.patientId}
                   onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                   required
                 >
-                  <option value="">Select patient</option>
+                  <option value="">{t('other.selectPatient')}</option>
                   {patients?.map((p: Patient) => (
                     <option key={p.id} value={p.id}>
                       {p.firstName} {p.lastName}
@@ -617,23 +617,23 @@ export default function Appointments() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Doctor *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('appointments.doctor')} *</label>
                 <select
                   value={formData.doctorId}
                   onChange={(e) => setFormData({ ...formData, doctorId: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                   required
                 >
-                  <option value="">Select doctor</option>
+                  <option value="">{t('other.selectDoctor')}</option>
                   {doctors.map((d: User) => (
                     <option key={d.id} value={d.id}>
-                      Dr. {d.firstName} {d.lastName}
+                      {t('appointments.dr')} {d.firstName} {d.lastName}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Date & Time *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('appointments.dateTime')} *</label>
                 <input
                   type="datetime-local"
                   value={formData.dateTime}
@@ -644,15 +644,15 @@ export default function Appointments() {
               </div>
               
               {/* Repeat Toggle */}
-              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl border border-purple-100">
+              <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl border border-purple-100 dark:border-purple-800">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">🔄</span>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">Repeat</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{t('appointments.repeat')}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, isRecurring: !formData.isRecurring })}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.isRecurring ? 'bg-purple-600' : 'bg-gray-300'}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.isRecurring ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-600'}`}
                 >
                   <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.isRecurring ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
@@ -660,43 +660,43 @@ export default function Appointments() {
 
               {/* Repeat Options */}
               {formData.isRecurring && (
-                <div className="grid grid-cols-3 gap-3 p-4 bg-purple-50 rounded-xl border border-purple-100">
+                <div className="grid grid-cols-3 gap-3 p-4 bg-purple-50 dark:bg-purple-900/30 rounded-xl border border-purple-100 dark:border-purple-800">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Frequency</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{t('other.frequency')}</label>
                     <select
                       value={formData.repeatFrequency}
                       onChange={(e) => setFormData({ ...formData, repeatFrequency: e.target.value })}
-                      className="w-full px-3 py-2 text-sm border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+                      className="w-full px-3 py-2 text-sm border border-purple-200 dark:border-purple-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
-                      <option value="DAILY">Daily</option>
-                      <option value="WEEKLY">Weekly</option>
-                      <option value="MONTHLY">Monthly</option>
+                      <option value="DAILY">{t('appointments.daily')}</option>
+                      <option value="WEEKLY">{t('appointments.weekly')}</option>
+                      <option value="MONTHLY">{t('appointments.monthly')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Every</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{t('other.every')}</label>
                     <input
                       type="number"
                       min="1"
                       value={formData.repeatInterval}
                       onChange={(e) => setFormData({ ...formData, repeatInterval: parseInt(e.target.value) || 1 })}
-                      className="w-full px-3 py-2 text-sm border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 text-sm border border-purple-200 dark:border-purple-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Ends</label>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{t('other.ends')}</label>
                     <input
                       type="date"
                       value={formData.repeatEndDate}
                       onChange={(e) => setFormData({ ...formData, repeatEndDate: e.target.value })}
-                      className="w-full px-3 py-2 text-sm border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-3 py-2 text-sm border border-purple-200 dark:border-purple-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.notes')}</label>
                 {noteTemplates && noteTemplates.length > 0 && (
                   <div className="mb-2 flex flex-wrap gap-1">
                     {noteTemplates.slice(0, 3).map((template: NoteTemplate) => (
@@ -716,7 +716,7 @@ export default function Appointments() {
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder="Add notes..." placeholder-gray-500
+                  placeholder={t('common.notes')}
                 />
               </div>
               <div className="flex gap-3 pt-2">
@@ -725,14 +725,14 @@ export default function Appointments() {
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
-                  Cancel
+                  {t('appointments.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all disabled:opacity-50 btn-shine"
                 >
-                  {isCreating ? 'Creating...' : 'Create Appointment'}
+                  {isCreating ? t('appointments.creating') : t('appointments.newAppointment')}
                 </button>
               </div>
             </form>

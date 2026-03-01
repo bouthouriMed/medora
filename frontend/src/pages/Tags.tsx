@@ -66,14 +66,14 @@ export default function Tags() {
         </div>
       ) : tags?.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">🏷️</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No tags yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create tags to categorize your patients</p>
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">🏷️</div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('other.noTagsYet')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('other.createTags')}</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
           >
-            + Create Tag
+            + {t('other.createTag')}
           </button>
         </div>
       ) : (
@@ -103,22 +103,22 @@ export default function Tags() {
         </div>
       )}
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Tag">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('other.createTag')}>
         <div className="p-6">
           <form onSubmit={handleCreate}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.name')} *</label>
                 <input
                   type="text"
                   value={newTag.name}
                   onChange={(e) => setNewTag({ ...newTag, name: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" e.g., VIP, New Patient, Chronic"
+                  placeholder="e.g., VIP, New Patient, Chronic"
                   required
                 />
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Color</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('other.color')}</label>
                 <div className="flex flex-wrap gap-2">
                   {TAG_COLORS.map(color => (
                     <button
@@ -137,14 +137,14 @@ export default function Tags() {
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium disabled:opacity-50"
                 >
-                  {isCreating ? 'Creating...' : 'Create Tag'}
+                  {isCreating ? t('common.saving') : t('common.add')}
                 </button>
               </div>
             </form>

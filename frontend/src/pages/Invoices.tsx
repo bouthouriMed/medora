@@ -51,27 +51,27 @@ export default function Invoices() {
       }).unwrap();
       setShowModal(false);
       setFormData({ appointmentId: '', patientId: '', amount: '', dueDate: '' });
-      showToast('Invoice created successfully!', 'success');
+      showToast(t('other.invoiceCreated'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to create invoice', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToCreateInvoice'), 'error');
     }
   };
 
   const handleMarkPaid = async (id: string) => {
     try {
       await markAsPaid(id).unwrap();
-      showToast('Invoice marked as paid!', 'success');
+      showToast(t('other.invoiceMarkedPaid'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to update invoice', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToUpdateInvoice'), 'error');
     }
   };
 
   const handleMarkUnpaid = async (id: string) => {
     try {
       await markAsUnpaid(id).unwrap();
-      showToast('Invoice marked as unpaid', 'success');
+      showToast(t('other.invoiceMarkedUnpaid'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to update invoice', 'error');
+      showToast(error instanceof Error ? error.message : t('other.failedToUpdateInvoice'), 'error');
     }
   };
 
@@ -146,9 +146,9 @@ export default function Invoices() {
           <svg className={`w-5 h-5 transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-          Filters
+          {t('other.filters')}
           <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
-            {[statusFilter, dateRange.start, dateRange.end].filter(Boolean).length || 'All'}
+            {[statusFilter, dateRange.start, dateRange.end].filter(Boolean).length || t('common.all')}
           </span>
         </button>
         
@@ -156,33 +156,33 @@ export default function Invoices() {
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="flex flex-wrap gap-3 items-end">
               <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">Status</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('common.status')}</label>
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusChange(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
-                  <option value="">All Statuses</option>
-                  <option value="PAID">Paid</option>
-                  <option value="UNPAID">Unpaid</option>
+                  <option value="">{t('other.allStatuses')}</option>
+                  <option value="PAID">{t('other.paid')}</option>
+                  <option value="UNPAID">{t('other.unpaid')}</option>
                 </select>
               </div>
               <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">From Date</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.fromDate')}</label>
                 <input
                   type="date"
                   value={dateRange.start}
                   onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">To Date</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.toDate')}</label>
                 <input
                   type="date"
                   value={dateRange.end}
                   onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <button
@@ -192,7 +192,7 @@ export default function Invoices() {
                 }}
                 className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white dark:text-white hover:bg-gray-100 rounded-lg transition-colors"
               >
-                Clear
+                {t('common.clear')}
               </button>
             </div>
           </div>
@@ -209,13 +209,13 @@ export default function Invoices() {
       ) : invoices?.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📄</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No invoices found</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create your first invoice to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('other.noInvoicesFound')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('other.createFirstInvoice')}</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
           >
-            + Create Invoice
+            + {t('other.createInvoice')}
           </button>
         </div>
       ) : (
@@ -226,13 +226,13 @@ export default function Invoices() {
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Invoice #</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Patient</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Due Date</th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Created</th>
-                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.invoiceNumber')}</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.patient')}</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.amount')}</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.status')}</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.dueDate')}</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.created')}</th>
+                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -271,14 +271,14 @@ export default function Invoices() {
                             onClick={() => handleMarkPaid(invoice.id)}
                             className="text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
                           >
-                            Mark Paid
+                            {t('other.markAsPaid')}
                           </button>
                         ) : (
                           <button
                             onClick={() => handleMarkUnpaid(invoice.id)}
                             className="text-orange-600 hover:text-orange-800 hover:bg-orange-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
                           >
-                            Mark Unpaid
+                            {t('other.markAsUnpaid')}
                           </button>
                         )}
                       </td>
@@ -310,7 +310,7 @@ export default function Invoices() {
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">${Number(invoice.amount).toFixed(2)}</span>
                   <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
-                    Due: {invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : 'No due date'}
+                    {t('other.dueDate')}: {invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : t('other.noDueDate')}
                   </span>
                 </div>
                 {invoice.status === 'UNPAID' ? (
@@ -318,14 +318,14 @@ export default function Invoices() {
                     onClick={() => handleMarkPaid(invoice.id)}
                     className="w-full text-green-600 hover:bg-green-50 px-4 py-2.5 rounded-xl transition-colors font-medium text-center"
                   >
-                    ✓ Mark as Paid
+                    ✓ {t('other.markAsPaid')}
                   </button>
                 ) : (
                   <button
                     onClick={() => handleMarkUnpaid(invoice.id)}
                     className="w-full text-orange-600 hover:bg-orange-50 px-4 py-2.5 rounded-xl transition-colors font-medium text-center"
                   >
-                    ↩ Mark as Unpaid
+                    ↩ {t('other.markAsUnpaid')}
                   </button>
                 )}
               </div>
@@ -335,18 +335,18 @@ export default function Invoices() {
       )}
 
       {/* Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Invoice">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('other.createInvoice')}>
         <div className="p-6">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Patient *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.patient')} *</label>
               <select
                 value={formData.patientId}
                 onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 required
               >
-                <option value="">Select patient</option>
+                <option value="">{t('other.selectPatient')}</option>
                 {patients?.map((p: Patient) => (
                   <option key={p.id} value={p.id}>
                     {p.firstName} {p.lastName}
@@ -355,14 +355,14 @@ export default function Invoices() {
               </select>
             </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Appointment *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('nav.appointments')} *</label>
                 <select
                   value={formData.appointmentId}
                   onChange={(e) => setFormData({ ...formData, appointmentId: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                   required
                 >
-                  <option value="">Select appointment</option>
+                  <option value="">{t('other.selectAppointment')}</option>
                   {appointments?.filter((a: Appointment) => a.status === 'COMPLETED').map((a: Appointment) => (
                     <option key={a.id} value={a.id}>
                       {new Date(a.dateTime).toLocaleDateString()} - {a.patient?.firstName} {a.patient?.lastName}
@@ -371,7 +371,7 @@ export default function Invoices() {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Amount ($) *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.amountField')}</label>
                 {presets && presets.length > 0 && (
                   <div className="mb-2 flex flex-wrap gap-1">
                     {presets.slice(0, 5).map((preset: any) => (
@@ -397,7 +397,7 @@ export default function Invoices() {
                 />
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Due Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.dueDateField')}</label>
                 <input
                   type="date"
                   value={formData.dueDate}
@@ -411,14 +411,14 @@ export default function Invoices() {
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all disabled:opacity-50 btn-shine"
                 >
-                  {isCreating ? 'Creating...' : 'Create Invoice'}
+                  {isCreating ? t('other.creating') : t('other.createInvoice')}
                 </button>
               </div>
             </form>

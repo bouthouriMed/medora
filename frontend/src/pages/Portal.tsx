@@ -38,7 +38,7 @@ export default function Portal() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading your portal...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t('portal.loading')}</p>
         </div>
       </div>
     );
@@ -53,7 +53,7 @@ export default function Portal() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white mb-2">Unable to Load Portal</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white mb-2">{t('portal.unableToLoad')}</h1>
           <p className="text-gray-600 dark:text-gray-400">
             The link you followed may be invalid or expired. Please contact your healthcare provider for assistance.
           </p>
@@ -92,7 +92,7 @@ export default function Portal() {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">
                 Welcome, {patient.firstName}!
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Your Personal Health Portal</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.yourPersonalHealthPortal')}</p>
             </div>
           </div>
         </div>
@@ -141,14 +141,14 @@ export default function Portal() {
             </div>
             <div className="p-6">
               {upcomingAppointments.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-center py-4">No upcoming appointments</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-center py-4">{t('portal.noUpcomingAppointments')}</p>
               ) : (
                 <div className="space-y-4">
                   {upcomingAppointments.map((apt) => (
                     <div key={apt.id} className="border-l-4 border-green-500 pl-4">
                       <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{formatDate(apt.dateTime)}</p>
                       <p className="text-gray-600 dark:text-gray-400">{formatTime(apt.dateTime)}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('appointments.dr')} {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
                       <span className={`inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full ${
                         apt.status === 'SCHEDULED' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700 dark:text-gray-300'
                       }`}>
@@ -172,14 +172,14 @@ export default function Portal() {
             </div>
             <div className="p-6">
               {pastAppointments.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-center py-4">No past appointments</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-center py-4">{t('portal.noPastAppointments')}</p>
               ) : (
                 <div className="space-y-4">
                   {pastAppointments.slice(0, 5).map((apt) => (
                     <div key={apt.id} className="border-l-4 border-purple-400 pl-4">
                       <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{formatDate(apt.dateTime)}</p>
                       <p className="text-gray-600 dark:text-gray-400">{formatTime(apt.dateTime)}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('appointments.dr')} {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
                       <span className={`inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full ${
                         apt.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 
                         apt.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700 dark:text-gray-300'
@@ -206,26 +206,26 @@ export default function Portal() {
           <div className="p-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Full Name</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.fullName')}</p>
                 <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.firstName} {patient.lastName}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Email</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.email')}</p>
                 <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.email || 'Not provided'}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Phone</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.phone')}</p>
                 <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.phone || 'Not provided'}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Date of Birth</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.dateOfBirth')}</p>
                 <p className="font-semibold text-gray-900 dark:text-white dark:text-white">
                   {patient.dateOfBirth ? formatDate(patient.dateOfBirth) : 'Not provided'}
                 </p>
               </div>
               {patient.address && (
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 md:col-span-2">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Address</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('portal.address')}</p>
                   <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.address}</p>
                 </div>
               )}

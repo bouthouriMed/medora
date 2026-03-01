@@ -104,12 +104,12 @@ export default function Patients() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to archive this patient?')) {
+    if (confirm(t('other.confirmArchivePatient'))) {
       try {
         await deletePatient(id).unwrap();
-        showToast('Patient archived successfully', 'success');
+        showToast(t('other.patientArchived'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to archive patient', 'error');
+        showToast(t('other.failedToArchivePatient'), 'error');
       }
     }
   };
@@ -149,7 +149,7 @@ export default function Patients() {
           placeholder={t('patients.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-3 pl-12 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all"
+          className="w-full px-4 py-3 pl-12 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all text-gray-900 dark:text-white placeholder-gray-400"
         />
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
       </div>
@@ -177,7 +177,7 @@ export default function Patients() {
                 <select
                   value={filters.tag}
                   onChange={(e) => setFilters({ ...filters, tag: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 >
                   <option value="">{t('common.all')} {t('other.tags')}</option>
                   {allTags?.map((tag: Tag) => (
@@ -191,7 +191,7 @@ export default function Patients() {
                   type="date"
                   value={filters.dateFrom}
                   onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <div className="flex-1 min-w-[150px]">
@@ -200,7 +200,7 @@ export default function Patients() {
                   type="date"
                   value={filters.dateTo}
                   onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 />
               </div>
               <button
@@ -225,8 +225,8 @@ export default function Patients() {
         /* Empty State */
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">👥</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No patients found</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Get started by adding your first patient</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('patients.noPatients')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('patients.noPatientsDesc')}</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
@@ -241,12 +241,12 @@ export default function Patients() {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Patient</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Phone</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Tags</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Date of Birth</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.patient')}</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.contact')}</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.phone')}</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.tags')}</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('patients.dateOfBirth')}</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.actions')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -288,13 +288,13 @@ export default function Patients() {
                           onClick={() => handleViewPatient(patient)}
                           className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
                         >
-                          View
+                          {t('other.view')}
                         </button>
                         <button
                           onClick={() => handleDelete(patient.id)}
                           className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
                         >
-                          Archive
+                          {t('other.archive')}
                         </button>
                       </div>
                     </td>
@@ -344,13 +344,13 @@ export default function Patients() {
                   onClick={() => handleViewPatient(patient)}
                   className="flex-1 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
                 >
-                  View
+                  {t('other.view')}
                 </button>
                 <button
                   onClick={() => handleDelete(patient.id)}
                   className="flex-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
                 >
-                  Archive
+                  {t('other.archive')}
                 </button>
               </div>
             </div>
@@ -359,7 +359,7 @@ export default function Patients() {
       )}
 
       {/* View Patient Modal */}
-      <Modal isOpen={!!selectedPatient} onClose={() => setSelectedPatient(null)} title="Patient Details">
+      <Modal isOpen={!!selectedPatient} onClose={() => setSelectedPatient(null)} title={t('other.patientDetails')}>
         <div className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
@@ -367,76 +367,76 @@ export default function Patients() {
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white dark:text-white">{selectedPatient?.firstName} {selectedPatient?.lastName}</h3>
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Patient ID: {selectedPatient?.id.slice(0, 8).toUpperCase()}</p>
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.patientIdLabel')} {selectedPatient?.id.slice(0, 8).toUpperCase()}</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Email</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.email || 'Not provided'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.email')}</p>
+              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.email || t('other.notProvided')}</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Phone</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.phone || 'Not provided'}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.phone')}</p>
+              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.phone || t('other.notProvided')}</p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Date of Birth</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('patients.dateOfBirth')}</p>
               <p className="font-medium text-gray-900 dark:text-white dark:text-white">
-                {selectedPatient?.dateOfBirth ? new Date(selectedPatient!.dateOfBirth).toLocaleDateString() : 'Not provided'}
-            </p>
-          </div>
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Address</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.address || 'Not provided'}</p>
+                {selectedPatient?.dateOfBirth ? new Date(selectedPatient!.dateOfBirth).toLocaleDateString() : t('other.notProvided')}
+              </p>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Notes</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.notes || 'No notes'}</p>
-            </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.address')}</p>
+                <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.address || t('other.notProvided')}</p>
+              </div>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.notes')}</p>
+                <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.notes || t('other.noNotes')}</p>
+              </div>
 
               <div className="bg-blue-50 rounded-xl p-4">
-                <p className="text-sm text-blue-600 mb-2">Patient Portal</p>
+                <p className="text-sm text-blue-600 mb-2">{t('other.patientPortal')}</p>
                 {patientDetails?.portalToken ? (
                   <button
                     onClick={() => {
                       const portalUrl = `${window.location.origin}/portal/${patientDetails.portalToken}`;
                       navigator.clipboard.writeText(portalUrl);
-                      showToast('Portal link copied to clipboard!', 'success');
+                      showToast(t('other.portalLinkCopied'), 'success');
                     }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
-                    Share Portal Link
+                    {t('other.sharePortalLink')}
                   </button>
                 ) : (
                   <button
                     onClick={async () => {
                       try {
                         const result = await regenerateToken(selectedPatient!.id).unwrap();
-                        showToast('Portal link generated!', 'success');
+                        showToast(t('other.portalLinkGenerated'), 'success');
                         setSelectedPatient(result);
                       } catch (error) {
-                        showToast('Failed to generate portal link', 'error');
+                        showToast(t('other.failedToGeneratePortalLink'), 'error');
                       }
                     }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
                   >
-                    Generate Portal Link
+                    {t('other.generatePortalLink')}
                   </button>
                 )}
               </div>
 
               <div className="bg-purple-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-purple-600">Tags</p>
+                  <p className="text-sm text-purple-600">{t('other.tags')}</p>
                   <button
                     onClick={() => setShowTagDropdown(!showTagDropdown)}
                     className="text-xs text-purple-600 hover:text-purple-800 font-medium"
                   >
-                    + Add Tag
+                    + {t('other.addTag')}
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -453,10 +453,10 @@ export default function Patients() {
                           onClick={async () => {
                             try {
                               await removeTagFromPatient({ patientId: selectedPatient!.id, tagId: tag.id }).unwrap();
-                              showToast('Tag removed', 'success');
+                              showToast(t('other.tagRemoved'), 'success');
                               refetchPatientTags();
                             } catch (error) {
-                              showToast('Failed to remove tag', 'error');
+                              showToast(t('other.failedToRemoveTag'), 'error');
                             }
                           }}
                           className="hover:opacity-70 ml-1"
@@ -466,7 +466,7 @@ export default function Patients() {
                       </span>
                     ))
                   ) : (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">No tags assigned</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noTagsAssigned')}</p>
                   )}
                 </div>
                 {showTagDropdown && allTags && allTags.length > 0 && (
@@ -477,22 +477,22 @@ export default function Patients() {
                         const tagId = e.target.value;
                         const alreadyHas = patientTags?.some((t: Tag) => t.id === tagId);
                         if (alreadyHas) {
-                          showToast('Tag already assigned', 'error');
+                          showToast(t('other.tagAlreadyAssigned'), 'error');
                           return;
                         }
                         try {
                           await addTagToPatient({ patientId: selectedPatient!.id, tagId }).unwrap();
                           setShowTagDropdown(false);
-                          showToast('Tag added!', 'success');
+                          showToast(t('other.tagAdded'), 'success');
                           refetchPatientTags();
                         } catch (error) {
-                          showToast('Failed to add tag', 'error');
+                          showToast(t('other.failedToAddTag'), 'error');
                         }
                       }}
                       className="w-full px-3 py-2 text-sm border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       defaultValue=""
                     >
-                      <option value="">Select a tag...</option>
+                      <option value="">{t('other.selectATag')}</option>
                       {allTags.filter((t: Tag) => !patientTags?.some((pt: Tag) => pt.id === t.id)).map((tag: Tag) => (
                         <option key={tag.id} value={tag.id}>{tag.name}</option>
                       ))}
@@ -509,7 +509,7 @@ export default function Patients() {
                   onClick={() => setExpandedSections(prev => ({ ...prev, info: !prev.info }))}
                   className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 flex items-center justify-between text-left"
                 >
-                  <span className="font-semibold text-gray-900 dark:text-white dark:text-white">Patient Info</span>
+                  <span className="font-semibold text-gray-900 dark:text-white dark:text-white">{t('other.patientInfo')}</span>
                   <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     {expandedSections.info ? '▲' : '▼'}
                   </span>
@@ -526,7 +526,7 @@ export default function Patients() {
                               onChange={(e) => setCustomFieldValues({ ...customFieldValues, [field.id]: e.target.value })}
                               className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
-                              <option value="">Select...</option>
+                              <option value="">{t('other.selectOption')}</option>
                               {field.options.split(',').map((opt: string) => (
                                 <option key={opt.trim()} value={opt.trim()}>{opt.trim()}</option>
                               ))}
@@ -542,16 +542,16 @@ export default function Patients() {
                                     value: customFieldValues[field.id] || '',
                                   }).unwrap();
                                   refetchCustomFields();
-                                  showToast('Saved!', 'success');
+                                  showToast(t('other.saved'), 'success');
                                 } catch (error) {
-                                  showToast('Failed to save', 'error');
+                                  showToast(t('other.failedToSave'), 'error');
                                 }
                                 setSavingFields(prev => { const next = new Set(prev); next.delete(field.id); return next; });
                               }}
                               disabled={savingFields.has(field.id)}
                               className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
                             >
-                              {savingFields.has(field.id) ? '...' : 'Save'}
+                              {savingFields.has(field.id) ? '...' : t('common.save')}
                             </button>
                           </div>
                         ) : (
@@ -574,16 +574,16 @@ export default function Patients() {
                                     value: customFieldValues[field.id] || '',
                                   }).unwrap();
                                   refetchCustomFields();
-                                  showToast('Saved!', 'success');
+                                  showToast(t('other.saved'), 'success');
                                 } catch (error) {
-                                  showToast('Failed to save', 'error');
+                                  showToast(t('other.failedToSave'), 'error');
                                 }
                                 setSavingFields(prev => { const next = new Set(prev); next.delete(field.id); return next; });
                               }}
                               disabled={savingFields.has(field.id)}
                               className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
                             >
-                              {savingFields.has(field.id) ? '...' : 'Save'}
+                              {savingFields.has(field.id) ? '...' : t('common.save')}
                             </button>
                           </div>
                         )}
@@ -595,9 +595,9 @@ export default function Patients() {
             )}
 
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <h4 className="font-semibold text-gray-900 dark:text-white dark:text-white mb-3">Appointments</h4>
+              <h4 className="font-semibold text-gray-900 dark:text-white dark:text-white mb-3">{t('nav.appointments')}</h4>
               {patientAppointments?.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm">No appointments found</p>
+                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm">{t('other.noAppointmentsFound')}</p>
               ) : (
                 <div className="space-y-2">
                   {patientAppointments?.slice(0, 5).map((apt: Appointment) => (
@@ -623,17 +623,17 @@ export default function Patients() {
               onClick={() => setSelectedPatient(null)}
               className="w-full mt-6 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors"
             >
-              Close
+              {t('common.close')}
             </button>
         </div>
       </Modal>
 
       {/* Create Patient Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add New Patient">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('other.addNewPatient')}>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">First Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('patients.firstName')} *</label>
                   <input
                     type="text"
                     value={formData.firstName}
@@ -643,7 +643,7 @@ export default function Patients() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Last Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('patients.lastName')} *</label>
                   <input
                     type="text"
                     value={formData.lastName}
@@ -654,7 +654,7 @@ export default function Patients() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.email')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -663,7 +663,7 @@ export default function Patients() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Phone</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.phone')}</label>
                 <input
                   type="tel"
                   value={formData.phone}
@@ -672,7 +672,7 @@ export default function Patients() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Date of Birth</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('patients.dateOfBirth')}</label>
                 <input
                   type="date"
                   value={formData.dateOfBirth}
@@ -681,7 +681,7 @@ export default function Patients() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.address')}</label>
                 <input
                   type="text"
                   value={formData.address}
@@ -690,7 +690,7 @@ export default function Patients() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.notes')}</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -704,14 +704,14 @@ export default function Patients() {
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating}
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all disabled:opacity-50 btn-shine"
                 >
-                  {isCreating ? 'Creating...' : 'Create Patient'}
+                  {isCreating ? t('other.creating') : t('other.createPatient')}
                 </button>
               </div>
             </form>

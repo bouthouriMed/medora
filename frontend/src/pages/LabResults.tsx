@@ -50,16 +50,16 @@ export default function LabResults() {
           id: editingResult.id,
           ...formData,
         }).unwrap();
-        showToast('Lab result updated!', 'success');
+        showToast(t('other.labResultUpdated'), 'success');
       } else {
         await createLabResult(formData).unwrap();
-        showToast('Lab result created!', 'success');
+        showToast(t('other.labResultCreated'), 'success');
       }
       setShowModal(false);
       setEditingResult(null);
       setFormData({ patientId: '', testName: '', category: '', result: '', normalRange: '', status: 'PENDING', notes: '' });
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to save lab result', 'error');
+      showToast(t('other.failedToSaveLabResult'), 'error');
     }
   };
 
@@ -78,12 +78,12 @@ export default function LabResults() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this lab result?')) {
+    if (confirm(t('other.deleteThisLabResult'))) {
       try {
         await deleteLabResult(id).unwrap();
-        showToast('Lab result deleted', 'success');
+        showToast(t('other.labResultDeleted'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to delete', 'error');
+        showToast(t('other.failedToDeleteLabResult'), 'error');
       }
     }
   };
@@ -126,7 +126,7 @@ export default function LabResults() {
               onChange={(e) => setFilterPatient(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
-              <option value="">All Patients</option>
+              <option value="">{t('other.allPatients')}</option>
               {patients?.map((p: Patient) => (
                 <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
               ))}
@@ -138,10 +138,10 @@ export default function LabResults() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
-              <option value="">All Statuses</option>
-              <option value="PENDING">Pending</option>
-              <option value="COMPLETED">Completed</option>
-              <option value="ABNORMAL">Abnormal</option>
+              <option value="">{t('other.allStatuses')}</option>
+              <option value="PENDING">{t('other.pending')}</option>
+              <option value="COMPLETED">{t('other.completedLab')}</option>
+              <option value="ABNORMAL">{t('other.abnormal')}</option>
             </select>
           </div>
         </div>
@@ -157,13 +157,13 @@ export default function LabResults() {
       ) : labResults?.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">🧪</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No lab results found</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Add your first lab result to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('other.labResultsFound')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('other.addFirstLabResult')}</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
           >
-            + Add Lab Result
+            + {t('other.addLabResult')}
           </button>
         </div>
       ) : (
@@ -185,8 +185,8 @@ export default function LabResults() {
                       {result.category && ` • ${result.category}`}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Ordered: {new Date(result.orderedAt).toLocaleDateString()}
-                      {result.completedAt && ` • Completed: ${new Date(result.completedAt).toLocaleDateString()}`}
+                      {t('other.ordered')}: {new Date(result.orderedAt).toLocaleDateString()}
+                      {result.completedAt && ` • ${t('other.completedLab')}: ${new Date(result.completedAt).toLocaleDateString()}`}
                     </p>
                   </div>
                 </div>
@@ -195,13 +195,13 @@ export default function LabResults() {
                     onClick={() => handleEdit(result)}
                     className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors"
                   >
-                    Edit
+                    {t('common.edit')}
                   </button>
                   <button
                     onClick={() => handleDelete(result.id)}
                     className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg font-medium transition-colors"
                   >
-                    Delete
+                    {t('common.delete')}
                   </button>
                 </div>
               </div>
@@ -210,19 +210,19 @@ export default function LabResults() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {result.result && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">Result</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.resultField')}</p>
                         <p className="font-medium text-gray-900 dark:text-white dark:text-white">{result.result}</p>
                       </div>
                     )}
                     {result.normalRange && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">Normal Range</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.normalRangeField')}</p>
                         <p className="font-medium text-gray-600 dark:text-gray-400">{result.normalRange}</p>
                       </div>
                     )}
                     {result.notes && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">Notes</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.notesField')}</p>
                         <p className="font-medium text-gray-600 dark:text-gray-400">{result.notes}</p>
                       </div>
                     )}
@@ -235,91 +235,91 @@ export default function LabResults() {
       )}
 
       {/* Modal */}
-      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditingResult(null); }} title={editingResult ? 'Edit Lab Result' : 'Add Lab Result'}>
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditingResult(null); }} title={editingResult ? t('other.editLabResult') : t('other.addLabResult')}>
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Patient *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.patient')} *</label>
                 <select
                   value={formData.patientId}
                   onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   required
                 >
-                  <option value="">Select patient</option>
+                  <option value="">{t('other.selectPatient')}</option>
                   {patients?.map((p: Patient) => (
                     <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Test Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.testNameField')}</label>
                 <input
                   type="text"
                   value={formData.testName}
                   onChange={(e) => setFormData({ ...formData, testName: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" e.g., Complete Blood Count"
+                  placeholder={t('other.testNamePlaceholder')}
                   required
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.categoryField')}</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
-                    <option value="">Select category</option>
+                    <option value="">{t('other.selectCategory')}</option>
                     {LAB_CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.statusField')}</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
-                    <option value="PENDING">Pending</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="ABNORMAL">Abnormal</option>
+                    <option value="PENDING">{t('other.pending')}</option>
+                    <option value="COMPLETED">{t('other.completedLab')}</option>
+                    <option value="ABNORMAL">{t('other.abnormal')}</option>
                   </select>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Result</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.resultField')}</label>
                   <input
                     type="text"
                     value={formData.result}
                     onChange={(e) => setFormData({ ...formData, result: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder=" e.g., 14.5 g/dL"
+                    placeholder="e.g., 14.5 g/dL" placeholder-gray-500
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Normal Range</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.normalRangeField')}</label>
                   <input
                     type="text"
                     value={formData.normalRange}
                     onChange={(e) => setFormData({ ...formData, normalRange: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder=" e.g., 12.0-17.5 g/dL"
+                    placeholder={t('other.normalRangePlaceholder')}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.notesField')}</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder=" Additional notes..."
+                  placeholder={t('other.notesPlaceholder')}
                 />
               </div>
               <div className="flex gap-3 pt-2">
@@ -328,13 +328,13 @@ export default function LabResults() {
                   onClick={() => { setShowModal(false); setEditingResult(null); }}
                   className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all btn-shine"
                 >
-                  {editingResult ? 'Update' : 'Create'}
+                  {editingResult ? t('common.update') : t('common.create')}
                 </button>
               </div>
             </form>

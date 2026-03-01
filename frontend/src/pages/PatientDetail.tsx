@@ -142,11 +142,11 @@ export default function PatientDetail() {
         height: vitalForm.height ? parseFloat(vitalForm.height) : undefined,
         oxygenSat: vitalForm.oxygenSat ? parseInt(vitalForm.oxygenSat) : undefined,
       }).unwrap();
-      showToast('Vital signs recorded!', 'success');
+      showToast(t('medical.vitalSignsRecorded'), 'success');
       setShowVitalModal(false);
       setVitalForm({ bloodPressureSystolic: '', bloodPressureDiastolic: '', heartRate: '', temperature: '', weight: '', height: '', oxygenSat: '', notes: '' });
     } catch (error) {
-      showToast('Failed to record vitals', 'error');
+      showToast(t('medical.failedToRecordVitals'), 'error');
     }
   };
 
@@ -154,11 +154,11 @@ export default function PatientDetail() {
     e.preventDefault();
     try {
       await createDiagnosis({ patientId: id!, ...diagnosisForm }).unwrap();
-      showToast('Diagnosis added!', 'success');
+      showToast(t('medical.diagnosisAdded'), 'success');
       setShowDiagnosisModal(false);
       setDiagnosisForm({ icdCode: '', description: '', status: 'ACTIVE', notes: '' });
     } catch (error) {
-      showToast('Failed to add diagnosis', 'error');
+      showToast(t('medical.failedToAddDiagnosis'), 'error');
     }
   };
 
@@ -166,11 +166,11 @@ export default function PatientDetail() {
     e.preventDefault();
     try {
       await createPrescription({ patientId: id!, ...prescriptionForm, refills: parseInt(prescriptionForm.refills) }).unwrap();
-      showToast('Prescription added!', 'success');
+      showToast(t('medical.prescriptionAdded'), 'success');
       setShowPrescriptionModal(false);
       setPrescriptionForm({ medication: '', dosage: '', frequency: '', duration: '', instructions: '', refills: '0' });
     } catch (error) {
-      showToast('Failed to add prescription', 'error');
+      showToast(t('medical.failedToAddPrescription'), 'error');
     }
   };
 
@@ -178,11 +178,11 @@ export default function PatientDetail() {
     e.preventDefault();
     try {
       await createAllergy({ patientId: id!, ...allergyForm }).unwrap();
-      showToast('Allergy added!', 'success');
+      showToast(t('medical.allergyAdded'), 'success');
       setShowAllergyModal(false);
       setAllergyForm({ allergen: '', severity: 'MODERATE', reaction: '' });
     } catch (error) {
-      showToast('Failed to add allergy', 'error');
+      showToast(t('medical.failedToAddAllergy'), 'error');
     }
   };
 
@@ -190,11 +190,11 @@ export default function PatientDetail() {
     e.preventDefault();
     try {
       await createCondition({ patientId: id!, ...conditionForm }).unwrap();
-      showToast('Condition added!', 'success');
+      showToast(t('medical.conditionAdded'), 'success');
       setShowConditionModal(false);
       setConditionForm({ name: '', status: 'ACTIVE', notes: '' });
     } catch (error) {
-      showToast('Failed to add condition', 'error');
+      showToast(t('medical.failedToAddCondition'), 'error');
     }
   };
 
@@ -226,7 +226,7 @@ export default function PatientDetail() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate('/patients')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+          <button onClick={() => navigate('/patients')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400">
             <Icons.arrowLeft size={20} />
           </button>
           <div>
@@ -268,23 +268,23 @@ export default function PatientDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Patient Info */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold mb-4">Patient Information</h3>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{t('other.patientInformation')}</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Email</span>
-                <span className="font-medium">{patient?.email || '-'}</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.email')}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{patient?.email || '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Phone</span>
-                <span className="font-medium">{patient?.phone || '-'}</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.phone')}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{patient?.phone || '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Date of Birth</span>
-                <span className="font-medium">{patient?.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString() : '-'}</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('patients.dateOfBirth')}</span>
+                <span className="font-medium text-gray-900 dark:text-white">{patient?.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString() : '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">Address</span>
-                <span className="font-medium text-right">{patient?.address || '-'}</span>
+                <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.address')}</span>
+                <span className="font-medium text-right text-gray-900 dark:text-white">{patient?.address || '-'}</span>
               </div>
             </div>
           </div>
@@ -294,79 +294,79 @@ export default function PatientDetail() {
             <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-white">
               <Icons.activity size={24} className="mb-2" />
               <p className="text-3xl font-bold">{activeDiagnoses.length}</p>
-              <p className="text-blue-100">Active Diagnoses</p>
+              <p className="text-blue-100">{t('other.activeDiagnoses')}</p>
             </div>
             <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-5 text-white">
               <Icons.pill size={24} className="mb-2" />
               <p className="text-3xl font-bold">{activePrescriptions.length}</p>
-              <p className="text-purple-100">Active Rxs</p>
+              <p className="text-purple-100">{t('other.activeRxs')}</p>
             </div>
             <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-5 text-white">
               <Icons.alert size={24} className="mb-2" />
               <p className="text-3xl font-bold">{history?.allergies?.length || 0}</p>
-              <p className="text-red-100">Allergies</p>
+              <p className="text-red-100">{t('other.allergies')}</p>
             </div>
             <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-5 text-white">
               <Icons.heart size={24} className="mb-2" />
               <p className="text-3xl font-bold">{history?.conditions?.length || 0}</p>
-              <p className="text-green-100">Conditions</p>
+              <p className="text-green-100">{t('other.conditions')}</p>
             </div>
           </div>
 
           {/* Latest Vitals */}
           {latestVitals && (
             <div className="lg:col-span-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-semibold mb-4">Latest Vitals</h3>
+              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{t('other.latestVitals')}</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                 {latestVitals.bloodPressureSystolic && (
-                  <div className="text-center p-3 bg-red-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Blood Pressure</p>
+                  <div className="text-center p-3 bg-red-50 dark:bg-red-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.bloodPressure')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.bloodPressureSystolic}/{latestVitals.bloodPressureDiastolic}</p>
-                    <p className="text-xs text-gray-400">mmHg</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t('other.mmhg')}</p>
                   </div>
                 )}
                 {latestVitals.heartRate && (
-                  <div className="text-center p-3 bg-pink-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Heart Rate</p>
+                  <div className="text-center p-3 bg-pink-50 dark:bg-pink-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.heartRate')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.heartRate}</p>
-                    <p className="text-xs text-gray-400">bpm</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t('other.bpm')}</p>
                   </div>
                 )}
                 {latestVitals.temperature && (
-                  <div className="text-center p-3 bg-orange-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Temperature</p>
+                  <div className="text-center p-3 bg-orange-50 dark:bg-orange-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.temperature')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.temperature}°</p>
-                    <p className="text-xs text-gray-400">F</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t('other.fahrenheit')}</p>
                   </div>
                 )}
                 {latestVitals.weight && (
-                  <div className="text-center p-3 bg-blue-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Weight</p>
+                  <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.weight')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.weight}</p>
-                    <p className="text-xs text-gray-400">kg</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t('other.kg')}</p>
                   </div>
                 )}
                 {latestVitals.height && (
-                  <div className="text-center p-3 bg-indigo-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Height</p>
+                  <div className="text-center p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.height')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.height}</p>
-                    <p className="text-xs text-gray-400">cm</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">{t('other.cm')}</p>
                   </div>
                 )}
                 {latestVitals.bmi && (
-                  <div className="text-center p-3 bg-purple-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">BMI</p>
+                  <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.bmi')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.bmi.toFixed(1)}</p>
                   </div>
                 )}
                 {latestVitals.oxygenSat && (
-                  <div className="text-center p-3 bg-cyan-50 rounded-xl">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">SpO2</p>
+                  <div className="text-center p-3 bg-cyan-50 dark:bg-cyan-900/30 rounded-xl">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.spo2')}</p>
                     <p className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{latestVitals.oxygenSat}%</p>
                   </div>
                 )}
               </div>
-              <p className="text-xs text-gray-400 mt-3">Recorded: {new Date(latestVitals.recordedAt).toLocaleString()}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">{t('other.recorded')}: {new Date(latestVitals.recordedAt).toLocaleString()}</p>
             </div>
           )}
         </div>
@@ -375,17 +375,17 @@ export default function PatientDetail() {
       {activeTab === 'vitals' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Vital Signs History</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('other.vitalSignsHistory')}</h3>
             {hasPermission(user, 'create_medical_records') && (
               <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-                + Record Vitals
+                + {t('medical.recordVitals')}
               </button>
             )}
           </div>
           {history?.vitals?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-              <Icons.activity size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No vital signs recorded yet</p>
+              <Icons.activity size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noVitalsRecorded')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -394,33 +394,33 @@ export default function PatientDetail() {
                   <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-2">{new Date(vital.recordedAt).toLocaleString()}</p>
                   <div className="flex flex-wrap gap-4">
                     {vital.bloodPressureSystolic && (
-                      <div className="text-center px-3 py-1 bg-red-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">BP</span>
-                        <p className="font-semibold">{vital.bloodPressureSystolic}/{vital.bloodPressureDiastolic}</p>
+                      <div className="text-center px-3 py-1 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.bp')}</span>
+                        <p className="font-semibold text-gray-900 dark:text-white">{vital.bloodPressureSystolic}/{vital.bloodPressureDiastolic}</p>
                       </div>
                     )}
                     {vital.heartRate && (
-                      <div className="text-center px-3 py-1 bg-pink-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">HR</span>
-                        <p className="font-semibold">{vital.heartRate}</p>
+                      <div className="text-center px-3 py-1 bg-pink-50 dark:bg-pink-900/30 rounded-lg">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.hr')}</span>
+                        <p className="font-semibold text-gray-900 dark:text-white">{vital.heartRate}</p>
                       </div>
                     )}
                     {vital.temperature && (
-                      <div className="text-center px-3 py-1 bg-orange-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Temp</span>
-                        <p className="font-semibold">{vital.temperature}°F</p>
+                      <div className="text-center px-3 py-1 bg-orange-50 dark:bg-orange-900/30 rounded-lg">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.temp')}</span>
+                        <p className="font-semibold text-gray-900 dark:text-white">{vital.temperature}°F</p>
                       </div>
                     )}
                     {vital.weight && (
-                      <div className="text-center px-3 py-1 bg-blue-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Wt</span>
-                        <p className="font-semibold">{vital.weight}kg</p>
+                      <div className="text-center px-3 py-1 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.wt')}</span>
+                        <p className="font-semibold text-gray-900 dark:text-white">{vital.weight}kg</p>
                       </div>
                     )}
                     {vital.bmi && (
-                      <div className="text-center px-3 py-1 bg-purple-50 rounded-lg">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">BMI</span>
-                        <p className="font-semibold">{vital.bmi.toFixed(1)}</p>
+                      <div className="text-center px-3 py-1 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.bmi')}</span>
+                        <p className="font-semibold text-gray-900 dark:text-white">{vital.bmi.toFixed(1)}</p>
                       </div>
                     )}
                   </div>
@@ -434,17 +434,17 @@ export default function PatientDetail() {
       {activeTab === 'diagnoses' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Diagnoses (ICD-10)</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('other.diagnosesIcd')}</h3>
             {hasPermission(user, 'create_medical_records') && (
               <button onClick={() => setShowDiagnosisModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-                + Add Diagnosis
+                + {t('medical.addDiagnosis')}
               </button>
             )}
           </div>
           {history?.diagnoses?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-              <Icons.stethoscope size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No diagnoses recorded</p>
+              <Icons.stethoscope size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noDiagnosesRecorded')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -452,16 +452,16 @@ export default function PatientDetail() {
                 <div key={diagnosis.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded">{diagnosis.icdCode}</span>
+                      <span className="font-mono text-sm bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 px-2 py-1 rounded">{diagnosis.icdCode}</span>
                       <span className={`px-2 py-0.5 text-xs rounded-full ${
-                        diagnosis.status === 'ACTIVE' ? 'bg-red-100 text-red-700' :
-                        diagnosis.status === 'CHRONIC' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
+                        diagnosis.status === 'ACTIVE' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
+                        diagnosis.status === 'CHRONIC' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                        'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
                       }`}>{diagnosis.status}</span>
                     </div>
-                    <p className="font-medium mt-1">{diagnosis.description}</p>
+                    <p className="font-medium mt-1 text-gray-900 dark:text-white">{diagnosis.description}</p>
                     {diagnosis.notes && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{diagnosis.notes}</p>}
-                    <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(diagnosis.diagnosedAt).toLocaleDateString()}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{t('other.diagnosed')}: {new Date(diagnosis.diagnosedAt).toLocaleDateString()}</p>
                   </div>
                   <div className="flex gap-2">
                     {hasPermission(user, 'create_medical_records') && (
@@ -470,22 +470,22 @@ export default function PatientDetail() {
                         onChange={async (e) => {
                           try {
                             await updateDiagnosis({ id: diagnosis.id, status: e.target.value }).unwrap();
-                            showToast('Diagnosis updated', 'success');
+                            showToast(t('medical.diagnosisUpdated'), 'success');
                           } catch (error) {
-                            showToast('Failed to update', 'error');
+                            showToast(t('medical.failedToUpdate'), 'error');
                           }
                         }}
-                        className="text-sm border rounded-lg px-2 py-1"
+                        className="text-sm border rounded-lg px-2 py-1 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
                       >
-                        <option value="ACTIVE">Active</option>
-                        <option value="CHRONIC">Chronic</option>
-                        <option value="RESOLVED">Resolved</option>
+                        <option value="ACTIVE">{t('medical.active')}</option>
+                        <option value="CHRONIC">{t('medical.chronic')}</option>
+                        <option value="RESOLVED">{t('medical.resolved')}</option>
                       </select>
                     )}
                     {hasPermission(user, 'create_medical_records') && (
                       <button
                         onClick={async () => {
-                          if (confirm('Delete this diagnosis?')) {
+                          if (confirm(t('other.confirmDelete') + ' diagnosis?')) {
                             try {
                               await deleteDiagnosis({ id: diagnosis.id, patientId: id! }).unwrap();
                               showToast('Diagnosis deleted', 'success');
@@ -494,7 +494,7 @@ export default function PatientDetail() {
                             }
                           }
                         }}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                       >
                         <Icons.trash size={18} />
                       </button>
@@ -510,17 +510,17 @@ export default function PatientDetail() {
       {activeTab === 'prescriptions' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Prescriptions</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('other.prescriptions')}</h3>
             {hasPermission(user, 'create_medical_records') && (
               <button onClick={() => setShowPrescriptionModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-                + Add Prescription
+                + {t('other.addPrescription')}
               </button>
             )}
           </div>
           {history?.prescriptions?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-              <Icons.pill size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No prescriptions</p>
+              <Icons.pill size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noPrescriptions')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -529,18 +529,18 @@ export default function PatientDetail() {
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h4 className="font-semibold text-lg">{rx.medication}</h4>
+                        <h4 className="font-semibold text-lg text-gray-900 dark:text-white">{rx.medication}</h4>
                         <span className={`px-2 py-0.5 text-xs rounded-full ${
-                          rx.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                          'bg-gray-100 text-gray-700 dark:text-gray-300'
+                          rx.status === 'ACTIVE' ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
+                          'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                         }`}>{rx.status}</span>
                       </div>
                       <p className="text-gray-600 dark:text-gray-400">{rx.dosage} - {rx.frequency}</p>
-                      {rx.duration && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Duration: {rx.duration}</p>}
-                      {rx.instructions && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">Instructions: {rx.instructions}</p>}
-                      <p className="text-xs text-gray-400 mt-2">
-                        Started: {new Date(rx.startDate).toLocaleDateString()}
-                        {rx.endDate && ` - Ended: ${new Date(rx.endDate).toLocaleDateString()}`}
+                      {rx.duration && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.duration')}: {rx.duration}</p>}
+                      {rx.instructions && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.instructions')}: {rx.instructions}</p>}
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+                        {t('other.started')}: {new Date(rx.startDate).toLocaleDateString()}
+                        {rx.endDate && ` - ${t('other.ended')}: ${new Date(rx.endDate).toLocaleDateString()}`}
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -549,25 +549,25 @@ export default function PatientDetail() {
                           onClick={async () => {
                             try {
                               await updatePrescription({ id: rx.id, patientId: id, status: 'COMPLETED' }).unwrap();
-                              showToast('Prescription completed', 'success');
+                              showToast(t('medical.prescriptionCompleted'), 'success');
                             } catch (err) {
-                              showToast('Failed to update prescription', 'error');
+                              showToast(t('medical.failedToUpdatePrescription'), 'error');
                             }
                           }}
-                          className="text-sm text-green-600 hover:text-green-700"
+                          className="text-sm text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300"
                         >
-                          Mark Complete
+                          {t('other.markComplete')}
                         </button>
                         )}
                         {hasPermission(user, 'create_medical_records') && (
                           <button
                             onClick={async () => {
-                              if (confirm('Delete this prescription?')) {
+                              if (confirm(t('other.deleteThisPrescription'))) {
                                 try {
                                   await deletePrescription({ id: rx.id, patientId: id }).unwrap();
-                                  showToast('Prescription deleted', 'success');
+                                  showToast(t('medical.prescriptionDeleted'), 'success');
                                 } catch (err) {
-                                  showToast('Failed to delete prescription', 'error');
+                                  showToast(t('medical.failedToDeletePrescription'), 'error');
                                 }
                               }
                             }}
@@ -588,17 +588,17 @@ export default function PatientDetail() {
       {activeTab === 'allergies' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Allergies</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('other.allergies')}</h3>
             {hasPermission(user, 'create_medical_records') && (
               <button onClick={() => setShowAllergyModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-                + Add Allergy
+                + {t('other.addAllergy')}
               </button>
             )}
           </div>
           {history?.allergies?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-              <Icons.alert size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No allergies recorded</p>
+              <Icons.alert size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noAllergiesRecorded')}</p>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -606,24 +606,24 @@ export default function PatientDetail() {
                 <div key={allergy.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex justify-between items-center">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{allergy.allergen}</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{allergy.allergen}</h4>
                       <span className={`px-2 py-0.5 text-xs rounded-full ${
-                        allergy.severity === 'SEVERE' ? 'bg-red-100 text-red-700' :
-                        allergy.severity === 'MODERATE' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
+                        allergy.severity === 'SEVERE' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
+                        allergy.severity === 'MODERATE' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                        'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
                       }`}>{allergy.severity}</span>
                     </div>
-                    {allergy.reaction && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">Reaction: {allergy.reaction}</p>}
+                    {allergy.reaction && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.reaction')}: {allergy.reaction}</p>}
                   </div>
                   {hasPermission(user, 'create_medical_records') && (
                     <button
                       onClick={async () => {
-                        if (confirm('Delete this allergy?')) {
+                        if (confirm(t('other.deleteThisAllergy'))) {
                           try {
                             await deleteAllergy({ id: allergy.id, patientId: id }).unwrap();
-                            showToast('Allergy deleted', 'success');
+                            showToast(t('medical.allergyDeleted'), 'success');
                           } catch (err) {
-                            showToast('Failed to delete allergy', 'error');
+                            showToast(t('medical.failedToDeleteAllergy'), 'error');
                           }
                         }
                       }}
@@ -642,17 +642,17 @@ export default function PatientDetail() {
       {activeTab === 'conditions' && (
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Medical Conditions</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('other.medicalConditions')}</h3>
             {hasPermission(user, 'create_medical_records') && (
               <button onClick={() => setShowConditionModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
-                + Add Condition
+                + {t('other.addCondition')}
               </button>
             )}
           </div>
           {history?.conditions?.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-              <Icons.heart size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">No conditions recorded</p>
+              <Icons.heart size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noConditionsRecorded')}</p>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -660,25 +660,25 @@ export default function PatientDetail() {
                 <div key={condition.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex justify-between items-center">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold">{condition.name}</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{condition.name}</h4>
                       <span className={`px-2 py-0.5 text-xs rounded-full ${
-                        condition.status === 'ACTIVE' ? 'bg-red-100 text-red-700' :
-                        condition.status === 'CHRONIC' ? 'bg-yellow-100 text-yellow-700' :
-                        'bg-green-100 text-green-700'
+                        condition.status === 'ACTIVE' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
+                        condition.status === 'CHRONIC' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                        'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
                       }`}>{condition.status}</span>
                     </div>
                     {condition.notes && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{condition.notes}</p>}
-                    {condition.diagnosedAt && <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(condition.diagnosedAt).toLocaleDateString()}</p>}
+                    {condition.diagnosedAt && <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{t('other.diagnosed')}: {new Date(condition.diagnosedAt).toLocaleDateString()}</p>}
                   </div>
                   {hasPermission(user, 'create_medical_records') && (
                     <button
                       onClick={async () => {
-                        if (confirm('Delete this condition?')) {
+                        if (confirm(t('other.deleteThisCondition'))) {
                           try {
                             await deleteCondition({ id: condition.id, patientId: id }).unwrap();
-                            showToast('Condition deleted', 'success');
+                            showToast(t('medical.conditionDeleted'), 'success');
                           } catch (err) {
-                            showToast('Failed to delete condition', 'error');
+                            showToast(t('medical.failedToDeleteCondition'), 'error');
                           }
                         }
                       }}
@@ -696,26 +696,26 @@ export default function PatientDetail() {
 
       {activeTab === 'timeline' && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Medical Timeline</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('other.medicalTimeline')}</h3>
           <div className="relative">
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
             <div className="space-y-4">
               {history?.medicalRecords?.map((record: any, index: number) => (
                 <div key={index} className="relative pl-10">
-                  <div className="absolute left-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute left-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800"></div>
                   <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
-                    <span className="text-xs text-gray-400">{new Date(record.date).toLocaleString()}</span>
-                    <h4 className="font-semibold">{record.title}</h4>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(record.date).toLocaleString()}</span>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">{record.title}</h4>
                     {record.description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{record.description}</p>}
                   </div>
                 </div>
               ))}
               {history?.labResults?.slice(0, 5).map((lab: any, index: number) => (
                 <div key={`lab-${index}`} className="relative pl-10">
-                  <div className="absolute left-2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute left-2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white dark:border-gray-800"></div>
                   <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
-                    <span className="text-xs text-gray-400">{new Date(lab.orderedAt).toLocaleString()}</span>
-                    <h4 className="font-semibold">Lab: {lab.testName}</h4>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(lab.orderedAt).toLocaleString()}</span>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">{t('other.lab')}: {lab.testName}</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{lab.status} {lab.result && `- ${lab.result}`}</p>
                   </div>
                 </div>
@@ -726,170 +726,170 @@ export default function PatientDetail() {
       )}
 
       {/* Modals */}
-      <Modal isOpen={showVitalModal} onClose={() => setShowVitalModal(false)} title="Record Vitals">
+      <Modal isOpen={showVitalModal} onClose={() => setShowVitalModal(false)} title={t('medical.recordVitals')}>
         <div className="p-6">
           <form onSubmit={handleVitalSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">BP Systolic</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.bpSystolic')}</label>
                   <input type="number" value={vitalForm.bloodPressureSystolic} onChange={e => setVitalForm({...vitalForm, bloodPressureSystolic: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="120" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">BP Diastolic</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.bpDiastolic')}</label>
                   <input type="number" value={vitalForm.bloodPressureDiastolic} onChange={e => setVitalForm({...vitalForm, bloodPressureDiastolic: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="80" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Heart Rate (bpm)</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.heartRateBpm')}</label>
                   <input type="number" value={vitalForm.heartRate} onChange={e => setVitalForm({...vitalForm, heartRate: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="72" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Temperature (°F)</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.temperatureF')}</label>
                   <input type="number" step="0.1" value={vitalForm.temperature} onChange={e => setVitalForm({...vitalForm, temperature: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="98.6" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Weight (kg)</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.weightKg')}</label>
                   <input type="number" step="0.1" value={vitalForm.weight} onChange={e => setVitalForm({...vitalForm, weight: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="70" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Height (cm)</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.heightCm')}</label>
                   <input type="number" value={vitalForm.height} onChange={e => setVitalForm({...vitalForm, height: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="170" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">SpO2 (%)</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.spo2')}</label>
                   <input type="number" value={vitalForm.oxygenSat} onChange={e => setVitalForm({...vitalForm, oxygenSat: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="98" placeholder-gray-500 />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Notes</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('common.notes')}</label>
                 <textarea value={vitalForm.notes} onChange={e => setVitalForm({...vitalForm, notes: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowVitalModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">Save</button>
+                <button type="button" onClick={() => setShowVitalModal(false)} className="flex-1 border border-gray-200 dark:border-gray-600 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">{t('common.cancel')}</button>
+                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">{t('common.save')}</button>
               </div>
             </form>
         </div>
       </Modal>
 
-      <Modal isOpen={showDiagnosisModal} onClose={() => setShowDiagnosisModal(false)} title="Add Diagnosis">
+      <Modal isOpen={showDiagnosisModal} onClose={() => setShowDiagnosisModal(false)} title={t('medical.addDiagnosis')}>
         <div className="p-6">
           <form onSubmit={handleDiagnosisSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">ICD-10 Code</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.icdCode')}</label>
                 <input type="text" value={diagnosisForm.icdCode} onChange={e => setDiagnosisForm({...diagnosisForm, icdCode: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="J06.9" placeholder-gray-500 required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Description</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('common.description')}</label>
                 <input type="text" value={diagnosisForm.description} onChange={e => setDiagnosisForm({...diagnosisForm, description: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="Acute upper respiratory infection" placeholder-gray-500 required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Status</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('common.status')}</label>
                 <select value={diagnosisForm.status} onChange={e => setDiagnosisForm({...diagnosisForm, status: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
-                  <option value="ACTIVE">Active</option>
-                  <option value="CHRONIC">Chronic</option>
-                  <option value="RESOLVED">Resolved</option>
+                  <option value="ACTIVE">{t('medical.active')}</option>
+                  <option value="CHRONIC">{t('medical.chronic')}</option>
+                  <option value="RESOLVED">{t('medical.resolved')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Notes</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('common.notes')}</label>
                 <textarea value={diagnosisForm.notes} onChange={e => setDiagnosisForm({...diagnosisForm, notes: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowDiagnosisModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">Save</button>
+                <button type="button" onClick={() => setShowDiagnosisModal(false)} className="flex-1 border py-2 rounded-lg">{t('common.cancel')}</button>
+                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">{t('common.save')}</button>
               </div>
             </form>
         </div>
       </Modal>
 
-      <Modal isOpen={showPrescriptionModal} onClose={() => setShowPrescriptionModal(false)} title="Add Prescription">
+      <Modal isOpen={showPrescriptionModal} onClose={() => setShowPrescriptionModal(false)} title={t('other.addPrescription')}>
         <div className="p-6">
           <form onSubmit={handlePrescriptionSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Medication</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.medication')}</label>
                 <input type="text" value={prescriptionForm.medication} onChange={e => setPrescriptionForm({...prescriptionForm, medication: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" required />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Dosage</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.dosage')}</label>
                   <input type="text" value={prescriptionForm.dosage} onChange={e => setPrescriptionForm({...prescriptionForm, dosage: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="500mg" placeholder-gray-500 required />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Frequency</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.frequency')}</label>
                   <input type="text" value={prescriptionForm.frequency} onChange={e => setPrescriptionForm({...prescriptionForm, frequency: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="3 times daily" placeholder-gray-500 required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Duration</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.duration')}</label>
                   <input type="text" value={prescriptionForm.duration} onChange={e => setPrescriptionForm({...prescriptionForm, duration: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="7 days" placeholder-gray-500 />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1 dark:text-white">Refills</label>
+                  <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.refills')}</label>
                   <input type="number" value={prescriptionForm.refills} onChange={e => setPrescriptionForm({...prescriptionForm, refills: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Instructions</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.instructions')}</label>
                 <textarea value={prescriptionForm.instructions} onChange={e => setPrescriptionForm({...prescriptionForm, instructions: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowPrescriptionModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">Save</button>
+                <button type="button" onClick={() => setShowPrescriptionModal(false)} className="flex-1 border py-2 rounded-lg">{t('common.cancel')}</button>
+                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">{t('common.save')}</button>
               </div>
             </form>
         </div>
       </Modal>
 
-      <Modal isOpen={showAllergyModal} onClose={() => setShowAllergyModal(false)} title="Add Allergy">
+      <Modal isOpen={showAllergyModal} onClose={() => setShowAllergyModal(false)} title={t('other.addAllergy')}>
         <div className="p-6">
           <form onSubmit={handleAllergySubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Allergen</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.allergen')}</label>
                 <input type="text" value={allergyForm.allergen} onChange={e => setAllergyForm({...allergyForm, allergen: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="Penicillin" placeholder-gray-500 required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Severity</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.severity')}</label>
                 <select value={allergyForm.severity} onChange={e => setAllergyForm({...allergyForm, severity: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
-                  <option value="MILD">Mild</option>
-                  <option value="MODERATE">Moderate</option>
-                  <option value="SEVERE">Severe</option>
+                  <option value="MILD">{t('other.mild')}</option>
+                  <option value="MODERATE">{t('other.moderate')}</option>
+                  <option value="SEVERE">{t('other.severe')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Reaction</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.reaction')}</label>
                 <input type="text" value={allergyForm.reaction} onChange={e => setAllergyForm({...allergyForm, reaction: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="Rash, swelling" placeholder-gray-500 />
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowAllergyModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">Save</button>
+                <button type="button" onClick={() => setShowAllergyModal(false)} className="flex-1 border py-2 rounded-lg">{t('common.cancel')}</button>
+                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">{t('common.save')}</button>
               </div>
             </form>
         </div>
       </Modal>
 
-      <Modal isOpen={showConditionModal} onClose={() => setShowConditionModal(false)} title="Add Condition">
+      <Modal isOpen={showConditionModal} onClose={() => setShowConditionModal(false)} title={t('other.addCondition')}>
         <div className="p-6">
           <form onSubmit={handleConditionSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Condition Name</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('other.condition')}</label>
                 <input type="text" value={conditionForm.name} onChange={e => setConditionForm({...conditionForm, name: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="Diabetes Type 2" placeholder-gray-500 required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Status</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('common.status')}</label>
                 <select value={conditionForm.status} onChange={e => setConditionForm({...conditionForm, status: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white">
-                  <option value="ACTIVE">Active</option>
-                  <option value="CHRONIC">Chronic</option>
-                  <option value="RESOLVED">Resolved</option>
+                  <option value="ACTIVE">{t('medical.active')}</option>
+                  <option value="CHRONIC">{t('medical.chronic')}</option>
+                  <option value="RESOLVED">{t('medical.resolved')}</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1 dark:text-white">Notes</label>
+                <label className="block text-sm font-medium mb-1 dark:text-white">{t('common.notes')}</label>
                 <textarea value={conditionForm.notes} onChange={e => setConditionForm({...conditionForm, notes: e.target.value})} className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 bg-white dark:bg-gray-700 dark:text-white" rows={2} />
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowConditionModal(false)} className="flex-1 border py-2 rounded-lg">Cancel</button>
-                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">Save</button>
+                <button type="button" onClick={() => setShowConditionModal(false)} className="flex-1 border py-2 rounded-lg">{t('common.cancel')}</button>
+                <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">{t('common.save')}</button>
               </div>
             </form>
         </div>

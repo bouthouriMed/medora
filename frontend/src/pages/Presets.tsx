@@ -116,7 +116,7 @@ export default function Presets() {
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder=" Search presets..."
+            placeholder="Search presets..." placeholder-gray-500
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-4 py-3 pl-12 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white shadow-sm transition-all"
@@ -156,14 +156,14 @@ export default function Presets() {
         </div>
       ) : filteredPresets.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">⚡</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No presets found</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Get started by adding your first preset</p>
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">⚡</div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('other.noPresetsFound')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('other.getStartedPresets')}</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
           >
-            + Add Preset
+            + {t('other.addPreset')}
           </button>
         </div>
       ) : (
@@ -200,22 +200,22 @@ export default function Presets() {
         </div>
       )}
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Add New Preset">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('other.addPreset')}>
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.name')} *</label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder=" e.g., Annual Checkup, Flu, Amoxicillin 500mg"
+                  placeholder="e.g., Annual Checkup, Flu, Amoxicillin 500mg"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Type *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.type')} *</label>
                 <select
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value as PresetType })}
@@ -227,13 +227,13 @@ export default function Presets() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.description')}</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={2}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder=" Optional notes or usage instructions"
+                  placeholder={t('other.optional')}
                 />
               </div>
               {formData.type === 'PROCEDURE' && (
@@ -246,7 +246,7 @@ export default function Presets() {
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder=" 0.00"
+                    placeholder="0.00" placeholder-gray-500
                   />
                 </div>
               )}

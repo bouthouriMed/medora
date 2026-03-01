@@ -89,11 +89,11 @@ export default function NoteTemplates() {
         </div>
       ) : filteredTemplates.length === 0 ? (
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📋</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No templates</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create templates for quick note entry</p>
+          <div className="w-20 h-20 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📋</div>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('other.noTemplates')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('other.createTemplates')}</p>
           <button onClick={() => setShowModal(true)} className="btn-gradient text-white px-6 py-3 rounded-xl">
-            + Create Template
+            + {t('other.createTemplate')}
           </button>
         </div>
       ) : (
@@ -103,9 +103,9 @@ export default function NoteTemplates() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h3 className="font-semibold text-gray-900 dark:text-white dark:text-white">{template.name}</h3>
-                  <span className="text-xs px-2 py-0.5 bg-gray-100 rounded">{template.type}</span>
+                  <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">{template.type}</span>
                 </div>
-                <button onClick={() => handleDelete(template)} className="text-gray-400 hover:text-red-500">
+                <button onClick={() => handleDelete(template)} className="text-gray-400 hover:text-red-500 dark:hover:text-red-400">
                   ✕
                 </button>
               </div>
@@ -115,39 +115,39 @@ export default function NoteTemplates() {
         </div>
       )}
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Create Note Template">
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('other.createTemplate')}>
         <div className="p-6">
           <form onSubmit={handleCreate}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Template Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.templateName')}</label>
                 <input
                   type="text"
                   value={newTemplate.name}
                   onChange={(e) => setNewTemplate({ ...newTemplate, name: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" e.g., Follow-up Visit"
+                  placeholder="e.g., Follow-up Visit"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.type')}</label>
                 <select
                   value={newTemplate.type}
                   onChange={(e) => setNewTemplate({ ...newTemplate, type: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="APPOINTMENT">Appointment</option>
-                  <option value="INVOICE">Invoice</option>
+                  <option value="APPOINTMENT">{t('other.appointment')}</option>
+                  <option value="INVOICE">{t('other.invoiceType')}</option>
                 </select>
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Content *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.content')} *</label>
                 <textarea
                   value={newTemplate.content}
                   onChange={(e) => setNewTemplate({ ...newTemplate, content: e.target.value })}
                   rows={5}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder=" Template content..."
+                  placeholder="Template content..."
                   required
                 />
               </div>

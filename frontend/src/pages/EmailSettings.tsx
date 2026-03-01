@@ -88,7 +88,7 @@ export default function EmailSettings() {
                 value={formData.smtpHost}
                 onChange={(e) => setFormData({ ...formData, smtpHost: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" smtp.gmail.com"
+                placeholder="smtp.gmail.com" placeholder-gray-500
               />
             </div>
             <div>
@@ -98,7 +98,7 @@ export default function EmailSettings() {
                 value={formData.smtpPort}
                 onChange={(e) => setFormData({ ...formData, smtpPort: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" 587"
+                placeholder="587" placeholder-gray-500
               />
             </div>
             <div>
@@ -108,7 +108,7 @@ export default function EmailSettings() {
                 value={formData.smtpUser}
                 onChange={(e) => setFormData({ ...formData, smtpUser: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" your email"
+                placeholder="your email" placeholder-gray-500
               />
             </div>
             <div>
@@ -118,17 +118,17 @@ export default function EmailSettings() {
                 value={formData.smtpPassword}
                 onChange={(e) => setFormData({ ...formData, smtpPassword: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" app password"
+                placeholder="app password" placeholder-gray-500
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">From Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('settings.fromEmail')}</label>
               <input
                 type="email"
                 value={formData.fromEmail}
                 onChange={(e) => setFormData({ ...formData, fromEmail: e.target.value })}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder=" noreply@yourclinic.com"
+                placeholder="noreply@yourclinic.com" placeholder-gray-500
               />
             </div>
             <div className="flex gap-3">
@@ -136,7 +136,7 @@ export default function EmailSettings() {
                 type="email"
                 value={testEmail}
                 onChange={(e) => setTestEmail(e.target.value)}
-                placeholder=" test@example.com"
+                placeholder="test@example.com" placeholder-gray-500
                 className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
@@ -162,7 +162,7 @@ export default function EmailSettings() {
       </div>
 
       <div className="bg-blue-50 rounded-xl p-4 text-sm text-blue-800">
-        <strong>Note:</strong> For Gmail, use <a href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noopener noreferrer" className="underline">App Password</a> instead of your regular password.
+        <strong>{t('settings.note')}:</strong> {t('settings.gmailNote')} <a href="https://support.google.com/accounts/answer/185833" target="_blank" rel="noopener noreferrer" className="underline">App Password</a>.
       </div>
     </div>
   );

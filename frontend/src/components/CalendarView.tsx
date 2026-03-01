@@ -173,6 +173,46 @@ function CalendarView({
           --fc-event-border-color: #3b82f6;
           --fc-today-bg-color: rgba(59, 130, 246, 0.1);
           --fc-now-indicator-color: #ef4444;
+          --fc-page-bg-color: #1f2937;
+          --fc-neutral-bg-color: #374151;
+          --fc-list-event-hover-bg-color: #374151;
+        }
+        .dark .fc .fc-bg {
+          background-color: #1f2937 !important;
+        }
+        .dark .fc .fc-daygrid-day {
+          background-color: #1f2937 !important;
+        }
+        .dark .fc .fc-daygrid-day.fc-day-today {
+          background-color: rgba(59, 130, 246, 0.2) !important;
+        }
+        .dark .fc .fc-daygrid-day-number {
+          color: #d1d5db !important;
+        }
+        .dark .fc .fc-col-header-cell {
+          background-color: #374151 !important;
+        }
+        .dark .fc .fc-col-header-cell-cushion {
+          color: #f9fafb !important;
+        }
+        .dark .fc .fc-scrollgrid {
+          background-color: #1f2937 !important;
+        }
+        .dark .fc .fc-timegrid-slot {
+          background-color: #1f2937 !important;
+        }
+        .dark .fc .fc-timegrid-axis {
+          background-color: #374151 !important;
+          color: #9ca3af !important;
+        }
+        .dark .fc .fc-day-other month {
+          background-color: #111827 !important;
+        }
+        .dark .fc .fc-day-other {
+          background-color: #111827 !important;
+        }
+        .dark .fc .fc-day-other .fc-daygrid-day-number {
+          color: #6b7280 !important;
         }
         .dark .fc .fc-toolbar-title {
           color: #f9fafb;

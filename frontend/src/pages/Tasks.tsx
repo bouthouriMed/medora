@@ -57,16 +57,16 @@ export default function Tasks() {
       
       if (editingTask) {
         await updateTask({ id: editingTask.id, ...data }).unwrap();
-        showToast('Task updated!', 'success');
+        showToast(t('other.taskUpdated'), 'success');
       } else {
         await createTask(data).unwrap();
-        showToast('Task created!', 'success');
+        showToast(t('other.taskCreated'), 'success');
       }
       setShowModal(false);
       setEditingTask(null);
       setFormData({ title: '', description: '', priority: 'MEDIUM', status: 'PENDING', dueDate: '', assignedTo: '', patientId: '' });
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to save task', 'error');
+      showToast(t('other.failedToSaveTask'), 'error');
     }
   };
 
@@ -85,12 +85,12 @@ export default function Tasks() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Delete this task?')) {
+    if (confirm(t('other.deleteThisTask'))) {
       try {
         await deleteTask(id).unwrap();
-        showToast('Task deleted', 'success');
+        showToast(t('other.taskDeleted'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to delete', 'error');
+        showToast(t('other.failedToDeleteTask'), 'error');
       }
     }
   };
@@ -98,9 +98,9 @@ export default function Tasks() {
   const handleStatusChange = async (task: Task, newStatus: string) => {
     try {
       await updateTask({ id: task.id, status: newStatus }).unwrap();
-      showToast('Task updated!', 'success');
+      showToast(t('other.taskUpdated'), 'success');
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to update', 'error');
+      showToast(t('other.failedToUpdate'), 'error');
     }
   };
 
@@ -184,7 +184,7 @@ export default function Tasks() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{pendingTasks.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Pending Tasks</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.pendingTasks')}</p>
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function Tasks() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{tasks?.filter((t: Task) => t.priority === 'HIGH' && t.status !== 'COMPLETED').length || 0}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">High Priority</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.highPriority')}</p>
             </div>
           </div>
         </div>
@@ -206,7 +206,7 @@ export default function Tasks() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{completedTasks.length}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">Completed</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.completedTask')}</p>
             </div>
           </div>
         </div>
@@ -224,13 +224,13 @@ export default function Tasks() {
           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
             <Icons.task size={40} className="text-blue-600" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">No tasks yet</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">Create your first task to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('other.noTasksYet')}</h3>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('other.createFirstTask')}</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
           >
-            + Create Task
+            + {t('other.createTask')}
           </button>
         </div>
       ) : (
@@ -283,13 +283,13 @@ export default function Tasks() {
                     onClick={() => handleEdit(task)}
                     className="px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg font-medium transition-colors flex items-center gap-1"
                   >
-                    <Icons.edit size={16} /> Edit
+                    <Icons.edit size={16} /> {t('common.edit')}
                   </button>
                   <button
                     onClick={() => handleDelete(task.id)}
                     className="px-4 py-2 text-red-500 hover:bg-red-50 rounded-lg font-medium transition-colors flex items-center gap-1"
                   >
-                    <Icons.trash size={16} /> Delete
+                    <Icons.trash size={16} /> {t('common.delete')}
                   </button>
                 </div>
               </div>
@@ -299,58 +299,58 @@ export default function Tasks() {
       )}
 
       {/* Modal */}
-      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditingTask(null); }} title={editingTask ? 'Edit Task' : 'New Task'}>
+      <Modal isOpen={showModal} onClose={() => { setShowModal(false); setEditingTask(null); }} title={editingTask ? t('other.editTask') : t('other.newTask')}>
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Title *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.titleField')}</label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder=" Task title"
+                  placeholder={t('other.titlePlaceholder')}
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.descriptionField')}</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  placeholder=" Task description..."
+                  placeholder={t('other.descriptionPlaceholder')}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Priority</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.priorityField')}</label>
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     {PRIORITIES.map((p) => (
-                      <option key={p.value} value={p.value}>{p.label}</option>
+                      <option key={p.value} value={p.value}>{t(`other.${p.value.toLowerCase()}`)}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.statusField')}</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
                     {STATUSES.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
+                      <option key={s.value} value={s.value}>{t(`other.${s.value.toLowerCase() === 'pending' ? 'pending' : s.value.toLowerCase() === 'in_progress' ? 'inProgress' : s.value.toLowerCase()}`)}</option>
                     ))}
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Due Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.dueDateField')}</label>
                 <input
                   type="date"
                   value={formData.dueDate}
@@ -360,26 +360,26 @@ export default function Tasks() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Assign To</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.assignTo')}</label>
                   <select
                     value={formData.assignedTo}
                     onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
-                    <option value="">Unassigned</option>
+                    <option value="">{t('other.unassigned')}</option>
                     {users?.map((u: User) => (
                       <option key={u.id} value={u.id}>{u.firstName} {u.lastName}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Related Patient</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.relatedPatient')}</label>
                   <select
                     value={formData.patientId}
                     onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                   >
-                    <option value="">None</option>
+                    <option value="">{t('other.none')}</option>
                     {patients?.map((p: Patient) => (
                       <option key={p.id} value={p.id}>{p.firstName} {p.lastName}</option>
                     ))}
@@ -392,13 +392,13 @@ export default function Tasks() {
                   onClick={() => { setShowModal(false); setEditingTask(null); }}
                   className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all btn-shine"
                 >
-                  {editingTask ? 'Update' : 'Create'}
+                  {editingTask ? t('common.update') : t('common.create')}
                 </button>
               </div>
             </form>

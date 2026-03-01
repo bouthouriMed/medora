@@ -33,16 +33,16 @@ export default function Users() {
           lastName: formData.lastName,
           role: formData.role,
         }).unwrap();
-        showToast('User updated successfully!', 'success');
+        showToast(t('other.userUpdated'), 'success');
       } else {
         await createUser(formData).unwrap();
-        showToast('User created successfully!', 'success');
+        showToast(t('other.userCreated'), 'success');
       }
       setShowModal(false);
       setEditingUser(null);
       setFormData({ email: '', password: '', firstName: '', lastName: '', role: 'STAFF' });
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to save user', 'error');
+      showToast(t('other.failedToSaveUser'), 'error');
     }
   };
 
@@ -59,12 +59,12 @@ export default function Users() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to remove this user?')) {
+    if (confirm(t('other.confirmRemoveUser'))) {
       try {
         await deleteUser(id).unwrap();
-        showToast('User removed successfully', 'success');
+        showToast(t('other.userRemoved'), 'success');
       } catch (error) {
-        showToast(error instanceof Error ? error.message : 'Failed to remove user', 'error');
+        showToast(t('other.failedToRemoveUser'), 'error');
       }
     }
   };
@@ -110,11 +110,11 @@ export default function Users() {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">User</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Added</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.user')}</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.email')}</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.role')}</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.added')}</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -133,7 +133,7 @@ export default function Users() {
                         <div className="font-semibold text-gray-900 dark:text-white dark:text-white">
                           {user.firstName} {user.lastName}
                           {user.id === currentUser?.user?.id && (
-                            <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">You</span>
+                            <span className="ml-2 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">{t('other.you')}</span>
                           )}
                         </div>
                       </div>
@@ -150,24 +150,24 @@ export default function Users() {
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400 dark:text-gray-400">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    {user.id !== currentUser?.user?.id && (
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => handleEdit(user)}
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    )}
-                  </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        {user.id !== currentUser?.user?.id && (
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={() => handleEdit(user)}
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                            >
+                              {t('common.edit')}
+                            </button>
+                            <button
+                              onClick={() => handleDelete(user.id)}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                            >
+                              {t('common.remove')}
+                            </button>
+                          </div>
+                        )}
+                      </td>
                 </tr>
               ))}
             </tbody>
@@ -175,7 +175,7 @@ export default function Users() {
           {users?.length === 0 && (
             <div className="text-center py-12 text-gray-400">
               <span className="text-5xl block mb-3">👥</span>
-              No users found
+              {t('other.noUsersFound')}
             </div>
           )}
         </div>
@@ -185,12 +185,12 @@ export default function Users() {
       <Modal 
         isOpen={showModal} 
         onClose={() => { setShowModal(false); setEditingUser(null); }} 
-        title={editingUser ? 'Edit User' : 'Add New User'}
+        title={editingUser ? t('other.editUser') : t('other.addNewUser')}
       >
         <form onSubmit={handleSubmit} className="p-6">
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">First Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.firstNameField')}</label>
                   <input
                     type="text"
                     value={formData.firstName}
@@ -200,7 +200,7 @@ export default function Users() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Last Name</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.lastNameField')}</label>
                   <input
                     type="text"
                     value={formData.lastName}
@@ -211,7 +211,7 @@ export default function Users() {
                 </div>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.emailField')}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -223,7 +223,7 @@ export default function Users() {
               </div>
               {!editingUser && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('other.passwordField')}</label>
                   <input
                     type="password"
                     value={formData.password}
@@ -231,19 +231,19 @@ export default function Users() {
                     className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     required={!editingUser}
                     minLength={6}
-                    placeholder="Min 6 characters" placeholder-gray-500
+                    placeholder={t('other.min6Chars')} placeholder-gray-500
                   />
                 </div>
               )}
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Role</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.role')}</label>
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as 'DOCTOR' | 'NURSE' | 'STAFF' | 'ADMIN' })}
                   className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 >
-                  <option value="STAFF">Staff</option>
-                  <option value="DOCTOR">Doctor</option>
+                  <option value="STAFF">{t('staff.staff')}</option>
+                  <option value="DOCTOR">{t('staff.doctor')}</option>
                 </select>
               </div>
               <div className="flex gap-3">
@@ -255,14 +255,14 @@ export default function Users() {
                   }}
                   className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isCreating || isUpdating}
                   className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 font-medium transition-all disabled:opacity-50"
                 >
-                  {isCreating || isUpdating ? 'Saving...' : editingUser ? 'Update' : 'Create'}
+                  {isCreating || isUpdating ? t('other.saving') : editingUser ? t('common.update') : t('other.createUser')}
                 </button>
               </div>
             </form>

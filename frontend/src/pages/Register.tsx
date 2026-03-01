@@ -113,7 +113,7 @@ export default function Register() {
                 value={formData.clinicName}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder=" Your Clinic Name"
+                placeholder="Your Clinic Name" placeholder-gray-500
                 required
               />
             </div>
@@ -129,7 +129,7 @@ export default function Register() {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder=" you@example.com"
+                placeholder="you@example.com" placeholder-gray-500
                 required
               />
             </div>
@@ -145,7 +145,7 @@ export default function Register() {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder=" Min 6 characters"
+                placeholder="Min 6 characters" placeholder-gray-500
                 required
               />
             </div>
@@ -161,7 +161,7 @@ export default function Register() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white dark:bg-gray-700"
-                placeholder=" ••••••••"
+                placeholder="••••••••" placeholder-gray-500
                 required
               />
             </div>
