@@ -230,8 +230,8 @@ export default function PatientDetail() {
             <Icons.arrowLeft size={20} />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{patient?.firstName} {patient?.lastName}</h1>
-            <p className="text-gray-500 dark:text-gray-400">{t('patients.patientID')}: {patient?.id?.slice(0, 8)}</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white dark:text-white">{patient?.firstName} {patient?.lastName}</h1>
+            <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('patients.patientID')}: {patient?.id?.slice(0, 8)}</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -253,7 +253,7 @@ export default function PatientDetail() {
               className={`flex items-center gap-2 px-4 py-3 border-b-2 font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300'
               }`}
             >
               <tab.icon size={18} />
@@ -267,23 +267,23 @@ export default function PatientDetail() {
       {activeTab === 'overview' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Patient Info */}
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
             <h3 className="text-lg font-semibold mb-4">Patient Information</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-500">Email</span>
+                <span className="text-gray-500 dark:text-gray-400">Email</span>
                 <span className="font-medium">{patient?.email || '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Phone</span>
+                <span className="text-gray-500 dark:text-gray-400">Phone</span>
                 <span className="font-medium">{patient?.phone || '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Date of Birth</span>
+                <span className="text-gray-500 dark:text-gray-400">Date of Birth</span>
                 <span className="font-medium">{patient?.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString() : '-'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-500">Address</span>
+                <span className="text-gray-500 dark:text-gray-400">Address</span>
                 <span className="font-medium text-right">{patient?.address || '-'}</span>
               </div>
             </div>
@@ -315,54 +315,54 @@ export default function PatientDetail() {
 
           {/* Latest Vitals */}
           {latestVitals && (
-            <div className="lg:col-span-3 bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+            <div className="lg:col-span-3 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6">
               <h3 className="text-lg font-semibold mb-4">Latest Vitals</h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                 {latestVitals.bloodPressureSystolic && (
                   <div className="text-center p-3 bg-red-50 rounded-xl">
-                    <p className="text-xs text-gray-500">Blood Pressure</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.bloodPressureSystolic}/{latestVitals.bloodPressureDiastolic}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Blood Pressure</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.bloodPressureSystolic}/{latestVitals.bloodPressureDiastolic}</p>
                     <p className="text-xs text-gray-400">mmHg</p>
                   </div>
                 )}
                 {latestVitals.heartRate && (
                   <div className="text-center p-3 bg-pink-50 rounded-xl">
-                    <p className="text-xs text-gray-500">Heart Rate</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.heartRate}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Heart Rate</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.heartRate}</p>
                     <p className="text-xs text-gray-400">bpm</p>
                   </div>
                 )}
                 {latestVitals.temperature && (
                   <div className="text-center p-3 bg-orange-50 rounded-xl">
-                    <p className="text-xs text-gray-500">Temperature</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.temperature}°</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Temperature</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.temperature}°</p>
                     <p className="text-xs text-gray-400">F</p>
                   </div>
                 )}
                 {latestVitals.weight && (
                   <div className="text-center p-3 bg-blue-50 rounded-xl">
-                    <p className="text-xs text-gray-500">Weight</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.weight}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Weight</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.weight}</p>
                     <p className="text-xs text-gray-400">kg</p>
                   </div>
                 )}
                 {latestVitals.height && (
                   <div className="text-center p-3 bg-indigo-50 rounded-xl">
-                    <p className="text-xs text-gray-500">Height</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.height}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Height</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.height}</p>
                     <p className="text-xs text-gray-400">cm</p>
                   </div>
                 )}
                 {latestVitals.bmi && (
                   <div className="text-center p-3 bg-purple-50 rounded-xl">
-                    <p className="text-xs text-gray-500">BMI</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.bmi.toFixed(1)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">BMI</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.bmi.toFixed(1)}</p>
                   </div>
                 )}
                 {latestVitals.oxygenSat && (
                   <div className="text-center p-3 bg-cyan-50 rounded-xl">
-                    <p className="text-xs text-gray-500">SpO2</p>
-                    <p className="text-lg font-bold text-gray-900">{latestVitals.oxygenSat}%</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">SpO2</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{latestVitals.oxygenSat}%</p>
                   </div>
                 )}
               </div>
@@ -383,43 +383,43 @@ export default function PatientDetail() {
             )}
           </div>
           {history?.vitals?.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.activity size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No vital signs recorded yet</p>
+              <p className="text-gray-500 dark:text-gray-400">No vital signs recorded yet</p>
             </div>
           ) : (
             <div className="space-y-3">
               {history?.vitals?.map((vital: Vitals) => (
-                <div key={vital.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                  <p className="text-sm text-gray-500 mb-2">{new Date(vital.recordedAt).toLocaleString()}</p>
+                <div key={vital.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{new Date(vital.recordedAt).toLocaleString()}</p>
                   <div className="flex flex-wrap gap-4">
                     {vital.bloodPressureSystolic && (
                       <div className="text-center px-3 py-1 bg-red-50 rounded-lg">
-                        <span className="text-xs text-gray-500">BP</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">BP</span>
                         <p className="font-semibold">{vital.bloodPressureSystolic}/{vital.bloodPressureDiastolic}</p>
                       </div>
                     )}
                     {vital.heartRate && (
                       <div className="text-center px-3 py-1 bg-pink-50 rounded-lg">
-                        <span className="text-xs text-gray-500">HR</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">HR</span>
                         <p className="font-semibold">{vital.heartRate}</p>
                       </div>
                     )}
                     {vital.temperature && (
                       <div className="text-center px-3 py-1 bg-orange-50 rounded-lg">
-                        <span className="text-xs text-gray-500">Temp</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Temp</span>
                         <p className="font-semibold">{vital.temperature}°F</p>
                       </div>
                     )}
                     {vital.weight && (
                       <div className="text-center px-3 py-1 bg-blue-50 rounded-lg">
-                        <span className="text-xs text-gray-500">Wt</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Wt</span>
                         <p className="font-semibold">{vital.weight}kg</p>
                       </div>
                     )}
                     {vital.bmi && (
                       <div className="text-center px-3 py-1 bg-purple-50 rounded-lg">
-                        <span className="text-xs text-gray-500">BMI</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">BMI</span>
                         <p className="font-semibold">{vital.bmi.toFixed(1)}</p>
                       </div>
                     )}
@@ -442,14 +442,14 @@ export default function PatientDetail() {
             )}
           </div>
           {history?.diagnoses?.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.stethoscope size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No diagnoses recorded</p>
+              <p className="text-gray-500 dark:text-gray-400">No diagnoses recorded</p>
             </div>
           ) : (
             <div className="space-y-3">
               {history?.diagnoses?.map((diagnosis: Diagnosis) => (
-                <div key={diagnosis.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-4 flex justify-between items-start">
+                <div key={diagnosis.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex justify-between items-start">
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm bg-blue-100 text-blue-700 px-2 py-1 rounded">{diagnosis.icdCode}</span>
@@ -460,7 +460,7 @@ export default function PatientDetail() {
                       }`}>{diagnosis.status}</span>
                     </div>
                     <p className="font-medium mt-1">{diagnosis.description}</p>
-                    {diagnosis.notes && <p className="text-sm text-gray-500 mt-1">{diagnosis.notes}</p>}
+                    {diagnosis.notes && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{diagnosis.notes}</p>}
                     <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(diagnosis.diagnosedAt).toLocaleDateString()}</p>
                   </div>
                   <div className="flex gap-2">
@@ -518,26 +518,26 @@ export default function PatientDetail() {
             )}
           </div>
           {history?.prescriptions?.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.pill size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No prescriptions</p>
+              <p className="text-gray-500 dark:text-gray-400">No prescriptions</p>
             </div>
           ) : (
             <div className="space-y-3">
               {history?.prescriptions?.map((rx: Prescription) => (
-                <div key={rx.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                <div key={rx.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-2">
                         <h4 className="font-semibold text-lg">{rx.medication}</h4>
                         <span className={`px-2 py-0.5 text-xs rounded-full ${
                           rx.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-                          'bg-gray-100 text-gray-700'
+                          'bg-gray-100 text-gray-700 dark:text-gray-300'
                         }`}>{rx.status}</span>
                       </div>
                       <p className="text-gray-600">{rx.dosage} - {rx.frequency}</p>
-                      {rx.duration && <p className="text-sm text-gray-500">Duration: {rx.duration}</p>}
-                      {rx.instructions && <p className="text-sm text-gray-500 mt-1">Instructions: {rx.instructions}</p>}
+                      {rx.duration && <p className="text-sm text-gray-500 dark:text-gray-400">Duration: {rx.duration}</p>}
+                      {rx.instructions && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Instructions: {rx.instructions}</p>}
                       <p className="text-xs text-gray-400 mt-2">
                         Started: {new Date(rx.startDate).toLocaleDateString()}
                         {rx.endDate && ` - Ended: ${new Date(rx.endDate).toLocaleDateString()}`}
@@ -596,14 +596,14 @@ export default function PatientDetail() {
             )}
           </div>
           {history?.allergies?.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.alert size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No allergies recorded</p>
+              <p className="text-gray-500 dark:text-gray-400">No allergies recorded</p>
             </div>
           ) : (
             <div className="grid gap-3">
               {history?.allergies?.map((allergy: Allergy) => (
-                <div key={allergy.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-4 flex justify-between items-center">
+                <div key={allergy.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex justify-between items-center">
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="font-semibold">{allergy.allergen}</h4>
@@ -613,7 +613,7 @@ export default function PatientDetail() {
                         'bg-green-100 text-green-700'
                       }`}>{allergy.severity}</span>
                     </div>
-                    {allergy.reaction && <p className="text-sm text-gray-500 mt-1">Reaction: {allergy.reaction}</p>}
+                    {allergy.reaction && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Reaction: {allergy.reaction}</p>}
                   </div>
                   {hasPermission(user, 'create_medical_records') && (
                     <button
@@ -650,14 +650,14 @@ export default function PatientDetail() {
             )}
           </div>
           {history?.conditions?.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
               <Icons.heart size={48} className="mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">No conditions recorded</p>
+              <p className="text-gray-500 dark:text-gray-400">No conditions recorded</p>
             </div>
           ) : (
             <div className="grid gap-3">
               {history?.conditions?.map((condition: Condition) => (
-                <div key={condition.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-4 flex justify-between items-center">
+                <div key={condition.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4 flex justify-between items-center">
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="font-semibold">{condition.name}</h4>
@@ -667,7 +667,7 @@ export default function PatientDetail() {
                         'bg-green-100 text-green-700'
                       }`}>{condition.status}</span>
                     </div>
-                    {condition.notes && <p className="text-sm text-gray-500 mt-1">{condition.notes}</p>}
+                    {condition.notes && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{condition.notes}</p>}
                     {condition.diagnosedAt && <p className="text-xs text-gray-400 mt-2">Diagnosed: {new Date(condition.diagnosedAt).toLocaleDateString()}</p>}
                   </div>
                   {hasPermission(user, 'create_medical_records') && (
@@ -703,7 +703,7 @@ export default function PatientDetail() {
               {history?.medicalRecords?.map((record: any, index: number) => (
                 <div key={index} className="relative pl-10">
                   <div className="absolute left-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
-                  <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
                     <span className="text-xs text-gray-400">{new Date(record.date).toLocaleString()}</span>
                     <h4 className="font-semibold">{record.title}</h4>
                     {record.description && <p className="text-sm text-gray-600 mt-1">{record.description}</p>}
@@ -713,7 +713,7 @@ export default function PatientDetail() {
               {history?.labResults?.slice(0, 5).map((lab: any, index: number) => (
                 <div key={`lab-${index}`} className="relative pl-10">
                   <div className="absolute left-2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white"></div>
-                  <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
                     <span className="text-xs text-gray-400">{new Date(lab.orderedAt).toLocaleString()}</span>
                     <h4 className="font-semibold">Lab: {lab.testName}</h4>
                     <p className="text-sm text-gray-600">{lab.status} {lab.result && `- ${lab.result}`}</p>

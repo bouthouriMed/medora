@@ -96,8 +96,8 @@ export default function Dashboard() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcome')}</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white dark:text-white">{t('dashboard.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcome')}</p>
       </div>
 
       {/* Stats Grid */}
@@ -134,10 +134,10 @@ export default function Dashboard() {
           <button
             key={i}
             onClick={() => navigate(action.path)}
-            className={`flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-${action.color}-300 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200 group`}
+            className={`flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 dark:border-gray-700 hover:border-${action.color}-300 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200 group`}
           >
             <span className="text-lg">{action.icon}</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">{action.label}</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 group-hover:text-gray-900 dark:text-white dark:group-hover:text-gray-100">{action.label}</span>
           </button>
         ))}
       </div>
@@ -145,11 +145,11 @@ export default function Dashboard() {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Revenue Trend - Larger */}
-        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.revenueTrend')}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.last6months')}</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{t('dashboard.revenueTrend')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('dashboard.last6months')}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-green-500"></span>
@@ -179,10 +179,10 @@ export default function Dashboard() {
         </div>
 
         {/* Appointment Status Pie */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.appointmentStatus')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.last6months')}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{t('dashboard.appointmentStatus')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('dashboard.last6months')}</p>
           </div>
           <div className="p-4 sm:p-6">
             {pieData.length > 0 && pieData.reduce((sum, d) => sum + d.value, 0) > 0 ? (
@@ -216,12 +216,12 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="mt-4 text-center">
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white">{completionRate}%</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.completionRate')}</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{completionRate}%</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('dashboard.completionRate')}</p>
                 </div>
               </>
             ) : (
-              <div className="h-[200px] flex items-center justify-center text-gray-400 dark:text-gray-500">
+              <div className="h-[200px] flex items-center justify-center text-gray-400 dark:text-gray-500 dark:text-gray-400">
                 {t('common.noData')}
               </div>
             )}
@@ -232,10 +232,10 @@ export default function Dashboard() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Appointments Overview */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.appointmentsOverview')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.monthlyBreakdown')}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{t('dashboard.appointmentsOverview')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('dashboard.monthlyBreakdown')}</p>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={250}>
@@ -256,10 +256,10 @@ export default function Dashboard() {
         </div>
 
         {/* Patient Growth */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.patientGrowth')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.newPatientsPerMonth')}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white">{t('dashboard.patientGrowth')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('dashboard.newPatientsPerMonth')}</p>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={250}>
@@ -281,7 +281,7 @@ export default function Dashboard() {
       {/* Today's Schedule & Upcoming */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Today's Appointments */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-5 sm:px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <span>📅</span>
@@ -293,7 +293,7 @@ export default function Dashboard() {
           </div>
           <div className="p-4 sm:p-6 max-h-[400px] overflow-y-auto">
             {data?.todayAppointments?.length === 0 ? (
-              <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+              <div className="text-center py-8 text-gray-400 dark:text-gray-500 dark:text-gray-400">
                 <span className="text-5xl block mb-3">📅</span>
                 <p className="font-medium">{t('dashboard.noAppointmentsToday')}</p>
               </div>
@@ -310,8 +310,8 @@ export default function Dashboard() {
                         {apt.patient?.firstName?.[0]}{apt.patient?.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                        <p className="font-semibold text-gray-900 dark:text-white dark:text-white text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                           {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           {' • '}
                           {t('appointments.doctor')}. {apt.doctor?.firstName} {apt.doctor?.lastName}
@@ -321,7 +321,7 @@ export default function Dashboard() {
                     <span className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-full ${
                       apt.status === 'COMPLETED' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
                       apt.status === 'CANCELLED' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
-                      apt.status === 'NO_SHOW' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' :
+                      apt.status === 'NO_SHOW' ? 'bg-gray-100 text-gray-700 dark:text-gray-300 dark:bg-gray-700 dark:text-gray-300' :
                       'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
                     }`}>
                       {apt.status === 'NO_SHOW' ? t('appointments.noShow') : apt.status === 'COMPLETED' ? t('appointments.completed') : apt.status === 'CANCELLED' ? t('appointments.cancelled') : t('appointments.scheduled')}
@@ -334,7 +334,7 @@ export default function Dashboard() {
         </div>
 
         {/* Upcoming Appointments */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="bg-gradient-to-r from-purple-500 to-purple-600 px-5 sm:px-6 py-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white flex items-center gap-2">
               <span>⏰</span>
@@ -346,7 +346,7 @@ export default function Dashboard() {
           </div>
           <div className="p-4 sm:p-6 max-h-[400px] overflow-y-auto">
             {data?.upcomingAppointments?.length === 0 ? (
-              <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+              <div className="text-center py-8 text-gray-400 dark:text-gray-500 dark:text-gray-400">
                 <span className="text-5xl block mb-3">⏰</span>
                 <p className="font-medium">{t('dashboard.noUpcomingAppointments')}</p>
               </div>
@@ -363,15 +363,15 @@ export default function Dashboard() {
                         {apt.patient?.firstName?.[0]}{apt.patient?.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
-                        <p className="text-xs sm:text-sm text-gray-500">
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                           {new Date(apt.dateTime).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
                           {' • '}
                           {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       Dr. {apt.doctor?.firstName}
                     </span>
                   </div>

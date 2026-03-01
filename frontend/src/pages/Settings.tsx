@@ -61,12 +61,12 @@ export default function Settings() {
   return (
     <div className="space-y-4 sm:space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('settings.title')}</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">{t('settings.configureClinic')}</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('settings.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('settings.configureClinic')}</p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('settings.emailNotifications')}</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white dark:text-white mb-4">{t('settings.emailNotifications')}</h2>
         
         <div className="mb-6">
           <label className="flex items-center gap-3">
@@ -76,66 +76,66 @@ export default function Settings() {
               onChange={(e) => setFormData({ ...formData, emailNotifications: e.target.checked })}
               className="w-5 h-5 text-blue-600 rounded"
             />
-            <span className="font-medium text-gray-700 dark:text-gray-300">{t('settings.enableEmailNotifications')}</span>
+            <span className="font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300">{t('settings.enableEmailNotifications')}</span>
           </label>
         </div>
 
         {formData.emailNotifications && (
           <div className="space-y-4 pl-8 border-l-2 border-gray-200 dark:border-gray-600">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('settings.smtpHost')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1.5">{t('settings.smtpHost')}</label>
               <input
                 type="text"
                 value={formData.smtpHost}
                 onChange={(e) => setFormData({ ...formData, smtpHost: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                 placeholder="smtp.gmail.com"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('settings.smtpPort')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1.5">{t('settings.smtpPort')}</label>
               <input
                 type="text"
                 value={formData.smtpPort}
                 onChange={(e) => setFormData({ ...formData, smtpPort: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                 placeholder="587"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('settings.smtpUsername')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1.5">{t('settings.smtpUsername')}</label>
               <input
                 type="text"
                 value={formData.smtpUser}
                 onChange={(e) => setFormData({ ...formData, smtpUser: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                 placeholder="your email"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('settings.smtpPassword')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1.5">{t('settings.smtpPassword')}</label>
               <input
                 type="password"
                 value={formData.smtpPassword}
                 onChange={(e) => setFormData({ ...formData, smtpPassword: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                 placeholder="app password"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('settings.fromEmail')}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 mb-1.5">{t('settings.fromEmail')}</label>
               <input
                 type="email"
                 value={formData.fromEmail}
                 onChange={(e) => setFormData({ ...formData, fromEmail: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
                 placeholder="noreply@yourclinic.com"
               />
             </div>
             <button
               type="button"
               onClick={handleTestEmail}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors"
+              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl font-medium transition-colors"
             >
               {t('settings.sendTestEmail')}
             </button>

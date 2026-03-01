@@ -47,13 +47,13 @@ export default function Portal() {
   if (error || !data) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md text-center">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Unable to Load Portal</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Unable to Load Portal</h1>
           <p className="text-gray-600">
             The link you followed may be invalid or expired. Please contact your healthcare provider for assistance.
           </p>
@@ -71,10 +71,10 @@ export default function Portal() {
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{clinic.name}</h1>
-              {clinic.address && <p className="text-gray-500 text-sm mt-1">{clinic.address}</p>}
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{clinic.name}</h1>
+              {clinic.address && <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{clinic.address}</p>}
             </div>
-            <div className="text-right text-sm text-gray-500">
+            <div className="text-right text-sm text-gray-500 dark:text-gray-400">
               {clinic.phone && <p>📞 {clinic.phone}</p>}
               {clinic.email && <p>✉️ {clinic.email}</p>}
             </div>
@@ -83,16 +83,16 @@ export default function Portal() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-6 mb-8">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
               {patient.firstName[0]}{patient.lastName[0]}
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Welcome, {patient.firstName}!
               </h2>
-              <p className="text-gray-500">Your Personal Health Portal</p>
+              <p className="text-gray-500 dark:text-gray-400">Your Personal Health Portal</p>
             </div>
           </div>
         </div>
@@ -111,12 +111,12 @@ export default function Portal() {
             </div>
             <div className="space-y-3">
               {outstandingInvoices.map((invoice) => (
-                <div key={invoice.id} className="bg-white rounded-xl p-4 flex justify-between items-center">
+                <div key={invoice.id} className="bg-white dark:bg-gray-800 rounded-xl p-4 flex justify-between items-center">
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-900 dark:text-white">
                       Invoice #{invoice.id.slice(0, 8).toUpperCase()}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Due: {invoice.dueDate ? formatDate(invoice.dueDate) : 'No due date'}
                     </p>
                   </div>
@@ -130,7 +130,7 @@ export default function Portal() {
         )}
 
         <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,16 +141,16 @@ export default function Portal() {
             </div>
             <div className="p-6">
               {upcomingAppointments.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No upcoming appointments</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">No upcoming appointments</p>
               ) : (
                 <div className="space-y-4">
                   {upcomingAppointments.map((apt) => (
                     <div key={apt.id} className="border-l-4 border-green-500 pl-4">
-                      <p className="font-semibold text-gray-900">{formatDate(apt.dateTime)}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{formatDate(apt.dateTime)}</p>
                       <p className="text-gray-600">{formatTime(apt.dateTime)}</p>
-                      <p className="text-sm text-gray-500">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
                       <span className={`inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full ${
-                        apt.status === 'SCHEDULED' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                        apt.status === 'SCHEDULED' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700 dark:text-gray-300'
                       }`}>
                         {apt.status}
                       </span>
@@ -161,7 +161,7 @@ export default function Portal() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,17 +172,17 @@ export default function Portal() {
             </div>
             <div className="p-6">
               {pastAppointments.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No past appointments</p>
+                <p className="text-gray-500 dark:text-gray-400 text-center py-4">No past appointments</p>
               ) : (
                 <div className="space-y-4">
                   {pastAppointments.slice(0, 5).map((apt) => (
                     <div key={apt.id} className="border-l-4 border-purple-400 pl-4">
-                      <p className="font-semibold text-gray-900">{formatDate(apt.dateTime)}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{formatDate(apt.dateTime)}</p>
                       <p className="text-gray-600">{formatTime(apt.dateTime)}</p>
-                      <p className="text-sm text-gray-500">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
                       <span className={`inline-block mt-2 px-2 py-1 text-xs font-medium rounded-full ${
                         apt.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 
-                        apt.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                        apt.status === 'CANCELLED' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700 dark:text-gray-300'
                       }`}>
                         {apt.status}
                       </span>
@@ -194,7 +194,7 @@ export default function Portal() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
           <div className="bg-gradient-to-r from-gray-700 to-gray-900 px-6 py-4">
             <h3 className="text-lg font-semibold text-white flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -206,27 +206,27 @@ export default function Portal() {
           <div className="p-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-sm text-gray-500">Full Name</p>
-                <p className="font-semibold text-gray-900">{patient.firstName} {patient.lastName}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Full Name</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{patient.firstName} {patient.lastName}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-sm text-gray-500">Email</p>
-                <p className="font-semibold text-gray-900">{patient.email || 'Not provided'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{patient.email || 'Not provided'}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-sm text-gray-500">Phone</p>
-                <p className="font-semibold text-gray-900">{patient.phone || 'Not provided'}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
+                <p className="font-semibold text-gray-900 dark:text-white">{patient.phone || 'Not provided'}</p>
               </div>
               <div className="bg-gray-50 rounded-xl p-4">
-                <p className="text-sm text-gray-500">Date of Birth</p>
-                <p className="font-semibold text-gray-900">
+                <p className="text-sm text-gray-500 dark:text-gray-400">Date of Birth</p>
+                <p className="font-semibold text-gray-900 dark:text-white">
                   {patient.dateOfBirth ? formatDate(patient.dateOfBirth) : 'Not provided'}
                 </p>
               </div>
               {patient.address && (
                 <div className="bg-gray-50 rounded-xl p-4 md:col-span-2">
-                  <p className="text-sm text-gray-500">Address</p>
-                  <p className="font-semibold text-gray-900">{patient.address}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Address</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{patient.address}</p>
                 </div>
               )}
             </div>
@@ -239,7 +239,7 @@ export default function Portal() {
           <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} {clinic.name}. All rights reserved.
           </p>
-          <p className="text-gray-500 text-xs mt-2">
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
             This is a read-only portal. For any questions, please contact the clinic directly.
           </p>
         </div>

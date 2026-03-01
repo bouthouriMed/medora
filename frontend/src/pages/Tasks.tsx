@@ -109,7 +109,7 @@ export default function Tasks() {
       case 'HIGH': return 'bg-red-100 text-red-700 border-red-200';
       case 'MEDIUM': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
       case 'LOW': return 'bg-green-100 text-green-700 border-green-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+      default: return 'bg-gray-100 text-gray-700 dark:text-gray-300 border-gray-200';
     }
   };
 
@@ -117,8 +117,8 @@ export default function Tasks() {
     switch (status) {
       case 'COMPLETED': return 'bg-green-100 text-green-700';
       case 'IN_PROGRESS': return 'bg-blue-100 text-blue-700';
-      case 'PENDING': return 'bg-gray-100 text-gray-700';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'PENDING': return 'bg-gray-100 text-gray-700 dark:text-gray-300';
+      default: return 'bg-gray-100 text-gray-700 dark:text-gray-300';
     }
   };
 
@@ -130,8 +130,8 @@ export default function Tasks() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.tasks')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.manageTasks')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('other.tasks')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.manageTasks')}</p>
         </div>
         <button
           onClick={() => {
@@ -146,13 +146,13 @@ export default function Tasks() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-4">
         <div className="flex flex-wrap gap-3">
           <div className="min-w-[150px]">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
               <option value="">{t('other.allStatuses')}</option>
               {STATUSES.map((s) => (
@@ -164,7 +164,7 @@ export default function Tasks() {
             <select
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700"
             >
               <option value="">{t('other.allPriorities')}</option>
               {PRIORITIES.map((p) => (
@@ -177,36 +177,36 @@ export default function Tasks() {
 
       {/* Task Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
               <Icons.clock size={20} className="text-blue-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{pendingTasks.length}</p>
-              <p className="text-sm text-gray-500">Pending Tasks</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{pendingTasks.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Pending Tasks</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-yellow-100 rounded-xl flex items-center justify-center">
               <Icons.alert size={20} className="text-yellow-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{tasks?.filter((t: Task) => t.priority === 'HIGH' && t.status !== 'COMPLETED').length || 0}</p>
-              <p className="text-sm text-gray-500">High Priority</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{tasks?.filter((t: Task) => t.priority === 'HIGH' && t.status !== 'COMPLETED').length || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">High Priority</p>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-5">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
               <Icons.checkCircle size={20} className="text-green-600" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">{completedTasks.length}</p>
-              <p className="text-sm text-gray-500">Completed</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{completedTasks.length}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Completed</p>
             </div>
           </div>
         </div>
@@ -220,12 +220,12 @@ export default function Tasks() {
           ))}
         </div>
       ) : tasks?.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">
             <Icons.task size={40} className="text-blue-600" />
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No tasks yet</h3>
-          <p className="text-gray-500 mb-6">Create your first task to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No tasks yet</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">Create your first task to get started</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
@@ -236,7 +236,7 @@ export default function Tasks() {
       ) : (
         <div className="grid gap-4">
           {tasks?.map((task: Task) => (
-            <div key={task.id} className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 hover:shadow-lg transition-all">
+            <div key={task.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1">
                   <button
@@ -249,7 +249,7 @@ export default function Tasks() {
                   </button>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className={`font-semibold text-gray-900 ${task.status === 'COMPLETED' ? 'line-through opacity-60' : ''}`}>
+                      <h3 className={`font-semibold text-gray-900 dark:text-white ${task.status === 'COMPLETED' ? 'line-through opacity-60' : ''}`}>
                         {task.title}
                       </h3>
                       <span className={`px-2 py-0.5 text-xs font-medium rounded-full border ${getPriorityColor(task.priority)}`}>
@@ -260,7 +260,7 @@ export default function Tasks() {
                       </span>
                     </div>
                     {task.description && (
-                      <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{task.description}</p>
                     )}
                     <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
                       {task.dueDate && (
@@ -303,33 +303,33 @@ export default function Tasks() {
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Title *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Title *</label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Task title"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Description</label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   placeholder="Task description..."
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Priority</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Priority</label>
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     {PRIORITIES.map((p) => (
                       <option key={p.value} value={p.value}>{p.label}</option>
@@ -337,11 +337,11 @@ export default function Tasks() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     {STATUSES.map((s) => (
                       <option key={s.value} value={s.value}>{s.label}</option>
@@ -350,21 +350,21 @@ export default function Tasks() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Due Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Due Date</label>
                 <input
                   type="date"
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Assign To</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Assign To</label>
                   <select
                     value={formData.assignedTo}
                     onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value="">Unassigned</option>
                     {users?.map((u: User) => (
@@ -373,11 +373,11 @@ export default function Tasks() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Related Patient</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Related Patient</label>
                   <select
                     value={formData.patientId}
                     onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
                     <option value="">None</option>
                     {patients?.map((p: Patient) => (
@@ -390,7 +390,7 @@ export default function Tasks() {
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); setEditingTask(null); }}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 font-medium"
+                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 font-medium"
                 >
                   Cancel
                 </button>

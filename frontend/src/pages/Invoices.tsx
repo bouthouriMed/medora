@@ -87,13 +87,13 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('invoices.title')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('invoices.manageBilling')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('invoices.title')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('invoices.manageBilling')}</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => exportInvoices(statusFilter)}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
           >
             📥 {t('common.export')}
           </button>
@@ -108,28 +108,28 @@ export default function Invoices() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover-lift">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 hover-lift">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('invoices.totalInvoices')}</p>
-              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-1">{invoices?.length || 0}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 font-medium">{t('invoices.totalInvoices')}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white mt-1">{invoices?.length || 0}</p>
             </div>
             <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-xl flex items-center justify-center text-2xl">📋</div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover-lift">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 hover-lift">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('invoices.paid')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 font-medium">{t('invoices.paid')}</p>
               <p className="text-2xl sm:text-3xl font-bold text-green-600 dark:text-green-400 mt-1">${totalPaid.toFixed(2)}</p>
             </div>
             <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 rounded-xl flex items-center justify-center text-2xl">✅</div>
           </div>
         </div>
-        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 hover-lift">
+        <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 hover-lift">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">{t('invoices.unpaid')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 font-medium">{t('invoices.unpaid')}</p>
               <p className="text-2xl sm:text-3xl font-bold text-orange-500 dark:text-orange-400 mt-1">${totalUnpaid.toFixed(2)}</p>
             </div>
             <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900 dark:to-red-900 rounded-xl flex items-center justify-center text-2xl">⏳</div>
@@ -138,10 +138,10 @@ export default function Invoices() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 text-gray-700 font-medium hover:text-gray-900 transition-colors"
+          className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-medium hover:text-gray-900 dark:text-white transition-colors"
         >
           <svg className={`w-5 h-5 transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -156,11 +156,11 @@ export default function Invoices() {
           <div className="mt-4 pt-4 border-t border-gray-100">
             <div className="flex flex-wrap gap-3 items-end">
               <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 mb-1">Status</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Status</label>
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusChange(e.target.value)}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                 >
                   <option value="">All Statuses</option>
                   <option value="PAID">Paid</option>
@@ -168,21 +168,21 @@ export default function Invoices() {
                 </select>
               </div>
               <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 mb-1">From Date</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">From Date</label>
                 <input
                   type="date"
                   value={dateRange.start}
                   onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 mb-1">To Date</label>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">To Date</label>
                 <input
                   type="date"
                   value={dateRange.end}
                   onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <button
@@ -190,7 +190,7 @@ export default function Invoices() {
                   handleStatusChange('');
                   setDateRange({ start: '', end: '' });
                 }}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 dark:text-white hover:bg-gray-100 rounded-lg transition-colors"
               >
                 Clear
               </button>
@@ -207,10 +207,10 @@ export default function Invoices() {
           ))}
         </div>
       ) : invoices?.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📄</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No invoices found</h3>
-          <p className="text-gray-500 mb-6">Create your first invoice to get started</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No invoices found</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">Create your first invoice to get started</p>
           <button
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
@@ -221,9 +221,9 @@ export default function Invoices() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white shadow-lg border border-gray-100 rounded-2xl overflow-hidden">
+          <div className="hidden md:block bg-white shadow-lg border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden">
             <div className="table-responsive">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Invoice #</th>
@@ -235,7 +235,7 @@ export default function Invoices() {
                     <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700">
                   {invoices?.map((invoice: Invoice) => (
                     <tr key={invoice.id} className="hover:bg-blue-50/50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-gray-600">
@@ -246,12 +246,12 @@ export default function Invoices() {
                           <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-semibold shadow-md">
                             {invoice.patient?.firstName?.[0]}{invoice.patient?.lastName?.[0]}
                           </div>
-                          <span className="font-medium text-gray-900">
+                          <span className="font-medium text-gray-900 dark:text-white">
                             {invoice.patient?.firstName} {invoice.patient?.lastName}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900 dark:text-white">
                         ${Number(invoice.amount).toFixed(2)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -259,10 +259,10 @@ export default function Invoices() {
                           {invoice.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                         {invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : '-'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                         {new Date(invoice.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
@@ -292,15 +292,15 @@ export default function Invoices() {
           {/* Mobile Cards */}
           <div className="md:hidden space-y-4">
             {invoices?.map((invoice: Invoice) => (
-              <div key={invoice.id} className="bg-white rounded-2xl shadow-md border border-gray-100 p-4 hover-lift">
+              <div key={invoice.id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4 hover-lift">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
                       {invoice.patient?.firstName?.[0]}{invoice.patient?.lastName?.[0]}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">{invoice.patient?.firstName} {invoice.patient?.lastName}</p>
-                      <p className="text-sm text-gray-500">#{invoice.id.slice(0, 8).toUpperCase()}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{invoice.patient?.firstName} {invoice.patient?.lastName}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">#{invoice.id.slice(0, 8).toUpperCase()}</p>
                     </div>
                   </div>
                   <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(invoice.status)}`}>
@@ -308,8 +308,8 @@ export default function Invoices() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-2xl font-bold text-gray-900">${Number(invoice.amount).toFixed(2)}</span>
-                  <span className="text-sm text-gray-500">
+                  <span className="text-2xl font-bold text-gray-900 dark:text-white">${Number(invoice.amount).toFixed(2)}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
                     Due: {invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : 'No due date'}
                   </span>
                 </div>
@@ -339,11 +339,11 @@ export default function Invoices() {
         <div className="p-6">
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Patient *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Patient *</label>
               <select
                 value={formData.patientId}
                 onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                 required
               >
                 <option value="">Select patient</option>
@@ -355,11 +355,11 @@ export default function Invoices() {
               </select>
             </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Appointment *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Appointment *</label>
                 <select
                   value={formData.appointmentId}
                   onChange={(e) => setFormData({ ...formData, appointmentId: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                   required
                 >
                   <option value="">Select appointment</option>
@@ -371,7 +371,7 @@ export default function Invoices() {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Amount ($) *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Amount ($) *</label>
                 {presets && presets.length > 0 && (
                   <div className="mb-2 flex flex-wrap gap-1">
                     {presets.slice(0, 5).map((preset: any) => (
@@ -391,25 +391,25 @@ export default function Invoices() {
                   step="0.01"
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="0.00"
                   required
                 />
               </div>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Due Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Due Date</label>
                 <input
                   type="date"
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 />
               </div>
               <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 font-medium transition-colors"
                 >
                   Cancel
                 </button>

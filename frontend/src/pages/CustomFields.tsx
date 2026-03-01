@@ -57,8 +57,8 @@ export default function CustomFields() {
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.customFields')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.customFieldsDesc')}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white">{t('other.customFields')}</h1>
+          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.customFieldsDesc')}</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -73,17 +73,17 @@ export default function CustomFields() {
           {[1, 2, 3].map(i => <div key={i} className="h-16 skeleton rounded-xl"></div>)}
         </div>
       ) : fields?.length === 0 ? (
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
           <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">📝</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No custom fields</h3>
-          <p className="text-gray-500 mb-6">Add custom fields to collect more patient info</p>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No custom fields</h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-6">Add custom fields to collect more patient info</p>
           <button onClick={() => setShowModal(true)} className="btn-gradient text-white px-6 py-3 rounded-xl">
             + Add Custom Field
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Field Name</th>
@@ -92,10 +92,10 @@ export default function CustomFields() {
                 <th className="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {fields?.map((field: CustomField) => (
                 <tr key={field.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 font-medium text-gray-900">{field.name}</td>
+                  <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{field.name}</td>
                   <td className="px-6 py-4 text-gray-600">
                     <span className="px-2 py-1 bg-gray-100 rounded text-xs">{field.fieldType}</span>
                   </td>
@@ -118,34 +118,34 @@ export default function CustomFields() {
         <div className="p-6">
           <form onSubmit={handleCreate}>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Field Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Field Name *</label>
                 <input
                   type="text"
                   value={newField.name}
                   onChange={(e) => setNewField({ ...newField, name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g., Insurance ID, Emergency Contact"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Field Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Field Type</label>
                 <select
                   value={newField.fieldType}
                   onChange={(e) => setNewField({ ...newField, fieldType: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {FIELD_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
               </div>
               {newField.fieldType === 'SELECT' && (
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Options (comma separated)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Options (comma separated)</label>
                   <input
                     type="text"
                     value={newField.options}
                     onChange={(e) => setNewField({ ...newField, options: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Option 1, Option 2, Option 3"
                   />
                 </div>
@@ -158,11 +158,11 @@ export default function CustomFields() {
                     onChange={(e) => setNewField({ ...newField, required: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded"
                   />
-                  <span className="text-sm text-gray-700">Required field</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Required field</span>
                 </label>
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50">
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50">
                   Cancel
                 </button>
                 <button type="submit" disabled={isCreating} className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg disabled:opacity-50">
