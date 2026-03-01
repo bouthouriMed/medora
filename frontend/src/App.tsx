@@ -1,6 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAppSelector } from './store/hooks';
+import { useAppSelector, useAppDispatch } from './store/hooks';
+import { setCredentials } from './store/slices/authSlice';
+import { useMeQuery } from './api';
 import Layout from './components/Layout';
 
 const Login = lazy(() => import('./pages/Login'));
@@ -35,7 +37,15 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const { data: meData } = useMeQuery(undefined, { skip: !isAuthenticated || !!user });
+
+  useEffect(() => {
+    if (meData?.user) {
+      dispatch(setCredentials({ user: meData.user, token: localStorage.getItem('token') || '' }));
+    }
+  }, [meData, dispatch]);
 
   return (
     <Suspense fallback={<LoadingFallback />}>
