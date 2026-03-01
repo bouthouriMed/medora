@@ -99,7 +99,7 @@ export default function Presets() {
         <div className="flex gap-2">
           <button
             onClick={() => setShowBulkModal(true)}
-            className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
+            className="px-4 py-2.5 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:bg-gray-700 font-medium transition-colors"
           >
             {t('other.seedDefaults')}
           </button>
@@ -127,7 +127,7 @@ export default function Presets() {
           <button
             onClick={() => setFilterType('')}
             className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${
-              filterType === '' ? 'btn-gradient text-white' : 'bg-white text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50'
+              filterType === '' ? 'btn-gradient text-white' : 'bg-white text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'
             }`}
           >
             All
@@ -139,7 +139,7 @@ export default function Presets() {
               className={`px-4 py-2.5 rounded-xl font-medium transition-colors ${
                 filterType === type.value
                   ? 'btn-gradient text-white'
-                  : 'bg-white text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50'
+                  : 'bg-white text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'
               }`}
             >
               {type.label}
@@ -254,7 +254,7 @@ export default function Presets() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 font-medium transition-colors"
+                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
                   Cancel
                 </button>
@@ -277,7 +277,7 @@ export default function Presets() {
               This will add the following default presets to your clinic:
             </p>
             
-            <div className="bg-gray-50 rounded-xl p-4 max-h-60 overflow-y-auto mb-6">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 max-h-60 overflow-y-auto mb-6">
               <div className="space-y-2">
                 {DEFAULT_PRESETS.map((preset, index) => (
                   <div key={index} className="flex justify-between items-center text-sm">
@@ -293,7 +293,7 @@ export default function Presets() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowBulkModal(false)}
-                className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 font-medium transition-colors"
+                className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
               >
                 Cancel
               </button>

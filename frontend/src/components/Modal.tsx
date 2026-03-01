@@ -35,14 +35,14 @@ export default function Modal({ isOpen, onClose, children, title }: ModalProps) 
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in" />
       <div
         ref={modalRef}
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col animate-scale-in"
+        className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-hidden flex flex-col animate-scale-in"
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
-            <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700 shrink-0">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

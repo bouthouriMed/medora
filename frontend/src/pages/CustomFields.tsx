@@ -84,7 +84,7 @@ export default function CustomFields() {
       ) : (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Field Name</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
@@ -94,7 +94,7 @@ export default function CustomFields() {
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {fields?.map((field: CustomField) => (
-                <tr key={field.id} className="hover:bg-gray-50">
+                <tr key={field.id} className="hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">{field.name}</td>
                   <td className="px-6 py-4 text-gray-600">
                     <span className="px-2 py-1 bg-gray-100 rounded text-xs">{field.fieldType}</span>
@@ -162,7 +162,7 @@ export default function CustomFields() {
                 </label>
               </div>
               <div className="flex gap-3">
-                <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50">
+                <button type="button" onClick={() => setShowModal(false)} className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
                   Cancel
                 </button>
                 <button type="submit" disabled={isCreating} className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg disabled:opacity-50">

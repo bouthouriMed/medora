@@ -67,7 +67,7 @@ export default function Portal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <header className="bg-white shadow-sm border-b border-gray-100">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div>
@@ -205,26 +205,26 @@ export default function Portal() {
           </div>
           <div className="p-6">
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Full Name</p>
                 <p className="font-semibold text-gray-900 dark:text-white">{patient.firstName} {patient.lastName}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
                 <p className="font-semibold text-gray-900 dark:text-white">{patient.email || 'Not provided'}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
                 <p className="font-semibold text-gray-900 dark:text-white">{patient.phone || 'Not provided'}</p>
               </div>
-              <div className="bg-gray-50 rounded-xl p-4">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Date of Birth</p>
                 <p className="font-semibold text-gray-900 dark:text-white">
                   {patient.dateOfBirth ? formatDate(patient.dateOfBirth) : 'Not provided'}
                 </p>
               </div>
               {patient.address && (
-                <div className="bg-gray-50 rounded-xl p-4 md:col-span-2">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 md:col-span-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Address</p>
                   <p className="font-semibold text-gray-900 dark:text-white">{patient.address}</p>
                 </div>

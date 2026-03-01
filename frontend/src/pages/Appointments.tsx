@@ -200,13 +200,13 @@ export default function Appointments() {
         <div className="flex gap-2">
           <button
             onClick={() => generateICS(allAppointments || [], 'all_appointments')}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors font-medium"
           >
             📅 {t('appointments.exportICS')}
           </button>
           <button
             onClick={() => exportAppointments(dateRange.startDate, dateRange.endDate)}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors font-medium"
           >
             📥 {t('common.export')}
           </button>
@@ -265,14 +265,14 @@ export default function Appointments() {
         <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-2 font-medium transition-all ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`px-4 py-2 font-medium transition-all ${view === 'list' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'}`}
           >
             <span className="sm:hidden">📋</span>
             <span className="hidden sm:inline">List</span>
           </button>
           <button
             onClick={() => setView('calendar')}
-            className={`px-4 py-2 font-medium transition-all ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+            className={`px-4 py-2 font-medium transition-all ${view === 'calendar' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700'}`}
           >
             <span className="sm:hidden">📅</span>
             <span className="hidden sm:inline">Calendar</span>
@@ -284,7 +284,7 @@ export default function Appointments() {
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden mb-6">
         <button
           onClick={() => setShowRecurring(!showRecurring)}
-          className="w-full px-6 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          className="w-full px-6 py-3 flex items-center justify-between hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
         >
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-lg">🔄</div>
@@ -375,7 +375,7 @@ export default function Appointments() {
           ) : (
             <>
               {/* Desktop Table */}
-              <div className="hidden md:block bg-white shadow-lg border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden">
+              <div className="hidden md:block bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden">
                 <div className="table-responsive">
                   <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
@@ -388,7 +388,7 @@ export default function Appointments() {
                         <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {appointments?.map((apt: Appointment) => (
                         <tr key={apt.id} className="hover:bg-blue-50/50 transition-colors">
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -473,7 +473,7 @@ export default function Appointments() {
                       <span>🕐 {new Date(apt.dateTime).toLocaleDateString()} {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     {apt.notes && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 rounded-lg p-2 mb-3">{apt.notes}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mb-3">{apt.notes}</p>
                     )}
                     {apt.status === 'SCHEDULED' && (
                       <div className="flex gap-2">
@@ -525,21 +525,21 @@ export default function Appointments() {
       <Modal isOpen={!!selectedAppointment} onClose={() => setSelectedAppointment(null)} title="Appointment Details">
         <div className="p-6">
           <div className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <p className="text-sm text-gray-500 dark:text-gray-400">Patient</p>
               <p className="font-semibold text-gray-900 dark:text-white">{selectedAppointment?.patient?.firstName} {selectedAppointment?.patient?.lastName}</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <p className="text-sm text-gray-500 dark:text-gray-400">Doctor</p>
               <p className="font-semibold text-gray-900 dark:text-white">Dr. {selectedAppointment?.doctor?.firstName} {selectedAppointment?.doctor?.lastName}</p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <p className="text-sm text-gray-500 dark:text-gray-400">Date & Time</p>
               <p className="font-semibold text-gray-900 dark:text-white">
                 {selectedAppointment && new Date(selectedAppointment.dateTime).toLocaleDateString()} at {selectedAppointment && new Date(selectedAppointment.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </p>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                 <p className="text-sm text-gray-500 dark:text-gray-400">Status</p>
                 <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
                   selectedAppointment?.status === 'COMPLETED' ? 'status-completed' :
@@ -550,7 +550,7 @@ export default function Appointments() {
                 </span>
               </div>
               {selectedAppointment?.notes && (
-                <div className="bg-gray-50 rounded-xl p-4">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
                   <p className="text-sm text-gray-500 dark:text-gray-400">Notes</p>
                   <p className="font-medium text-gray-900 dark:text-white">{selectedAppointment?.notes}</p>
                 </div>
@@ -588,7 +588,7 @@ export default function Appointments() {
               )}
               <button
                 onClick={() => setSelectedAppointment(null)}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 font-medium transition-colors"
+                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
               >
                 Close
               </button>
@@ -723,7 +723,7 @@ export default function Appointments() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 font-medium transition-colors"
+                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
                   Cancel
                 </button>

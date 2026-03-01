@@ -93,7 +93,7 @@ export default function Invoices() {
         <div className="flex gap-2">
           <button
             onClick={() => exportInvoices(statusFilter)}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors font-medium"
           >
             📥 {t('common.export')}
           </button>
@@ -221,7 +221,7 @@ export default function Invoices() {
       ) : (
         <>
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white shadow-lg border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden">
+          <div className="hidden md:block bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden">
             <div className="table-responsive">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gradient-to-r from-gray-50 to-blue-50">
@@ -235,7 +235,7 @@ export default function Invoices() {
                     <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   {invoices?.map((invoice: Invoice) => (
                     <tr key={invoice.id} className="hover:bg-blue-50/50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap font-mono text-sm text-gray-600">
@@ -409,7 +409,7 @@ export default function Invoices() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 font-medium transition-colors"
+                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
                 >
                   Cancel
                 </button>

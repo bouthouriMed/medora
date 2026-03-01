@@ -155,7 +155,7 @@ function CalendarView({
   }, [currentMonth]);
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 sm:p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 p-4 sm:p-6">
       <style>{`
         .fc {
           font-family: inherit;
