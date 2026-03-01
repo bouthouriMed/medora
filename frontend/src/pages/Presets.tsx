@@ -3,6 +3,7 @@ import { useGetPresetsQuery, useCreatePresetMutation, useDeletePresetMutation, u
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { Preset, PresetType } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const PRESET_TYPES: { value: PresetType; label: string; color: string }[] = [
   { value: 'DIAGNOSIS', label: 'Diagnosis', color: 'bg-blue-100 text-blue-700' },

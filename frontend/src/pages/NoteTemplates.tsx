@@ -3,8 +3,10 @@ import { useGetNoteTemplatesQuery, useCreateNoteTemplateMutation, useDeleteNoteT
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { NoteTemplate } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export default function NoteTemplates() {
+  const { t } = useTranslation();
   const { data: templates, isLoading, refetch } = useGetNoteTemplatesQuery(undefined);
   const [createTemplate, { isLoading: isCreating }] = useCreateNoteTemplateMutation();
   const [deleteTemplate] = useDeleteNoteTemplateMutation();

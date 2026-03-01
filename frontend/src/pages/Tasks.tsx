@@ -4,6 +4,7 @@ import { showToast } from '../components/Toast';
 import { Icons } from '../components/Icons';
 import Modal from '../components/Modal';
 import type { Task, User, Patient } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const PRIORITIES = [
   { value: 'HIGH', label: 'High', color: 'red' },
@@ -18,6 +19,7 @@ const STATUSES = [
 ];
 
 export default function Tasks() {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [filterStatus, setFilterStatus] = useState('');

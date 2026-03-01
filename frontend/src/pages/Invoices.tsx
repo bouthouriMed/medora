@@ -5,8 +5,10 @@ import { showToast } from '../components/Toast';
 import { exportInvoices } from '../utils/export';
 import Modal from '../components/Modal';
 import type { Invoice, Patient, Appointment } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export default function Invoices() {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [dateRange, setDateRange] = useState({ start: '', end: '' });

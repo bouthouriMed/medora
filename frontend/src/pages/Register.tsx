@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from '../api';
 import { useAppDispatch } from '../store/hooks';
 import { setCredentials } from '../store/slices/authSlice';
+import { useTranslation } from 'react-i18next';
 
 export default function Register() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: '',

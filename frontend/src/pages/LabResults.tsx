@@ -3,6 +3,7 @@ import { useGetLabResultsQuery, useGetPatientsQuery, useCreateLabResultMutation,
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { LabResult, Patient } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const LAB_CATEGORIES = [
   'Blood Test',
@@ -16,6 +17,7 @@ const LAB_CATEGORIES = [
 ];
 
 export default function LabResults() {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [editingResult, setEditingResult] = useState<LabResult | null>(null);
   const [filterPatient, setFilterPatient] = useState('');

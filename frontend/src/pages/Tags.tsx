@@ -3,6 +3,7 @@ import { useGetTagsQuery, useCreateTagMutation, useDeleteTagMutation } from '../
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { Tag } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const TAG_COLORS = [
   '#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',
@@ -10,6 +11,7 @@ const TAG_COLORS = [
 ];
 
 export default function Tags() {
+  const { t } = useTranslation();
   const { data: tags, isLoading, refetch } = useGetTagsQuery(undefined);
   const [createTag, { isLoading: isCreating }] = useCreateTagMutation();
   const [deleteTag] = useDeleteTagMutation();

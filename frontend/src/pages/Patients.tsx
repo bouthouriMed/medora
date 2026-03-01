@@ -5,9 +5,11 @@ import { showToast } from '../components/Toast';
 import { exportPatients } from '../utils/export';
 import Modal from '../components/Modal';
 import type { Patient, Appointment, Tag } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export default function Patients() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -135,7 +137,7 @@ export default function Patients() {
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
           >
-            + Add Patient
+            + {t('patients.addPatient')}
           </button>
         </div>
       </div>
@@ -229,7 +231,7 @@ export default function Patients() {
             onClick={() => setShowModal(true)}
             className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
           >
-            + Add Patient
+            + {t('patients.addPatient')}
           </button>
         </div>
       ) : (

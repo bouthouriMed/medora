@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useGetPortalDataQuery } from '../api';
 import type { PortalData } from '../types';
+import { useTranslation } from 'react-i18next';
 
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString('en-US', {
@@ -26,6 +27,7 @@ function formatCurrency(amount: number) {
 }
 
 export default function Portal() {
+  const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const { data, isLoading, error } = useGetPortalDataQuery(token || '', {
     skip: !token,

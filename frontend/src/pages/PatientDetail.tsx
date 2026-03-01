@@ -6,6 +6,7 @@ import { Icons } from '../components/Icons';
 import Modal from '../components/Modal';
 import { useAppSelector } from '../store/hooks';
 import { hasPermission } from '../utils/permissions';
+import { useTranslation } from 'react-i18next';
 
 interface Vitals {
   id: string;

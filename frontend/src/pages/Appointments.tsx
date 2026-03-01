@@ -6,8 +6,10 @@ import { exportAppointments, generateICS } from '../utils/export';
 import CalendarView from '../components/CalendarView';
 import Modal from '../components/Modal';
 import type { Appointment, Patient, User, RecurringAppointment, NoteTemplate } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export default function Appointments() {
+  const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
   const [showRecurring, setShowRecurring] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);

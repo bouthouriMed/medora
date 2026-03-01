@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useGetDashboardQuery } from '../api';
 import type { Appointment } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const COLORS = ['#22c55e', '#ef4444', '#6b7280', '#3b82f6'];
 
@@ -15,6 +16,7 @@ const formatCurrency = (value: number) => {
 export default function Dashboard() {
   const { data, isLoading, error } = useGetDashboardQuery(undefined);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return (
@@ -39,9 +41,9 @@ export default function Dashboard() {
 
   const stats = [
     { 
-      label: "Today's Appointments", 
+      label: t('dashboard.todayAppointments'), 
       value: data?.todayAppointments?.length || 0, 
-      subtext: `${data?.todayAppointments?.filter((a: Appointment) => a.status === 'COMPLETED').length || 0} completed`,
+      subtext: `${data?.todayAppointments?.filter((a: Appointment) => a.status === 'COMPLETED').length || 0} ${t('appointments.completed')}`,
       color: 'blue',
       icon: '📅',
       gradient: 'from-blue-400 to-blue-600',
@@ -49,9 +51,9 @@ export default function Dashboard() {
       onClick: () => navigate('/appointments?filter=today')
     },
     { 
-      label: 'This Month Revenue', 
+      label: t('dashboard.revenue'), 
       value: `$${(Number(data?.monthlyRevenue || 0)).toLocaleString()}`, 
-      subtext: `${data?.monthlyRevenueCount || 0} invoices`,
+      subtext: `${data?.monthlyRevenueCount || 0} ${t('invoices.title').toLowerCase()}`,
       color: 'green',
       icon: '💰',
       gradient: 'from-green-400 to-emerald-500',
@@ -59,9 +61,9 @@ export default function Dashboard() {
       onClick: () => navigate('/invoices')
     },
     { 
-      label: 'Upcoming', 
+      label: t('dashboard.upcomingAppointments'), 
       value: data?.upcomingAppointments?.length || 0, 
-      subtext: 'next 7 days',
+      subtext: t('dashboard.thisMonth'),
       color: 'purple',
       icon: '⏰',
       gradient: 'from-purple-400 to-violet-600',
@@ -69,7 +71,7 @@ export default function Dashboard() {
       onClick: () => navigate('/appointments?filter=upcoming')
     },
     { 
-      label: 'Unpaid Invoices', 
+      label: t('dashboard.pendingInvoices'), 
       value: data?.unpaidInvoices || 0, 
       subtext: 'needs attention',
       color: 'red',

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useGetClinicSettingsQuery, useUpdateClinicSettingsMutation, useSendTestEmailMutation } from '../api';
 import { showToast } from '../components/Toast';
+import { useTranslation } from 'react-i18next';
 
 export default function EmailSettings() {
+  const { t } = useTranslation();
   const { data: settings, isLoading, refetch } = useGetClinicSettingsQuery(undefined);
   const [updateSettings, { isLoading: isSaving }] = useUpdateClinicSettingsMutation();
   const [sendTestEmail] = useSendTestEmailMutation();

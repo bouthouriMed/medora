@@ -3,6 +3,7 @@ import { useGetCustomFieldsQuery, useCreateCustomFieldMutation, useDeleteCustomF
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { CustomField } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const FIELD_TYPES = [
   { value: 'TEXT', label: 'Text' },
@@ -12,6 +13,7 @@ const FIELD_TYPES = [
 ];
 
 export default function CustomFields() {
+  const { t } = useTranslation();
   const { data: fields, isLoading, refetch } = useGetCustomFieldsQuery(undefined);
   const [createField, { isLoading: isCreating }] = useCreateCustomFieldMutation();
   const [deleteField] = useDeleteCustomFieldMutation();

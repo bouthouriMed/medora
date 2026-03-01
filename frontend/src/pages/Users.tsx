@@ -3,8 +3,10 @@ import { useGetUsersQuery, useCreateUserMutation, useUpdateUserMutation, useDele
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { User } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export default function Users() {
+  const { t } = useTranslation();
   const { data: currentUser } = useMeQuery(undefined);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
