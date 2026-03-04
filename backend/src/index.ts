@@ -40,10 +40,17 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 const startServer = async () => {
   try {
-    if (process.env.NODE_ENV === 'production') {
-      console.log('Running database migrations...');
-      execSync('node_modules/.bin/prisma migrate deploy', { stdio: 'inherit', env: process.env });
-      console.log('Migrations complete');
+    console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
+    if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+      try {
+        console.log('Running database migrations...');
+        execSync('node_modules/.bin/prisma migrate deploy', { stdio: 'inherit', env: process.env });
+        console.log('Migrations complete');
+      } catch (e) {
+        console.error('Migration failed (non-fatal):', e);
+      }
+    } else if (!process.env.DATABASE_URL) {
+      console.error('WARNING: DATABASE_URL is not set. Database operations will fail.');
     }
 
     await connectRedis();
