@@ -39,7 +39,12 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 const startServer = async () => {
   try {
+    console.log('=== ENV DIAGNOSTIC ===');
     console.log('DATABASE_URL present:', !!process.env.DATABASE_URL);
+    console.log('DATABASE_URL starts with:', process.env.DATABASE_URL?.substring(0, 30) || 'NOT SET');
+    const railwayVars = Object.keys(process.env).filter(k => k.startsWith('RAILWAY') || k.startsWith('PG') || k === 'DATABASE_URL');
+    console.log('Railway/DB related vars:', railwayVars);
+    console.log('======================');
     if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
       try {
         console.log('Running database migrations...');
