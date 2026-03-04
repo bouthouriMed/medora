@@ -457,7 +457,7 @@ export default function PatientDetail() {
                         diagnosis.status === 'ACTIVE' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
                         diagnosis.status === 'CHRONIC' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
                         'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
-                      }`}>{diagnosis.status}</span>
+                      }`}>{t(`medical.${diagnosis.status.toLowerCase()}`)}</span>
                     </div>
                     <p className="font-medium mt-1 text-gray-900 dark:text-white">{diagnosis.description}</p>
                     {diagnosis.notes && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{diagnosis.notes}</p>}
@@ -533,7 +533,7 @@ export default function PatientDetail() {
                         <span className={`px-2 py-0.5 text-xs rounded-full ${
                           rx.status === 'ACTIVE' ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
                           'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                        }`}>{rx.status}</span>
+                        }`}>{t(`medical.${rx.status.toLowerCase()}`)}</span>
                       </div>
                       <p className="text-gray-600 dark:text-gray-400">{rx.dosage} - {rx.frequency}</p>
                       {rx.duration && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.duration')}: {rx.duration}</p>}
@@ -611,7 +611,7 @@ export default function PatientDetail() {
                         allergy.severity === 'SEVERE' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
                         allergy.severity === 'MODERATE' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
                         'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
-                      }`}>{allergy.severity}</span>
+                      }`}>{t(`medical.${allergy.severity.toLowerCase()}`)}</span>
                     </div>
                     {allergy.reaction && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.reaction')}: {allergy.reaction}</p>}
                   </div>
@@ -665,7 +665,7 @@ export default function PatientDetail() {
                         condition.status === 'ACTIVE' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
                         condition.status === 'CHRONIC' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
                         'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
-                      }`}>{condition.status}</span>
+                      }`}>{t(`medical.${condition.status.toLowerCase()}`)}</span>
                     </div>
                     {condition.notes && <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mt-1">{condition.notes}</p>}
                     {condition.diagnosedAt && <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">{t('other.diagnosed')}: {new Date(condition.diagnosedAt).toLocaleDateString()}</p>}
@@ -716,7 +716,7 @@ export default function PatientDetail() {
                   <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
                     <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(lab.orderedAt).toLocaleString()}</span>
                     <h4 className="font-semibold text-gray-900 dark:text-white">{t('other.lab')}: {lab.testName}</h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{lab.status} {lab.result && `- ${lab.result}`}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">{lab.status === 'COMPLETED' ? t('appointments.completed') : lab.status === 'PENDING' ? t('other.statusPending') : lab.status} {lab.result && `- ${lab.result}`}</p>
                   </div>
                 </div>
               ))}

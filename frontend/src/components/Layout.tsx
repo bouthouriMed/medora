@@ -206,6 +206,58 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="border-t border-blue-600 my-2 pt-2">
                 <p className="px-4 py-1 text-xs font-medium text-blue-300 uppercase">{t('settings.title')}</p>
               </div>
+              {/* Theme Toggle - Mobile */}
+              <div className="px-4 py-2">
+                <p className="text-xs font-medium text-blue-300 uppercase mb-2">{t('settings.theme')}</p>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setTheme('light')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      theme === 'light' ? 'bg-white text-blue-700' : 'bg-blue-700 text-blue-200 hover:bg-blue-600'
+                    }`}
+                  >
+                    {t('settings.lightTheme')}
+                  </button>
+                  <button
+                    onClick={() => setTheme('dark')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      theme === 'dark' ? 'bg-white text-blue-700' : 'bg-blue-700 text-blue-200 hover:bg-blue-600'
+                    }`}
+                  >
+                    {t('settings.darkTheme')}
+                  </button>
+                </div>
+              </div>
+              {/* Language Toggle - Mobile */}
+              <div className="px-4 py-2 pb-3">
+                <p className="text-xs font-medium text-blue-300 uppercase mb-2">{t('settings.language')}</p>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setLanguage('en')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      language === 'en' ? 'bg-white text-blue-700' : 'bg-blue-700 text-blue-200 hover:bg-blue-600'
+                    }`}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => setLanguage('fr')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      language === 'fr' ? 'bg-white text-blue-700' : 'bg-blue-700 text-blue-200 hover:bg-blue-600'
+                    }`}
+                  >
+                    Français
+                  </button>
+                  <button
+                    onClick={() => setLanguage('ar')}
+                    className={`flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      language === 'ar' ? 'bg-white text-blue-700' : 'bg-blue-700 text-blue-200 hover:bg-blue-600'
+                    }`}
+                  >
+                    العربية
+                  </button>
+                </div>
+              </div>
               {settingsItems.map((item) => (
                 <button
                   key={item.path}
