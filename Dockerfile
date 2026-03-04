@@ -13,7 +13,8 @@ COPY backend/package*.json ./
 RUN npm install
 COPY backend/tsconfig.json ./
 COPY backend/prisma ./prisma/
-RUN npx prisma generate
+RUN npm install prisma@5.22.0 @prisma/client@5.22.0 --save-exact
+RUN npx prisma@5.22.0 generate
 COPY backend/src ./src/
 RUN npm run build
 
