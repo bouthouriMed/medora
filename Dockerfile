@@ -30,6 +30,7 @@ COPY backend/.env.production ./.env
 
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV DATABASE_URL=postgresql://postgres:gSbFckOnpxcoqfzClxctegjxfWqdMAnG@postgres.railway.internal:5432/railway
 
 EXPOSE 8080
 
