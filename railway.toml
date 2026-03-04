@@ -2,9 +2,6 @@
   builder = "DOCKERFILE"
   dockerfilePath = "Dockerfile"
 
-[build.args]
-  DATABASE_URL = "${{Postgres.DATABASE_URL}}"
-
 [deploy]
   startCommand = "node dist/index.js"
   numReplicas = 1

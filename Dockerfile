@@ -27,9 +27,6 @@ COPY --from=backend-builder /app/backend/prisma ./prisma/
 COPY --from=backend-builder /app/backend/package*.json ./
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-ARG DATABASE_URL
-RUN printf 'DATABASE_URL=%s\n' "${DATABASE_URL}" > .env
-
 ENV NODE_ENV=production
 ENV PORT=8080
 

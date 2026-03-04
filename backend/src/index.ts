@@ -8,7 +8,7 @@ import routes from './routes/index';
 import { connectRedis } from './utils/redis';
 
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ override: false });
 
 const app = express();
 const PORT = process.env.PORT || 3000;
