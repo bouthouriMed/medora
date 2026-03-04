@@ -2,12 +2,13 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import path from 'path';
 import routes from './routes/index';
 import { connectRedis } from './utils/redis';
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+  import('dotenv').then(dotenv => dotenv.config());
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
