@@ -3,7 +3,7 @@
   dockerfilePath = "Dockerfile"
 
 [build.args]
-  DATABASE_URL = "${{DATABASE_URL}}"
+  DATABASE_URL = "${{Postgres.DATABASE_URL}}"
 
 [deploy]
   startCommand = "node dist/index.js"
