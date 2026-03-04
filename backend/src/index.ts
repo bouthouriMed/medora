@@ -7,9 +7,8 @@ import { execSync } from 'child_process';
 import routes from './routes/index';
 import { connectRedis } from './utils/redis';
 
-if (process.env.NODE_ENV !== 'production') {
-  import('dotenv').then(dotenv => dotenv.config());
-}
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;

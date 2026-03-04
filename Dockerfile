@@ -26,6 +26,7 @@ COPY --from=backend-builder /app/backend/dist ./dist
 COPY --from=backend-builder /app/backend/prisma ./prisma/
 COPY --from=backend-builder /app/backend/package*.json ./
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY backend/.env ./.env
 
 ENV NODE_ENV=production
 ENV PORT=8080
