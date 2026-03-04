@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import path from 'path';
+import { execSync } from 'child_process';
 import routes from './routes/index';
 import { connectRedis } from './utils/redis';
 
@@ -39,6 +40,12 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 
 const startServer = async () => {
   try {
+    if (process.env.NODE_ENV === 'production') {
+      console.log('Running database migrations...');
+      execSync('node_modules/.bin/prisma migrate deploy', { stdio: 'inherit', env: process.env });
+      console.log('Migrations complete');
+    }
+
     await connectRedis();
     console.log('Redis connected');
     
