@@ -29,6 +29,7 @@ COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 ENV NODE_ENV=production
 ENV PORT=8080
+ENV DATABASE_URL=${DATABASE_URL}
 
 EXPOSE 8080
 
