@@ -61,6 +61,55 @@ interface Condition {
 
 type TabType = 'overview' | 'vitals' | 'diagnoses' | 'prescriptions' | 'allergies' | 'conditions' | 'timeline';
 
+function AITimelineRecord({ record, isAI, onEdit, onRegenerate, isRegenerating }: {
+  record: any; isAI: boolean;
+  onEdit: () => void; onRegenerate: () => void; isRegenerating: boolean;
+}) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="relative pl-10">
+      <div className={`absolute left-2 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${isAI ? 'bg-purple-500' : 'bg-blue-500'}`} />
+      <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-md border p-4 ${isAI ? 'border-purple-100 dark:border-purple-800/40' : 'border-gray-100 dark:border-gray-700'}`}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {isAI && <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full font-medium">✨ AI Note</span>}
+            <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(record.date).toLocaleString()}</span>
+          </div>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {isAI && (
+              <>
+                <button onClick={onEdit} className="text-xs px-2 py-1 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Edit">✏️ Edit</button>
+                <button onClick={onRegenerate} disabled={isRegenerating} className="text-xs px-2 py-1 rounded-lg text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-50 transition-colors" title="Regenerate">
+                  {isRegenerating ? '...' : '↺ Regen'}
+                </button>
+              </>
+            )}
+            {isAI && record.description && (
+              <button onClick={() => setExpanded(e => !e)} className="text-xs px-2 py-1 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                {expanded ? '▲ Collapse' : '▼ Expand'}
+              </button>
+            )}
+          </div>
+        </div>
+        <h4 className="font-semibold text-gray-900 dark:text-white mt-1">{record.title}</h4>
+        {record.description && (
+          isAI ? (
+            expanded ? (
+              <div className="border-t border-purple-100 dark:border-purple-800/30 pt-3 mt-3">
+                <MarkdownContent text={record.description} />
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 cursor-pointer" onClick={() => setExpanded(true)}>
+                {record.description.slice(0, 120).replace(/[#*_`]/g, '')}… <span className="text-purple-500">expand</span>
+              </p>
+            )
+          ) : <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{record.description}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MarkdownContent({ text }: { text: string }) {
   const lines = text.split('\n');
   return (
@@ -280,6 +329,7 @@ export default function PatientDetail() {
   const latestVitals = history?.vitals?.[0];
   const activeDiagnoses = history?.diagnoses?.filter((d: Diagnosis) => d.status === 'ACTIVE') || [];
   const activePrescriptions = history?.prescriptions?.filter((p: Prescription) => p.status === 'ACTIVE') || [];
+  const hasAISummary = history?.medicalRecords?.some((r: any) => r.type === 'AI_CLINICAL_NOTE' && r.title?.startsWith('Clinical Summary'));
 
   if (isLoading) {
     return (
@@ -304,29 +354,44 @@ export default function PatientDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={async () => {
-              try {
-                const result = await generatePatientSummary({ patientId: id }).unwrap();
-                setGeneratedSummaryText(result.generatedText);
-                setShowSummaryModal(true);
-              } catch {
-                showToast('Failed to generate summary', 'error');
-              }
-            }}
-            disabled={isGeneratingSummary}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
-          >
-            {isGeneratingSummary ? (
-              <>
-                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Generating...
-              </>
-            ) : '✨ AI Summary'}
-          </button>
+          {hasAISummary ? (
+            <button
+              onClick={async () => {
+                try {
+                  const result = await generatePatientSummary({ patientId: id }).unwrap();
+                  setGeneratedSummaryText(result.generatedText);
+                  setShowSummaryModal(true);
+                } catch {
+                  showToast('Failed to generate summary', 'error');
+                }
+              }}
+              disabled={isGeneratingSummary}
+              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 disabled:opacity-60 text-gray-600 dark:text-gray-300 hover:text-purple-700 dark:hover:text-purple-300 border border-gray-200 dark:border-gray-600 hover:border-purple-300 rounded-xl font-medium transition-colors flex items-center gap-2 text-sm"
+              title="A summary already exists. Click to regenerate."
+            >
+              {isGeneratingSummary ? (
+                <><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Generating...</>
+              ) : <><span>↺</span> Regenerate Summary</>}
+            </button>
+          ) : (
+            <button
+              onClick={async () => {
+                try {
+                  const result = await generatePatientSummary({ patientId: id }).unwrap();
+                  setGeneratedSummaryText(result.generatedText);
+                  setShowSummaryModal(true);
+                } catch {
+                  showToast('Failed to generate summary', 'error');
+                }
+              }}
+              disabled={isGeneratingSummary}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
+            >
+              {isGeneratingSummary ? (
+                <><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Generating...</>
+              ) : '✨ AI Summary'}
+            </button>
+          )}
           {hasPermission(user, 'create_medical_records') && (
             <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
               + {t('medical.recordVitals')}
@@ -795,21 +860,26 @@ export default function PatientDetail() {
               {history?.medicalRecords?.map((record: any, index: number) => {
                 const isAI = record.type === 'AI_CLINICAL_NOTE';
                 return (
-                <div key={index} className="relative pl-10">
-                  <div className={`absolute left-2 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${isAI ? 'bg-purple-500' : 'bg-blue-500'}`}></div>
-                  <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-md border p-4 ${isAI ? 'border-purple-100 dark:border-purple-800/40' : 'border-gray-100 dark:border-gray-700'}`}>
-                    <div className="flex items-center gap-2 mb-1">
-                      {isAI && <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full font-medium">✨ AI Note</span>}
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(record.date).toLocaleString()}</span>
-                    </div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{record.title}</h4>
-                    {record.description && (
-                      isAI
-                        ? <div className="border-t border-purple-100 dark:border-purple-800/30 pt-3 mt-2"><MarkdownContent text={record.description} /></div>
-                        : <p className="text-sm text-gray-600 dark:text-gray-400">{record.description}</p>
-                    )}
-                  </div>
-                </div>
+                <AITimelineRecord
+                  key={index}
+                  record={record}
+                  isAI={isAI}
+                  onEdit={() => {
+                    setGeneratedSummaryText(record.description || '');
+                    setSummaryIsEditing(true);
+                    setShowSummaryModal(true);
+                  }}
+                  onRegenerate={async () => {
+                    try {
+                      const result = await generatePatientSummary({ patientId: id }).unwrap();
+                      setGeneratedSummaryText(result.generatedText);
+                      setShowSummaryModal(true);
+                    } catch {
+                      showToast('Failed to regenerate summary', 'error');
+                    }
+                  }}
+                  isRegenerating={isGeneratingSummary}
+                />
               )})}
               {history?.labResults?.slice(0, 5).map((lab: any, index: number) => (
                 <div key={`lab-${index}`} className="relative pl-10">
