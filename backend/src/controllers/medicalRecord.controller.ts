@@ -294,9 +294,9 @@ export const generateVisitNote = async (req: AuthRequest, res: Response) => {
     });
 
     res.json({ generatedText, patientId: appointment.patientId });
-  } catch (error) {
-    console.error('generateVisitNote error:', error);
-    res.status(500).json({ error: 'Failed to generate visit note' });
+  } catch (error: any) {
+    console.error('generateVisitNote error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Failed to generate visit note' });
   }
 };
 
@@ -328,8 +328,8 @@ export const generatePatientSummary = async (req: AuthRequest, res: Response) =>
     });
 
     res.json({ generatedText, patientId });
-  } catch (error) {
-    console.error('generatePatientSummary error:', error);
-    res.status(500).json({ error: 'Failed to generate patient summary' });
+  } catch (error: any) {
+    console.error('generatePatientSummary error:', error?.message || error);
+    res.status(500).json({ error: error?.message || 'Failed to generate patient summary' });
   }
 };
