@@ -93,7 +93,7 @@ ${allergiesText}
 
 Generate a complete SOAP note with the four sections: Subjective, Objective, Assessment, and Plan. Be concise and clinically appropriate. Use professional medical language.`;
 
-    const model = getClient().getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = getClient().getGenerativeModel({ model: 'gemini-2.0-flash' });
     const result = await model.generateContent(prompt);
     return result.response.text();
   }
@@ -157,7 +157,7 @@ Generate a comprehensive clinical summary with these 5 sections:
 
 Be thorough and clinically precise. Use professional medical language suitable for handoff or referral documentation.`;
 
-    const model = getClient().getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = getClient().getGenerativeModel({ model: 'gemini-2.0-flash' });
     const result = await model.generateContent(prompt);
     return result.response.text();
   }
