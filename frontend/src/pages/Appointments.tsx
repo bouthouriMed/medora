@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation, useGenerateVisitNoteMutation, useCreateMedicalRecordMutation } from '../api';
 import { showToast } from '../components/Toast';
@@ -74,6 +74,18 @@ export default function Appointments() {
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [searchParams, setSearchParams] = useSearchParams();
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const { data: noteTemplates } = useGetNoteTemplatesQuery('APPOINTMENT');
 
@@ -481,28 +493,55 @@ export default function Appointments() {
                             {apt.notes || '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            {apt.status === 'SCHEDULED' && (
-                              <div className="flex justify-end gap-2 flex-wrap">
-                                <button
-                                  onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
-                                  className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                                >
-                                  {t('appointments.complete')}
-                                </button>
-                                <button
-                                  onClick={() => handleStatusChange(apt.id, 'NO_SHOW')}
-                                  className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                                >
-                                  {t('appointments.noShow')}
-                                </button>
-                                <button
-                                  onClick={() => handleCancel(apt.id)}
-                                  className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                                >
-                                  {t('appointments.cancel')}
-                                </button>
-                              </div>
-                            )}
+                            <div className="relative" ref={openMenuId === apt.id ? menuRef : undefined}>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === apt.id ? null : apt.id); }}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                              >
+                                <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                                  <circle cx="12" cy="5" r="1.5" />
+                                  <circle cx="12" cy="12" r="1.5" />
+                                  <circle cx="12" cy="19" r="1.5" />
+                                </svg>
+                              </button>
+                              {openMenuId === apt.id && (
+                                <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                                  <button
+                                    onClick={() => { setSelectedAppointment(apt); setOpenMenuId(null); }}
+                                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                    {t('other.view')}
+                                  </button>
+                                  {apt.status === 'SCHEDULED' && (
+                                    <>
+                                      <button
+                                        onClick={() => { handleStatusChange(apt.id, 'COMPLETED'); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                        {t('appointments.complete')}
+                                      </button>
+                                      <button
+                                        onClick={() => { handleStatusChange(apt.id, 'NO_SHOW'); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                                        {t('appointments.noShow')}
+                                      </button>
+                                      <hr className="my-1 border-gray-100 dark:border-gray-700" />
+                                      <button
+                                        onClick={() => { handleCancel(apt.id); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                        {t('appointments.cancel')}
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -535,22 +574,30 @@ export default function Appointments() {
                     {apt.notes && (
                       <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mb-3">{apt.notes}</p>
                     )}
-                    {apt.status === 'SCHEDULED' && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
-                          className="flex-1 text-green-600 hover:bg-green-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
-                        >
-                          ✓ {t('appointments.complete')}
-                        </button>
-                        <button
-                          onClick={() => handleCancel(apt.id)}
-                          className="flex-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
-                        >
-                          ✕ {t('appointments.cancel')}
-                        </button>
-                      </div>
-                    )}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedAppointment(apt)}
+                        className="flex-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                      >
+                        {t('other.view')}
+                      </button>
+                      {apt.status === 'SCHEDULED' && (
+                        <>
+                          <button
+                            onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
+                            className="flex-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                          >
+                            {t('appointments.complete')}
+                          </button>
+                          <button
+                            onClick={() => handleCancel(apt.id)}
+                            className="flex-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                          >
+                            {t('appointments.cancel')}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

@@ -39,6 +39,7 @@ export class AppointmentController {
       } else if (startDate && endDate) {
         start = parseLocalDate(startDate as string);
         end = parseLocalDate(endDate as string);
+        end.setHours(23, 59, 59, 999);
       } else if (startDate) {
         start = parseLocalDate(startDate as string);
         const endDateSingle = parseLocalDate(startDate as string);
