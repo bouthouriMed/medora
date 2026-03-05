@@ -572,12 +572,12 @@ export default function Appointments() {
                       <span>🕐 {new Date(apt.dateTime).toLocaleDateString()} {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
                     {apt.notes && (
-                      <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mb-3">{apt.notes}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mb-3">{apt.notes}</p>
                     )}
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => setSelectedAppointment(apt)}
-                        className="flex-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                        className="flex-1 min-w-[80px] text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                       >
                         {t('other.view')}
                       </button>
@@ -585,17 +585,31 @@ export default function Appointments() {
                         <>
                           <button
                             onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
-                            className="flex-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                            className="flex-1 min-w-[80px] text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                           >
                             {t('appointments.complete')}
                           </button>
                           <button
+                            onClick={() => handleStatusChange(apt.id, 'NO_SHOW')}
+                            className="flex-1 min-w-[80px] text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                          >
+                            {t('appointments.noShow')}
+                          </button>
+                          <button
                             onClick={() => handleCancel(apt.id)}
-                            className="flex-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                            className="flex-1 min-w-[80px] text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                           >
                             {t('appointments.cancel')}
                           </button>
                         </>
+                      )}
+                      {apt.status !== 'SCHEDULED' && (
+                        <button
+                          onClick={() => handleStatusChange(apt.id, 'SCHEDULED')}
+                          className="flex-1 min-w-[80px] text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                        >
+                          {t('appointments.reschedule')}
+                        </button>
                       )}
                     </div>
                   </div>

@@ -92,8 +92,8 @@ export default function Dashboard() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('dashboard.title')}</h1>
-        <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcome')}</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcome')}</p>
       </div>
 
       {/* Stats Grid */}
@@ -133,7 +133,7 @@ export default function Dashboard() {
             className={`flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 dark:border-gray-700 hover:border-${action.color}-300 hover:bg-${action.color}-50 dark:hover:bg-${action.color}-900/20 transition-all duration-200 group`}
           >
             <span className="text-lg">{action.icon}</span>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 group-hover:text-gray-900 dark:text-white dark:text-white dark:group-hover:text-gray-100">{action.label}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-gray-100">{action.label}</span>
           </button>
         ))}
       </div>
@@ -144,12 +144,12 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('dashboard.revenueTrend')}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{t('dashboard.last6months')}</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.revenueTrend')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.last6months')}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-green-500"></span>
-              <span className="text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400">{t('dashboard.revenue')}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{t('dashboard.revenue')}</span>
             </div>
           </div>
           <div className="p-4 sm:p-6">
@@ -177,8 +177,8 @@ export default function Dashboard() {
         {/* Appointment Status Pie */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('dashboard.appointmentStatus')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{t('dashboard.last6months')}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.appointmentStatus')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.last6months')}</p>
           </div>
           <div className="p-4 sm:p-6">
             {pieData.length > 0 && pieData.reduce((sum, d) => sum + d.value, 0) > 0 ? (
@@ -212,8 +212,8 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="mt-4 text-center">
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{completionRate}%</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{t('dashboard.completionRate')}</p>
+                  <p className="text-3xl font-bold text-gray-900 dark:text-white">{completionRate}%</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.completionRate')}</p>
                 </div>
               </>
             ) : (
@@ -230,8 +230,8 @@ export default function Dashboard() {
         {/* Appointments Overview */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('dashboard.appointmentsOverview')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{t('dashboard.monthlyBreakdown')}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.appointmentsOverview')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.monthlyBreakdown')}</p>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={250}>
@@ -254,8 +254,8 @@ export default function Dashboard() {
         {/* Patient Growth */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 dark:border-gray-700 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('dashboard.patientGrowth')}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">{t('dashboard.newPatientsPerMonth')}</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t('dashboard.patientGrowth')}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('dashboard.newPatientsPerMonth')}</p>
           </div>
           <div className="p-4 sm:p-6">
             <ResponsiveContainer width="100%" height={250}>
@@ -306,8 +306,8 @@ export default function Dashboard() {
                         {apt.patient?.firstName?.[0]}{apt.patient?.lastName?.[0]}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900 dark:text-white dark:text-white dark:text-white text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
-                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400">
+                        <p className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">{apt.patient?.firstName} {apt.patient?.lastName}</p>
+                        <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                           {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           {' • '}
                           {t('appointments.doctor')}. {apt.doctor?.firstName} {apt.doctor?.lastName}
@@ -367,7 +367,7 @@ export default function Dashboard() {
                         </p>
                       </div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {t('appointments.dr')} {apt.doctor?.firstName}
                     </span>
                   </div>

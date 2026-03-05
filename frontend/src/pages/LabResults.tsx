@@ -4,6 +4,7 @@ import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { LabResult, Patient } from '../types';
 import { useTranslation } from 'react-i18next';
+import { AlertCircle, CheckCircle, Minus } from 'lucide-react';
 
 const LAB_CATEGORIES = [
   'Blood Test',
@@ -15,6 +16,51 @@ const LAB_CATEGORIES = [
   'Microbiology',
   'Other',
 ];
+
+function parseReferenceRange(rangeStr: string): { min?: number; max?: number } | null {
+  if (!rangeStr) return null;
+  
+  const match = rangeStr.match(/([<>]=?|[-–])\s*(\d+\.?\d*)/g);
+  if (!match) {
+    const simpleRange = rangeStr.match(/(\d+\.?\d*)\s*[-–]\s*(\d+\.?\d*)/);
+    if (simpleRange) {
+      return { min: parseFloat(simpleRange[1]), max: parseFloat(simpleRange[2]) };
+    }
+    const singleNum = rangeStr.match(/(\d+\.?\d*)/);
+    if (singleNum) {
+      return { max: parseFloat(singleNum[1]) };
+    }
+    return null;
+  }
+  
+  const result: { min?: number; max?: number } = {};
+  for (const part of match) {
+    if (part.startsWith('>')) result.min = parseFloat(part.slice(1));
+    else if (part.startsWith('>=')) result.min = parseFloat(part.slice(2));
+    else if (part.startsWith('<')) result.max = parseFloat(part.slice(1));
+    else if (part.startsWith('<=')) result.max = parseFloat(part.slice(2));
+    else if (part.includes('-') || part.includes('–')) {
+      const [min, max] = part.split(/[-–]/).map(n => parseFloat(n.trim()));
+      if (!isNaN(min)) result.min = min;
+      if (!isNaN(max)) result.max = max;
+    }
+  }
+  return result.min !== undefined || result.max !== undefined ? result : null;
+}
+
+function getResultStatus(result: string | null, normalRange: string | null): 'normal' | 'low' | 'high' | 'unknown' {
+  if (!result || !normalRange) return 'unknown';
+  
+  const resultNum = parseFloat(result);
+  if (isNaN(resultNum)) return 'unknown';
+  
+  const range = parseReferenceRange(normalRange);
+  if (!range) return 'unknown';
+  
+  if (range.min !== undefined && resultNum < range.min) return 'low';
+  if (range.max !== undefined && resultNum > range.max) return 'high';
+  return 'normal';
+}
 
 export default function LabResults() {
   const { t } = useTranslation();
@@ -100,10 +146,39 @@ export default function LabResults() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return 'bg-green-100 text-green-700';
-      case 'ABNORMAL': return 'bg-red-100 text-red-700';
-      case 'PENDING': return 'bg-yellow-100 text-yellow-700';
+      case 'COMPLETED': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+      case 'ABNORMAL': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+      case 'PENDING': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
       default: return 'bg-gray-100 text-gray-700 dark:text-gray-300';
+    }
+  };
+
+  const getResultIndicator = (result: string | null, normalRange: string | null) => {
+    const status = getResultStatus(result, normalRange);
+    switch (status) {
+      case 'normal':
+        return (
+          <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+            <CheckCircle className="w-4 h-4" />
+            <span className="text-xs font-medium">{t('other.normal')}</span>
+          </div>
+        );
+      case 'low':
+        return (
+          <div className="flex items-center gap-1.5 text-orange-600 dark:text-orange-400">
+            <AlertCircle className="w-4 h-4" />
+            <span className="text-xs font-medium">{t('other.low')}</span>
+          </div>
+        );
+      case 'high':
+        return (
+          <div className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+            <AlertCircle className="w-4 h-4" />
+            <span className="text-xs font-medium">{t('other.high')}</span>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
@@ -112,8 +187,8 @@ export default function LabResults() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('other.labResults')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('other.trackLabResults')}</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{t('other.labResults')}</h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.trackLabResults')}</p>
         </div>
         <button
           onClick={() => {
@@ -216,23 +291,31 @@ export default function LabResults() {
                 </div>
               </div>
               {(result.result || result.normalRange || result.notes) && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {result.result && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.resultField')}</p>
-                        <p className="font-medium text-gray-900 dark:text-white dark:text-white">{result.result}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('other.resultField')}</p>
+                        <div className="flex items-center gap-2">
+                          <p className={`font-semibold text-lg ${
+                            getResultStatus(result.result, result.normalRange) === 'high' ? 'text-red-600 dark:text-red-400' :
+                            getResultStatus(result.result, result.normalRange) === 'low' ? 'text-orange-600 dark:text-orange-400' :
+                            getResultStatus(result.result, result.normalRange) === 'normal' ? 'text-green-600 dark:text-green-400' :
+                            'text-gray-900 dark:text-white'
+                          }`}>{result.result}</p>
+                          {getResultIndicator(result.result, result.normalRange)}
+                        </div>
                       </div>
                     )}
                     {result.normalRange && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.normalRangeField')}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('other.normalRangeField')}</p>
                         <p className="font-medium text-gray-600 dark:text-gray-400">{result.normalRange}</p>
                       </div>
                     )}
                     {result.notes && (
                       <div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.notesField')}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('other.notesField')}</p>
                         <p className="font-medium text-gray-600 dark:text-gray-400">{result.notes}</p>
                       </div>
                     )}

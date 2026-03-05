@@ -731,6 +731,16 @@
     "emailField": "Email",
     "passwordField": "Mot de passe",
     "saving": "Enregistrement...",
-    "createUser": "Créer un utilisateur"
+    "createUser": "Créer un utilisateur",
+    "quickSearchPlaceholder": "Rechercher patients, rendez-vous, personnel...",
+    "noResultsFound": "Aucun résultat trouvé",
+    "typeAtLeast2Chars": "Tapez au moins 2 caractères pour rechercher",
+    "navigate": "Naviguer",
+    "select": "Sélectionner",
+    "toOpen": "pour ouvrir",
+    "noContactInfo": "Pas d'info contact",
+    "normal": "Normal",
+    "low": "Bas",
+    "high": "Élevé"
   }
 }

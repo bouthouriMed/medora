@@ -5,6 +5,7 @@ import { setCredentials } from './store/slices/authSlice';
 import { useMeQuery } from './api';
 import { useTheme } from './hooks/useTheme';
 import Layout from './components/Layout';
+import QuickSearch from './components/QuickSearch';
 
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
@@ -51,6 +52,7 @@ function App() {
 
   return (
     <Suspense fallback={<LoadingFallback />}>
+      <QuickSearch />
       <Routes>
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />

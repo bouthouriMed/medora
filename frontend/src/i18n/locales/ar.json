@@ -731,6 +731,16 @@
     "emailField": "البريد الإلكتروني",
     "passwordField": "كلمة المرور",
     "saving": "جارٍ الحفظ...",
-    "createUser": "إنشاء مستخدم"
+    "createUser": "إنشاء مستخدم",
+    "quickSearchPlaceholder": "البحث عن مرضى، مواعيد، طاقم...",
+    "noResultsFound": "لم يتم العثور على نتائج",
+    "typeAtLeast2Chars": "اكتب حرفين على الأقل للبحث",
+    "navigate": "تنقل",
+    "select": "اختيار",
+    "toOpen": "لفتح",
+    "noContactInfo": "لا يوجد معلومات اتصال",
+    "normal": "طبيعي",
+    "low": "منخفض",
+    "high": "مرتفع"
   }
 }
