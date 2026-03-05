@@ -64,21 +64,62 @@ type TabType = 'overview' | 'vitals' | 'diagnoses' | 'prescriptions' | 'allergie
 function MarkdownContent({ text }: { text: string }) {
   const lines = text.split('\n');
   return (
-    <div className="space-y-1.5 text-sm text-gray-800 dark:text-gray-200">
+    <div className="space-y-1 text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
       {lines.map((line, i) => {
-        if (!line.trim()) return <div key={i} className="h-2" />;
+        if (!line.trim()) return <div key={i} className="h-3" />;
+        if (/^---+$/.test(line.trim())) return <hr key={i} className="border-gray-200 dark:border-gray-600 my-3" />;
+
+        // Markdown headings
         if (/^#{1,3}\s/.test(line)) {
-          const content = line.replace(/^#{1,3}\s+\*?\*?/, '').replace(/\*?\*?$/, '');
-          return <h3 key={i} className="font-bold text-base text-gray-900 dark:text-white mt-3 mb-1 border-b border-gray-200 dark:border-gray-600 pb-1">{content}</h3>;
+          const content = line.replace(/^#{1,3}\s+/, '').replace(/^\*\*|\*\*$/g, '');
+          return (
+            <div key={i} className="flex items-center gap-2 mt-4 mb-2">
+              <div className="w-1 h-5 bg-purple-500 rounded-full flex-shrink-0" />
+              <h3 className="font-bold text-base text-gray-900 dark:text-white">{content}</h3>
+            </div>
+          );
         }
-        if (/^---+$/.test(line.trim())) return <hr key={i} className="border-gray-200 dark:border-gray-600 my-2" />;
-        const formatted = line
-          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-          .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-        if (/^\s*[\*\-]\s+/.test(line)) {
-          return <div key={i} className="flex gap-2 pl-3"><span className="text-purple-500 mt-0.5">•</span><span dangerouslySetInnerHTML={{ __html: formatted.replace(/^\s*[\*\-]\s+/, '') }} /></div>;
+
+        // Numbered section headers like "**1. Patient Overview**"
+        if (/^\*\*\d+\.\s/.test(line)) {
+          const content = line.replace(/^\*\*/, '').replace(/\*\*:?\s*$/, '').replace(/\*\*$/, '');
+          return (
+            <div key={i} className="flex items-center gap-2 mt-4 mb-2">
+              <div className="w-1 h-5 bg-purple-500 rounded-full flex-shrink-0" />
+              <h3 className="font-bold text-base text-gray-900 dark:text-white">{content}</h3>
+            </div>
+          );
         }
-        return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />;
+
+        const inline = (s: string) => s
+          .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-gray-900 dark:text-white">$1</strong>')
+          .replace(/\*([^*\n]+)\*/g, '<em class="italic">$1</em>');
+
+        // Bullet points (including nested with spaces)
+        const bulletMatch = line.match(/^(\s*)[\*\-]\s+(.*)/);
+        if (bulletMatch) {
+          const indent = Math.floor(bulletMatch[1].length / 4);
+          return (
+            <div key={i} className="flex gap-2" style={{ paddingLeft: `${indent * 16 + 12}px` }}>
+              <span className="text-purple-400 mt-0.5 flex-shrink-0">•</span>
+              <span dangerouslySetInnerHTML={{ __html: inline(bulletMatch[2]) }} />
+            </div>
+          );
+        }
+
+        // Numbered list items like "1.  text" or "1. text"
+        const numMatch = line.match(/^(\s*)(\d+)\.\s+(.*)/);
+        if (numMatch && parseInt(numMatch[2]) < 20) {
+          const indent = Math.floor(numMatch[1].length / 4);
+          return (
+            <div key={i} className="flex gap-2" style={{ paddingLeft: `${indent * 16 + 12}px` }}>
+              <span className="text-purple-400 font-semibold flex-shrink-0 w-5">{numMatch[2]}.</span>
+              <span dangerouslySetInnerHTML={{ __html: inline(numMatch[3]) }} />
+            </div>
+          );
+        }
+
+        return <p key={i} className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: inline(line) }} />;
       })}
     </div>
   );
@@ -751,16 +792,25 @@ export default function PatientDetail() {
           <div className="relative">
             <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
             <div className="space-y-4">
-              {history?.medicalRecords?.map((record: any, index: number) => (
+              {history?.medicalRecords?.map((record: any, index: number) => {
+                const isAI = record.type === 'AI_CLINICAL_NOTE';
+                return (
                 <div key={index} className="relative pl-10">
-                  <div className="absolute left-2 w-4 h-4 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800"></div>
-                  <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-4">
-                    <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(record.date).toLocaleString()}</span>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">{record.title}</h4>
-                    {record.description && <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{record.description}</p>}
+                  <div className={`absolute left-2 w-4 h-4 rounded-full border-2 border-white dark:border-gray-800 ${isAI ? 'bg-purple-500' : 'bg-blue-500'}`}></div>
+                  <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-md border p-4 ${isAI ? 'border-purple-100 dark:border-purple-800/40' : 'border-gray-100 dark:border-gray-700'}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      {isAI && <span className="text-xs px-2 py-0.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-full font-medium">✨ AI Note</span>}
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{new Date(record.date).toLocaleString()}</span>
+                    </div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{record.title}</h4>
+                    {record.description && (
+                      isAI
+                        ? <div className="border-t border-purple-100 dark:border-purple-800/30 pt-3 mt-2"><MarkdownContent text={record.description} /></div>
+                        : <p className="text-sm text-gray-600 dark:text-gray-400">{record.description}</p>
+                    )}
                   </div>
                 </div>
-              ))}
+              )})}
               {history?.labResults?.slice(0, 5).map((lab: any, index: number) => (
                 <div key={`lab-${index}`} className="relative pl-10">
                   <div className="absolute left-2 w-4 h-4 bg-purple-500 rounded-full border-2 border-white dark:border-gray-800"></div>
@@ -992,6 +1042,7 @@ export default function PatientDetail() {
                   setShowSummaryModal(false);
                   setSummaryIsEditing(false);
                   setGeneratedSummaryText('');
+                  setActiveTab('timeline');
                 } catch {
                   showToast('Failed to save summary', 'error');
                 }

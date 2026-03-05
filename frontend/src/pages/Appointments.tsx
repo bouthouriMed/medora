@@ -11,21 +11,52 @@ import { useTranslation } from 'react-i18next';
 function MarkdownContent({ text }: { text: string }) {
   const lines = text.split('\n');
   return (
-    <div className="space-y-1.5 text-sm text-gray-800 dark:text-gray-200">
+    <div className="space-y-1 text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
       {lines.map((line, i) => {
-        if (!line.trim()) return <div key={i} className="h-2" />;
+        if (!line.trim()) return <div key={i} className="h-3" />;
+        if (/^---+$/.test(line.trim())) return <hr key={i} className="border-gray-200 dark:border-gray-600 my-3" />;
         if (/^#{1,3}\s/.test(line)) {
-          const content = line.replace(/^#{1,3}\s+\*?\*?/, '').replace(/\*?\*?$/, '');
-          return <h3 key={i} className="font-bold text-base text-gray-900 dark:text-white mt-3 mb-1 border-b border-gray-200 dark:border-gray-600 pb-1">{content}</h3>;
+          const content = line.replace(/^#{1,3}\s+/, '').replace(/^\*\*|\*\*$/g, '');
+          return (
+            <div key={i} className="flex items-center gap-2 mt-4 mb-2">
+              <div className="w-1 h-5 bg-purple-500 rounded-full flex-shrink-0" />
+              <h3 className="font-bold text-base text-gray-900 dark:text-white">{content}</h3>
+            </div>
+          );
         }
-        if (/^---+$/.test(line.trim())) return <hr key={i} className="border-gray-200 dark:border-gray-600 my-2" />;
-        const formatted = line
-          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-          .replace(/\*([^*]+)\*/g, '<em>$1</em>');
-        if (/^\s*[\*\-]\s+/.test(line)) {
-          return <div key={i} className="flex gap-2 pl-3"><span className="text-purple-500 mt-0.5">•</span><span dangerouslySetInnerHTML={{ __html: formatted.replace(/^\s*[\*\-]\s+/, '') }} /></div>;
+        if (/^\*\*\d+\.\s/.test(line)) {
+          const content = line.replace(/^\*\*/, '').replace(/\*\*:?\s*$/, '').replace(/\*\*$/, '');
+          return (
+            <div key={i} className="flex items-center gap-2 mt-4 mb-2">
+              <div className="w-1 h-5 bg-purple-500 rounded-full flex-shrink-0" />
+              <h3 className="font-bold text-base text-gray-900 dark:text-white">{content}</h3>
+            </div>
+          );
         }
-        return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />;
+        const inline = (s: string) => s
+          .replace(/\*\*([^*]+)\*\*/g, '<strong class="font-semibold text-gray-900 dark:text-white">$1</strong>')
+          .replace(/\*([^*\n]+)\*/g, '<em class="italic">$1</em>');
+        const bulletMatch = line.match(/^(\s*)[\*\-]\s+(.*)/);
+        if (bulletMatch) {
+          const indent = Math.floor(bulletMatch[1].length / 4);
+          return (
+            <div key={i} className="flex gap-2" style={{ paddingLeft: `${indent * 16 + 12}px` }}>
+              <span className="text-purple-400 mt-0.5 flex-shrink-0">•</span>
+              <span dangerouslySetInnerHTML={{ __html: inline(bulletMatch[2]) }} />
+            </div>
+          );
+        }
+        const numMatch = line.match(/^(\s*)(\d+)\.\s+(.*)/);
+        if (numMatch && parseInt(numMatch[2]) < 20) {
+          const indent = Math.floor(numMatch[1].length / 4);
+          return (
+            <div key={i} className="flex gap-2" style={{ paddingLeft: `${indent * 16 + 12}px` }}>
+              <span className="text-purple-400 font-semibold flex-shrink-0 w-5">{numMatch[2]}.</span>
+              <span dangerouslySetInnerHTML={{ __html: inline(numMatch[3]) }} />
+            </div>
+          );
+        }
+        return <p key={i} className="text-gray-700 dark:text-gray-300" dangerouslySetInnerHTML={{ __html: inline(line) }} />;
       })}
     </div>
   );
