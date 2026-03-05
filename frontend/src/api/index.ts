@@ -537,6 +537,16 @@ export const api = createApi({
         { type: 'PatientMedicalHistory', id: patientId },
       ],
     }),
+    updateMedicalRecord: builder.mutation({
+      query: ({ id, patientId, ...body }) => ({
+        url: `/medical-records/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
   }),
 });
 
@@ -616,4 +626,5 @@ export const {
   useGenerateVisitNoteMutation,
   useGeneratePatientSummaryMutation,
   useCreateMedicalRecordMutation,
+  useUpdateMedicalRecordMutation,
 } = api;

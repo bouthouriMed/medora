@@ -165,6 +165,7 @@ router.delete('/allergies/:id', authenticate, medicalRecordController.deleteAlle
 router.post('/patients/:patientId/conditions', authenticate, medicalRecordController.createCondition);
 router.delete('/conditions/:id', authenticate, medicalRecordController.deleteCondition);
 router.post('/patients/:patientId/medical-records', authenticate, medicalRecordController.createMedicalRecord);
+router.put('/medical-records/:id', authenticate, medicalRecordController.updateMedicalRecord);
 router.post('/appointments/:id/generate-note', authenticate, medicalRecordController.generateVisitNote);
 router.post('/patients/:patientId/generate-summary', authenticate, medicalRecordController.generatePatientSummary);
 

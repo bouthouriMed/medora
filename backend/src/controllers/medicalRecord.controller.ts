@@ -254,6 +254,23 @@ export const createMedicalRecord = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const updateMedicalRecord = async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+    const clinicId = req.user!.clinicId;
+    const { title, description, data } = req.body as any;
+
+    const record = await prisma.medicalRecord.updateMany({
+      where: { id, clinicId },
+      data: { title, description, data, updatedAt: new Date() },
+    });
+
+    res.json(record);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update medical record' });
+  }
+};
+
 export const generateVisitNote = async (req: AuthRequest, res: Response) => {
   try {
     const clinicId = req.user!.clinicId;

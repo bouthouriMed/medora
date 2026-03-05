@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetPatientQuery, useGetPatientMedicalHistoryQuery, useCreateVitalMutation, useCreateDiagnosisMutation, useUpdateDiagnosisMutation, useDeleteDiagnosisMutation, useCreatePrescriptionMutation, useUpdatePrescriptionMutation, useDeletePrescriptionMutation, useCreateAllergyMutation, useDeleteAllergyMutation, useCreateConditionMutation, useDeleteConditionMutation, useGetUsersQuery, useGeneratePatientSummaryMutation, useCreateMedicalRecordMutation } from '../api';
+import { useGetPatientQuery, useGetPatientMedicalHistoryQuery, useCreateVitalMutation, useCreateDiagnosisMutation, useUpdateDiagnosisMutation, useDeleteDiagnosisMutation, useCreatePrescriptionMutation, useUpdatePrescriptionMutation, useDeletePrescriptionMutation, useCreateAllergyMutation, useDeleteAllergyMutation, useCreateConditionMutation, useDeleteConditionMutation, useGetUsersQuery, useGeneratePatientSummaryMutation, useCreateMedicalRecordMutation, useUpdateMedicalRecordMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { Icons } from '../components/Icons';
 import Modal from '../components/Modal';
@@ -188,6 +188,7 @@ export default function PatientDetail() {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [generatedSummaryText, setGeneratedSummaryText] = useState('');
   const [summaryIsEditing, setSummaryIsEditing] = useState(false);
+  const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
 
   const { data: patient } = useGetPatientQuery(id || '');
   const { data: history, isLoading } = useGetPatientMedicalHistoryQuery(id || '', { skip: !id });
@@ -206,6 +207,7 @@ export default function PatientDetail() {
   const [deleteCondition] = useDeleteConditionMutation();
   const [generatePatientSummary, { isLoading: isGeneratingSummary }] = useGeneratePatientSummaryMutation();
   const [createMedicalRecord, { isLoading: isSavingSummary }] = useCreateMedicalRecordMutation();
+  const [updateMedicalRecord, { isLoading: isUpdatingSummary }] = useUpdateMedicalRecordMutation();
 
   const [vitalForm, setVitalForm] = useState({
     bloodPressureSystolic: '',
@@ -358,6 +360,8 @@ export default function PatientDetail() {
             <button
               onClick={async () => {
                 try {
+                  const existingRecord = history?.medicalRecords?.find((r: any) => r.type === 'AI_CLINICAL_NOTE' && r.title?.startsWith('Clinical Summary'));
+                  setEditingRecordId(existingRecord?.id || null);
                   const result = await generatePatientSummary({ patientId: id }).unwrap();
                   setGeneratedSummaryText(result.generatedText);
                   setShowSummaryModal(true);
@@ -377,6 +381,7 @@ export default function PatientDetail() {
             <button
               onClick={async () => {
                 try {
+                  setEditingRecordId(null);
                   const result = await generatePatientSummary({ patientId: id }).unwrap();
                   setGeneratedSummaryText(result.generatedText);
                   setShowSummaryModal(true);
@@ -865,12 +870,14 @@ export default function PatientDetail() {
                   record={record}
                   isAI={isAI}
                   onEdit={() => {
+                    setEditingRecordId(record.id);
                     setGeneratedSummaryText(record.description || '');
                     setSummaryIsEditing(true);
                     setShowSummaryModal(true);
                   }}
                   onRegenerate={async () => {
                     try {
+                      setEditingRecordId(record.id);
                       const result = await generatePatientSummary({ patientId: id }).unwrap();
                       setGeneratedSummaryText(result.generatedText);
                       setShowSummaryModal(true);
@@ -1067,7 +1074,7 @@ export default function PatientDetail() {
       </Modal>
 
       {/* AI Patient Summary Modal */}
-      <Modal isOpen={showSummaryModal} onClose={() => { setShowSummaryModal(false); setSummaryIsEditing(false); }} title="✨ AI Clinical Summary">
+      <Modal isOpen={showSummaryModal} onClose={() => { setShowSummaryModal(false); setSummaryIsEditing(false); setEditingRecordId(null); }} title="✨ AI Clinical Summary">
         <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500 dark:text-gray-400">AI-generated clinical summary — click to edit</p>
@@ -1093,7 +1100,7 @@ export default function PatientDetail() {
           )}
           <div className="flex gap-3">
             <button
-              onClick={() => { setShowSummaryModal(false); setSummaryIsEditing(false); }}
+              onClick={() => { setShowSummaryModal(false); setSummaryIsEditing(false); setEditingRecordId(null); }}
               className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
             >
               Discard
@@ -1101,26 +1108,37 @@ export default function PatientDetail() {
             <button
               onClick={async () => {
                 try {
-                  await createMedicalRecord({
-                    patientId: id,
-                    type: 'AI_CLINICAL_NOTE',
-                    title: `Clinical Summary - ${new Date().toLocaleDateString()}`,
-                    description: generatedSummaryText,
-                    data: { generatedBy: 'gemini-2.5-flash' },
-                  }).unwrap();
+                  if (editingRecordId) {
+                    await updateMedicalRecord({
+                      id: editingRecordId,
+                      patientId: id,
+                      title: `Clinical Summary - ${new Date().toLocaleDateString()}`,
+                      description: generatedSummaryText,
+                      data: { generatedBy: 'gemini-2.5-flash' },
+                    }).unwrap();
+                  } else {
+                    await createMedicalRecord({
+                      patientId: id,
+                      type: 'AI_CLINICAL_NOTE',
+                      title: `Clinical Summary - ${new Date().toLocaleDateString()}`,
+                      description: generatedSummaryText,
+                      data: { generatedBy: 'gemini-2.5-flash' },
+                    }).unwrap();
+                  }
                   showToast('Summary saved to medical records', 'success');
                   setShowSummaryModal(false);
                   setSummaryIsEditing(false);
                   setGeneratedSummaryText('');
+                  setEditingRecordId(null);
                   setActiveTab('timeline');
                 } catch {
                   showToast('Failed to save summary', 'error');
                 }
               }}
-              disabled={isSavingSummary}
+              disabled={isSavingSummary || isUpdatingSummary}
               className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors"
             >
-              {isSavingSummary ? 'Saving...' : 'Save to Records'}
+              {(isSavingSummary || isUpdatingSummary) ? 'Saving...' : 'Save to Records'}
             </button>
           </div>
         </div>
