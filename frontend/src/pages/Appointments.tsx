@@ -8,6 +8,29 @@ import Modal from '../components/Modal';
 import type { Appointment, Patient, User, RecurringAppointment, NoteTemplate } from '../types';
 import { useTranslation } from 'react-i18next';
 
+function MarkdownContent({ text }: { text: string }) {
+  const lines = text.split('\n');
+  return (
+    <div className="space-y-1.5 text-sm text-gray-800 dark:text-gray-200">
+      {lines.map((line, i) => {
+        if (!line.trim()) return <div key={i} className="h-2" />;
+        if (/^#{1,3}\s/.test(line)) {
+          const content = line.replace(/^#{1,3}\s+\*?\*?/, '').replace(/\*?\*?$/, '');
+          return <h3 key={i} className="font-bold text-base text-gray-900 dark:text-white mt-3 mb-1 border-b border-gray-200 dark:border-gray-600 pb-1">{content}</h3>;
+        }
+        if (/^---+$/.test(line.trim())) return <hr key={i} className="border-gray-200 dark:border-gray-600 my-2" />;
+        const formatted = line
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        if (/^\s*[\*\-]\s+/.test(line)) {
+          return <div key={i} className="flex gap-2 pl-3"><span className="text-purple-500 mt-0.5">•</span><span dangerouslySetInnerHTML={{ __html: formatted.replace(/^\s*[\*\-]\s+/, '') }} /></div>;
+        }
+        return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />;
+      })}
+    </div>
+  );
+}
+
 export default function Appointments() {
   const { t } = useTranslation();
   const [showModal, setShowModal] = useState(false);
@@ -16,6 +39,7 @@ export default function Appointments() {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [generatedNoteText, setGeneratedNoteText] = useState('');
   const [notePatientId, setNotePatientId] = useState('');
+  const [noteIsEditing, setNoteIsEditing] = useState(false);
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [searchParams, setSearchParams] = useSearchParams();
@@ -627,18 +651,33 @@ export default function Appointments() {
         </Modal>
 
       {/* AI Visit Note Modal */}
-      <Modal isOpen={showNoteModal} onClose={() => setShowNoteModal(false)} title="✨ AI-Generated Visit Note">
+      <Modal isOpen={showNoteModal} onClose={() => { setShowNoteModal(false); setNoteIsEditing(false); }} title="✨ AI-Generated Visit Note">
         <div className="p-6 space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Review and edit the generated note before saving to medical records.</p>
-          <textarea
-            value={generatedNoteText}
-            onChange={(e) => setGeneratedNoteText(e.target.value)}
-            rows={18}
-            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm resize-none"
-          />
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500 dark:text-gray-400">AI-generated SOAP note — click to edit</p>
+            <button onClick={() => setNoteIsEditing(!noteIsEditing)} className="text-xs px-3 py-1 rounded-lg border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+              {noteIsEditing ? '👁 Preview' : '✏️ Edit'}
+            </button>
+          </div>
+          {noteIsEditing ? (
+            <textarea
+              value={generatedNoteText}
+              onChange={(e) => setGeneratedNoteText(e.target.value)}
+              rows={18}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm resize-none"
+              autoFocus
+            />
+          ) : (
+            <div
+              onClick={() => setNoteIsEditing(true)}
+              className="cursor-text max-h-96 overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600 transition-colors"
+            >
+              <MarkdownContent text={generatedNoteText} />
+            </div>
+          )}
           <div className="flex gap-3">
             <button
-              onClick={() => setShowNoteModal(false)}
+              onClick={() => { setShowNoteModal(false); setNoteIsEditing(false); }}
               className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
             >
               Discard
@@ -651,10 +690,11 @@ export default function Appointments() {
                     type: 'AI_CLINICAL_NOTE',
                     title: `Visit Note - ${new Date().toLocaleDateString()}`,
                     description: generatedNoteText,
-                    data: { generatedBy: 'claude-opus-4-6', appointmentId: selectedAppointment?.id },
+                    data: { generatedBy: 'gemini-2.5-flash', appointmentId: selectedAppointment?.id },
                   }).unwrap();
                   showToast('Visit note saved to medical records', 'success');
                   setShowNoteModal(false);
+                  setNoteIsEditing(false);
                   setGeneratedNoteText('');
                 } catch {
                   showToast('Failed to save note', 'error');

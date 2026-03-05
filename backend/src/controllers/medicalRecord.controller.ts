@@ -232,7 +232,8 @@ export const deleteCondition = async (req: AuthRequest, res: Response) => {
 export const createMedicalRecord = async (req: AuthRequest, res: Response) => {
   try {
     const clinicId = req.user!.clinicId;
-    const { patientId, type, title, description, date, data } = req.body as any;
+    const patientId = req.params.patientId || req.body.patientId;
+    const { type, title, description, date, data } = req.body as any;
 
     const record = await prisma.medicalRecord.create({
       data: {

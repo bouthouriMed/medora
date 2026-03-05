@@ -61,6 +61,29 @@ interface Condition {
 
 type TabType = 'overview' | 'vitals' | 'diagnoses' | 'prescriptions' | 'allergies' | 'conditions' | 'timeline';
 
+function MarkdownContent({ text }: { text: string }) {
+  const lines = text.split('\n');
+  return (
+    <div className="space-y-1.5 text-sm text-gray-800 dark:text-gray-200">
+      {lines.map((line, i) => {
+        if (!line.trim()) return <div key={i} className="h-2" />;
+        if (/^#{1,3}\s/.test(line)) {
+          const content = line.replace(/^#{1,3}\s+\*?\*?/, '').replace(/\*?\*?$/, '');
+          return <h3 key={i} className="font-bold text-base text-gray-900 dark:text-white mt-3 mb-1 border-b border-gray-200 dark:border-gray-600 pb-1">{content}</h3>;
+        }
+        if (/^---+$/.test(line.trim())) return <hr key={i} className="border-gray-200 dark:border-gray-600 my-2" />;
+        const formatted = line
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+        if (/^\s*[\*\-]\s+/.test(line)) {
+          return <div key={i} className="flex gap-2 pl-3"><span className="text-purple-500 mt-0.5">•</span><span dangerouslySetInnerHTML={{ __html: formatted.replace(/^\s*[\*\-]\s+/, '') }} /></div>;
+        }
+        return <p key={i} dangerouslySetInnerHTML={{ __html: formatted }} />;
+      })}
+    </div>
+  );
+}
+
 export default function PatientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -74,6 +97,7 @@ export default function PatientDetail() {
   const [showConditionModal, setShowConditionModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [generatedSummaryText, setGeneratedSummaryText] = useState('');
+  const [summaryIsEditing, setSummaryIsEditing] = useState(false);
 
   const { data: patient } = useGetPatientQuery(id || '');
   const { data: history, isLoading } = useGetPatientMedicalHistoryQuery(id || '', { skip: !id });
@@ -923,18 +947,33 @@ export default function PatientDetail() {
       </Modal>
 
       {/* AI Patient Summary Modal */}
-      <Modal isOpen={showSummaryModal} onClose={() => setShowSummaryModal(false)} title="✨ AI Clinical Summary">
+      <Modal isOpen={showSummaryModal} onClose={() => { setShowSummaryModal(false); setSummaryIsEditing(false); }} title="✨ AI Clinical Summary">
         <div className="p-6 space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Review and edit the generated summary before saving to medical records.</p>
-          <textarea
-            value={generatedSummaryText}
-            onChange={(e) => setGeneratedSummaryText(e.target.value)}
-            rows={22}
-            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm resize-none"
-          />
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-gray-500 dark:text-gray-400">AI-generated clinical summary — click to edit</p>
+            <button onClick={() => setSummaryIsEditing(!summaryIsEditing)} className="text-xs px-3 py-1 rounded-lg border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+              {summaryIsEditing ? '👁 Preview' : '✏️ Edit'}
+            </button>
+          </div>
+          {summaryIsEditing ? (
+            <textarea
+              value={generatedSummaryText}
+              onChange={(e) => setGeneratedSummaryText(e.target.value)}
+              rows={22}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm resize-none"
+              autoFocus
+            />
+          ) : (
+            <div
+              onClick={() => setSummaryIsEditing(true)}
+              className="cursor-text max-h-[32rem] overflow-y-auto border border-gray-100 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-800/50 hover:border-purple-300 dark:hover:border-purple-600 transition-colors"
+            >
+              <MarkdownContent text={generatedSummaryText} />
+            </div>
+          )}
           <div className="flex gap-3">
             <button
-              onClick={() => setShowSummaryModal(false)}
+              onClick={() => { setShowSummaryModal(false); setSummaryIsEditing(false); }}
               className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
             >
               Discard
@@ -947,10 +986,11 @@ export default function PatientDetail() {
                     type: 'AI_CLINICAL_NOTE',
                     title: `Clinical Summary - ${new Date().toLocaleDateString()}`,
                     description: generatedSummaryText,
-                    data: { generatedBy: 'claude-opus-4-6' },
+                    data: { generatedBy: 'gemini-2.5-flash' },
                   }).unwrap();
                   showToast('Summary saved to medical records', 'success');
                   setShowSummaryModal(false);
+                  setSummaryIsEditing(false);
                   setGeneratedSummaryText('');
                 } catch {
                   showToast('Failed to save summary', 'error');
