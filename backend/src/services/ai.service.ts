@@ -1,13 +1,13 @@
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-let _anthropic: Anthropic | null = null;
-function getClient(): Anthropic {
-  if (!_anthropic) {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error('ANTHROPIC_API_KEY environment variable is not set');
-    _anthropic = new Anthropic({ apiKey });
+let _client: GoogleGenerativeAI | null = null;
+function getClient(): GoogleGenerativeAI {
+  if (!_client) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error('GEMINI_API_KEY environment variable is not set');
+    _client = new GoogleGenerativeAI(apiKey);
   }
-  return _anthropic;
+  return _client;
 }
 
 interface VisitNoteInput {
@@ -93,15 +93,9 @@ ${allergiesText}
 
 Generate a complete SOAP note with the four sections: Subjective, Objective, Assessment, and Plan. Be concise and clinically appropriate. Use professional medical language.`;
 
-    const message = await getClient().messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    const content = message.content[0];
-    if (content.type !== 'text') throw new Error('Unexpected response type from AI');
-    return content.text;
+    const model = getClient().getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(prompt);
+    return result.response.text();
   }
 
   async generatePatientSummary(input: PatientSummaryInput): Promise<string> {
@@ -163,15 +157,9 @@ Generate a comprehensive clinical summary with these 5 sections:
 
 Be thorough and clinically precise. Use professional medical language suitable for handoff or referral documentation.`;
 
-    const message = await getClient().messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 2048,
-      messages: [{ role: 'user', content: prompt }],
-    });
-
-    const content = message.content[0];
-    if (content.type !== 'text') throw new Error('Unexpected response type from AI');
-    return content.text;
+    const model = getClient().getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const result = await model.generateContent(prompt);
+    return result.response.text();
   }
 }
 
