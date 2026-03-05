@@ -63,6 +63,17 @@ export class PatientRepository {
             appointment: true,
           },
         },
+        diagnoses: { orderBy: { diagnosedAt: 'desc' } },
+        prescriptions: { orderBy: { createdAt: 'desc' } },
+        allergies: true,
+        conditions: true,
+        vitals: { orderBy: { recordedAt: 'desc' }, take: 5 },
+        labResults: { orderBy: { orderedAt: 'desc' }, take: 5 },
+        medicalRecords: {
+          where: { type: 'AI_CLINICAL_NOTE' },
+          orderBy: { date: 'desc' },
+          take: 1,
+        },
       },
     });
   }

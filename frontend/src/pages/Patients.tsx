@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetPatientsQuery, useGetPatientAppointmentsQuery, useCreatePatientMutation, useDeletePatientMutation, useGetPatientQuery, useRegeneratePatientTokenMutation, useGetTagsQuery, useGetPatientTagsQuery, useAddTagToPatientMutation, useRemoveTagFromPatientMutation, useGetPatientCustomFieldsQuery, useSavePatientCustomFieldMutation } from '../api';
 import { showToast } from '../components/Toast';
@@ -15,6 +15,18 @@ export default function Patients() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [filters, setFilters] = useState({
     tag: '',
     dateFrom: '',
@@ -283,19 +295,53 @@ export default function Patients() {
                       {patient.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString() : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="flex justify-end gap-2">
+                      <div className="relative" ref={openMenuId === patient.id ? menuRef : undefined}>
                         <button
-                          onClick={() => handleViewPatient(patient)}
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                          onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === patient.id ? null : patient.id); }}
+                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
-                          {t('other.view')}
+                          <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="5" r="1.5" />
+                            <circle cx="12" cy="12" r="1.5" />
+                            <circle cx="12" cy="19" r="1.5" />
+                          </svg>
                         </button>
-                        <button
-                          onClick={() => handleDelete(patient.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                        >
-                          {t('other.archive')}
-                        </button>
+                        {openMenuId === patient.id && (
+                          <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                            <button
+                              onClick={() => { handleViewPatient(patient); setOpenMenuId(null); }}
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                              {t('other.view')}
+                            </button>
+                            <button
+                              onClick={async () => {
+                                if (patient.portalToken) {
+                                  window.open(`${window.location.origin}/portal/${patient.portalToken}`, '_blank');
+                                } else {
+                                  try {
+                                    await regenerateToken(patient.id).unwrap();
+                                    showToast(t('other.portalLinkGenerated'), 'success');
+                                  } catch { showToast(t('other.failedToGeneratePortalLink'), 'error'); }
+                                }
+                                setOpenMenuId(null);
+                              }}
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                              {t('other.patientPortal')}
+                            </button>
+                            <hr className="my-1 border-gray-100 dark:border-gray-700" />
+                            <button
+                              onClick={() => { handleDelete(patient.id); setOpenMenuId(null); }}
+                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              {t('other.archive')}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -342,13 +388,28 @@ export default function Patients() {
               <div className="flex gap-2 mt-4">
                 <button
                   onClick={() => handleViewPatient(patient)}
-                  className="flex-1 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
+                  className="flex-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                 >
                   {t('other.view')}
                 </button>
                 <button
+                  onClick={async () => {
+                    if (patient.portalToken) {
+                      window.open(`${window.location.origin}/portal/${patient.portalToken}`, '_blank');
+                    } else {
+                      try {
+                        await regenerateToken(patient.id).unwrap();
+                        showToast(t('other.portalLinkGenerated'), 'success');
+                      } catch { showToast(t('other.failedToGeneratePortalLink'), 'error'); }
+                    }
+                  }}
+                  className="flex-1 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                >
+                  {t('other.patientPortal')}
+                </button>
+                <button
                   onClick={() => handleDelete(patient.id)}
-                  className="flex-1 text-red-500 hover:bg-red-50 px-3 py-2 rounded-lg transition-colors font-medium text-center"
+                  className="flex-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                 >
                   {t('other.archive')}
                 </button>

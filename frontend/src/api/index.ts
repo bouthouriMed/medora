@@ -209,6 +209,13 @@ export const api = createApi({
     getPortalData: builder.query({
       query: (token) => `/public/patient/${token}`,
     }),
+    portalChat: builder.mutation({
+      query: ({ token, message, history }) => ({
+        url: `/public/patient/${token}/chat`,
+        method: 'POST',
+        body: { message, history },
+      }),
+    }),
     getTags: builder.query({
       query: () => '/tags',
     }),
@@ -582,6 +589,7 @@ export const {
   useCreatePresetsBulkMutation,
   useDeletePresetMutation,
   useGetPortalDataQuery,
+  usePortalChatMutation,
   useGetTagsQuery,
   useCreateTagMutation,
   useDeleteTagMutation,

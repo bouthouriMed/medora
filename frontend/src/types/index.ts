@@ -105,6 +105,49 @@ export interface Preset {
   updatedAt: string;
 }
 
+export interface PortalVital {
+  id: string;
+  bloodPressureSystolic: number | null;
+  bloodPressureDiastolic: number | null;
+  heartRate: number | null;
+  temperature: number | null;
+  weight: number | null;
+  height: number | null;
+  oxygenSat: number | null;
+  respiratoryRate: number | null;
+  recordedAt: string;
+}
+
+export interface PortalDiagnosis {
+  id: string;
+  icdCode: string;
+  description: string;
+  status: string;
+  diagnosedAt: string;
+}
+
+export interface PortalPrescription {
+  id: string;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  duration: string | null;
+  status: string;
+}
+
+export interface PortalAllergy {
+  id: string;
+  allergen: string;
+  severity: string;
+  reaction: string | null;
+}
+
+export interface PortalCondition {
+  id: string;
+  name: string;
+  status: string;
+}
+
 export interface PortalData {
   patient: Patient;
   clinic: {
@@ -116,6 +159,13 @@ export interface PortalData {
   upcomingAppointments: Appointment[];
   pastAppointments: Appointment[];
   outstandingInvoices: Invoice[];
+  diagnoses: PortalDiagnosis[];
+  prescriptions: PortalPrescription[];
+  allergies: PortalAllergy[];
+  conditions: PortalCondition[];
+  vitals: PortalVital[];
+  labResults: LabResult[];
+  summary: string | null;
 }
 
 export interface Tag {

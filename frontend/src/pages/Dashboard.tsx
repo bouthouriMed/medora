@@ -40,44 +40,40 @@ export default function Dashboard() {
   }
 
   const stats = [
-    { 
-      label: t('dashboard.todayAppointments'), 
-      value: data?.todayAppointments?.length || 0, 
+    {
+      label: t('dashboard.todayAppointments'),
+      value: data?.todayAppointments?.length || 0,
       subtext: `${data?.todayAppointments?.filter((a: Appointment) => a.status === 'COMPLETED').length || 0} ${t('appointments.completed')}`,
-      color: 'blue',
       icon: '📅',
-      gradient: 'from-blue-400 to-blue-600',
-      hover: 'hover:from-blue-500 hover:to-blue-700',
+      borderColor: 'border-blue-200 dark:border-blue-800',
+      iconColor: 'text-blue-500',
       onClick: () => navigate('/appointments?filter=today')
     },
-    { 
-      label: t('dashboard.revenue'), 
-      value: `$${(Number(data?.monthlyRevenue || 0)).toLocaleString()}`, 
+    {
+      label: t('dashboard.revenue'),
+      value: `$${(Number(data?.monthlyRevenue || 0)).toLocaleString()}`,
       subtext: `${data?.monthlyRevenueCount || 0} ${t('invoices.title').toLowerCase()}`,
-      color: 'green',
       icon: '💰',
-      gradient: 'from-green-400 to-emerald-500',
-      hover: 'hover:from-green-500 hover:to-emerald-600',
+      borderColor: 'border-green-200 dark:border-green-800',
+      iconColor: 'text-green-500',
       onClick: () => navigate('/invoices')
     },
-    { 
-      label: t('dashboard.upcomingAppointments'), 
-      value: data?.upcomingAppointments?.length || 0, 
+    {
+      label: t('dashboard.upcomingAppointments'),
+      value: data?.upcomingAppointments?.length || 0,
       subtext: t('dashboard.thisMonth'),
-      color: 'purple',
       icon: '⏰',
-      gradient: 'from-purple-400 to-violet-600',
-      hover: 'hover:from-purple-500 hover:to-violet-700',
+      borderColor: 'border-purple-200 dark:border-purple-800',
+      iconColor: 'text-purple-500',
       onClick: () => navigate('/appointments?filter=upcoming')
     },
-    { 
-      label: t('dashboard.pendingInvoices'), 
-      value: data?.unpaidInvoices || 0, 
+    {
+      label: t('dashboard.pendingInvoices'),
+      value: data?.unpaidInvoices || 0,
       subtext: t('dashboard.needsAttention'),
-      color: 'red',
       icon: '⚠️',
-      gradient: 'from-orange-400 to-red-500',
-      hover: 'hover:from-orange-500 hover:to-red-600',
+      borderColor: 'border-orange-200 dark:border-orange-800',
+      iconColor: 'text-orange-500',
       onClick: () => navigate('/invoices?status=UNPAID')
     },
   ];
@@ -106,16 +102,16 @@ export default function Dashboard() {
           <div
             key={index}
             onClick={stat.onClick}
-            className={`group cursor-pointer bg-gradient-to-br ${stat.gradient} ${stat.hover} rounded-2xl p-5 sm:p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1`}
+            className={`group cursor-pointer bg-white dark:bg-gray-800 border ${stat.borderColor} rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1`}
             style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-white/80 text-sm font-medium">{stat.label}</p>
-                <p className="text-3xl sm:text-4xl font-bold mt-1">{stat.value}</p>
-                <p className="text-white/70 text-xs mt-1">{stat.subtext}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">{stat.label}</p>
+                <p className="text-3xl sm:text-4xl font-bold mt-1 text-gray-900 dark:text-white">{stat.value}</p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">{stat.subtext}</p>
               </div>
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-xl flex items-center justify-center text-2xl sm:text-3xl backdrop-blur-sm">
+              <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gray-50 dark:bg-gray-700 rounded-xl flex items-center justify-center text-2xl sm:text-3xl`}>
                 {stat.icon}
               </div>
             </div>

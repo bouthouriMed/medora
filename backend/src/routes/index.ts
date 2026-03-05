@@ -96,6 +96,7 @@ router.post('/presets/bulk', authenticate, validate([
 router.delete('/presets/:id', authenticate, presetController.delete);
 
 router.get('/public/patient/:token', publicPortalController.getPatientByToken);
+router.post('/public/patient/:token/chat', publicPortalController.chatWithAI);
 
 router.get('/tags', authenticate, tagController.getAllTags);
 router.post('/tags', authenticate, validate([

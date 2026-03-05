@@ -161,6 +161,80 @@ Be thorough and clinically precise. Use professional medical language suitable f
     const result = await model.generateContent(prompt);
     return result.response.text();
   }
+  async portalChat(input: {
+    patient: { firstName: string; lastName: string; dateOfBirth?: string | null };
+    history: {
+      diagnoses: Array<{ icdCode: string; description: string; status: string }>;
+      prescriptions: Array<{ medication: string; dosage: string; frequency: string; status: string }>;
+      allergies: Array<{ allergen: string; severity: string; reaction?: string | null }>;
+      conditions: Array<{ name: string; status: string }>;
+      vitals: Array<{ bloodPressureSystolic?: number | null; bloodPressureDiastolic?: number | null; heartRate?: number | null; temperature?: number | null; weight?: number | null; oxygenSat?: number | null; recordedAt: string }>;
+      labResults: Array<{ testName: string; result: string | null; status: string; orderedAt: string }>;
+    };
+    message: string;
+    conversationHistory: Array<{ role: string; content: string }>;
+  }): Promise<string> {
+    const { patient, history, message, conversationHistory } = input;
+
+    const age = patient.dateOfBirth
+      ? Math.floor((Date.now() - new Date(patient.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+      : null;
+
+    const diagnosesText = history.diagnoses.map(d => `- ${d.description} (${d.icdCode}) [${d.status}]`).join('\n') || 'None on record';
+    const medsText = history.prescriptions.map(p => `- ${p.medication} ${p.dosage}, ${p.frequency} [${p.status}]`).join('\n') || 'None on record';
+    const allergiesText = history.allergies.map(a => `- ${a.allergen} (${a.severity})${a.reaction ? ': ' + a.reaction : ''}`).join('\n') || 'No known allergies';
+    const conditionsText = history.conditions.map(c => `- ${c.name} [${c.status}]`).join('\n') || 'None on record';
+    const vitalsText = history.vitals.map(v => {
+      const parts = [];
+      if (v.bloodPressureSystolic) parts.push(`BP ${v.bloodPressureSystolic}/${v.bloodPressureDiastolic}`);
+      if (v.heartRate) parts.push(`HR ${v.heartRate}`);
+      if (v.temperature) parts.push(`Temp ${v.temperature}°F`);
+      if (v.weight) parts.push(`Weight ${v.weight}kg`);
+      if (v.oxygenSat) parts.push(`O2 ${v.oxygenSat}%`);
+      return `[${new Date(v.recordedAt).toLocaleDateString()}] ${parts.join(', ')}`;
+    }).join('\n') || 'No vitals recorded';
+    const labsText = history.labResults.map(l => `- ${l.testName}: ${l.result || 'Pending'} [${l.status}] (${new Date(l.orderedAt).toLocaleDateString()})`).join('\n') || 'No lab results';
+
+    const conversationText = conversationHistory.map(m => `${m.role === 'user' ? 'Patient' : 'Assistant'}: ${m.content}`).join('\n');
+
+    const prompt = `You are a friendly, helpful health assistant for a patient portal. You help patients understand their health information in simple, easy-to-understand language. Avoid medical jargon when possible, and explain terms simply when you must use them.
+
+IMPORTANT RULES:
+- Be warm, empathetic, and encouraging
+- Use simple language a non-medical person can understand
+- When discussing serious conditions or symptoms, always recommend the patient contact their healthcare provider
+- Never diagnose or prescribe - only help them understand existing records
+- If asked about something not in their records, say you don't have that information and suggest asking their doctor
+- Keep responses concise but helpful
+
+PATIENT INFORMATION:
+Name: ${patient.firstName} ${patient.lastName}${age ? `, ${age} years old` : ''}
+
+Diagnoses:
+${diagnosesText}
+
+Medications:
+${medsText}
+
+Allergies:
+${allergiesText}
+
+Conditions:
+${conditionsText}
+
+Recent Vitals:
+${vitalsText}
+
+Recent Lab Results:
+${labsText}
+
+${conversationText ? `PREVIOUS CONVERSATION:\n${conversationText}\n` : ''}
+Patient's question: ${message}`;
+
+    const model = getClient().getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  }
 }
 
 export default new AiService();

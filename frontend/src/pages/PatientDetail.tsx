@@ -453,25 +453,25 @@ export default function PatientDetail() {
 
           {/* Quick Stats */}
           <div className="lg:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-white">
-              <Icons.activity size={24} className="mb-2" />
-              <p className="text-3xl font-bold">{activeDiagnoses.length}</p>
-              <p className="text-blue-100">{t('other.activeDiagnoses')}</p>
+            <div className="bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-2xl p-5">
+              <Icons.activity size={24} className="mb-2 text-blue-500" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{activeDiagnoses.length}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('other.activeDiagnoses')}</p>
             </div>
-            <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-5 text-white">
-              <Icons.pill size={24} className="mb-2" />
-              <p className="text-3xl font-bold">{activePrescriptions.length}</p>
-              <p className="text-purple-100">{t('other.activeRxs')}</p>
+            <div className="bg-white dark:bg-gray-800 border border-purple-200 dark:border-purple-800 rounded-2xl p-5">
+              <Icons.pill size={24} className="mb-2 text-purple-500" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{activePrescriptions.length}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('other.activeRxs')}</p>
             </div>
-            <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl p-5 text-white">
-              <Icons.alert size={24} className="mb-2" />
-              <p className="text-3xl font-bold">{history?.allergies?.length || 0}</p>
-              <p className="text-red-100">{t('other.allergies')}</p>
+            <div className="bg-white dark:bg-gray-800 border border-red-200 dark:border-red-800 rounded-2xl p-5">
+              <Icons.alert size={24} className="mb-2 text-red-500" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{history?.allergies?.length || 0}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('other.allergies')}</p>
             </div>
-            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-5 text-white">
-              <Icons.heart size={24} className="mb-2" />
-              <p className="text-3xl font-bold">{history?.conditions?.length || 0}</p>
-              <p className="text-green-100">{t('other.conditions')}</p>
+            <div className="bg-white dark:bg-gray-800 border border-green-200 dark:border-green-800 rounded-2xl p-5">
+              <Icons.heart size={24} className="mb-2 text-green-500" />
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{history?.conditions?.length || 0}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">{t('other.conditions')}</p>
             </div>
           </div>
 
