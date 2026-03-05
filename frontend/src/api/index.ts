@@ -515,6 +515,28 @@ export const api = createApi({
         { type: 'PatientMedicalHistory', id: patientId },
       ],
     }),
+    generateVisitNote: builder.mutation({
+      query: ({ id }) => ({
+        url: `/appointments/${id}/generate-note`,
+        method: 'POST',
+      }),
+    }),
+    generatePatientSummary: builder.mutation({
+      query: ({ patientId }) => ({
+        url: `/patients/${patientId}/generate-summary`,
+        method: 'POST',
+      }),
+    }),
+    createMedicalRecord: builder.mutation({
+      query: ({ patientId, ...body }) => ({
+        url: `/patients/${patientId}/medical-records`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (result, error, { patientId }) => [
+        { type: 'PatientMedicalHistory', id: patientId },
+      ],
+    }),
   }),
 });
 
@@ -591,4 +613,7 @@ export const {
   useDeleteAllergyMutation,
   useCreateConditionMutation,
   useDeleteConditionMutation,
+  useGenerateVisitNoteMutation,
+  useGeneratePatientSummaryMutation,
+  useCreateMedicalRecordMutation,
 } = api;

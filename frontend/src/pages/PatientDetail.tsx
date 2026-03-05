@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetPatientQuery, useGetPatientMedicalHistoryQuery, useCreateVitalMutation, useCreateDiagnosisMutation, useUpdateDiagnosisMutation, useDeleteDiagnosisMutation, useCreatePrescriptionMutation, useUpdatePrescriptionMutation, useDeletePrescriptionMutation, useCreateAllergyMutation, useDeleteAllergyMutation, useCreateConditionMutation, useDeleteConditionMutation, useGetUsersQuery } from '../api';
+import { useGetPatientQuery, useGetPatientMedicalHistoryQuery, useCreateVitalMutation, useCreateDiagnosisMutation, useUpdateDiagnosisMutation, useDeleteDiagnosisMutation, useCreatePrescriptionMutation, useUpdatePrescriptionMutation, useDeletePrescriptionMutation, useCreateAllergyMutation, useDeleteAllergyMutation, useCreateConditionMutation, useDeleteConditionMutation, useGetUsersQuery, useGeneratePatientSummaryMutation, useCreateMedicalRecordMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { Icons } from '../components/Icons';
 import Modal from '../components/Modal';
@@ -72,6 +72,8 @@ export default function PatientDetail() {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [showAllergyModal, setShowAllergyModal] = useState(false);
   const [showConditionModal, setShowConditionModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [generatedSummaryText, setGeneratedSummaryText] = useState('');
 
   const { data: patient } = useGetPatientQuery(id || '');
   const { data: history, isLoading } = useGetPatientMedicalHistoryQuery(id || '', { skip: !id });
@@ -88,6 +90,8 @@ export default function PatientDetail() {
   const [deleteAllergy] = useDeleteAllergyMutation();
   const [createCondition] = useCreateConditionMutation();
   const [deleteCondition] = useDeleteConditionMutation();
+  const [generatePatientSummary, { isLoading: isGeneratingSummary }] = useGeneratePatientSummaryMutation();
+  const [createMedicalRecord, { isLoading: isSavingSummary }] = useCreateMedicalRecordMutation();
 
   const [vitalForm, setVitalForm] = useState({
     bloodPressureSystolic: '',
@@ -235,6 +239,29 @@ export default function PatientDetail() {
           </div>
         </div>
         <div className="flex gap-2">
+          <button
+            onClick={async () => {
+              try {
+                const result = await generatePatientSummary({ patientId: id }).unwrap();
+                setGeneratedSummaryText(result.generatedText);
+                setShowSummaryModal(true);
+              } catch {
+                showToast('Failed to generate summary', 'error');
+              }
+            }}
+            disabled={isGeneratingSummary}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
+          >
+            {isGeneratingSummary ? (
+              <>
+                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Generating...
+              </>
+            ) : '✨ AI Summary'}
+          </button>
           {hasPermission(user, 'create_medical_records') && (
             <button onClick={() => setShowVitalModal(true)} className="btn-gradient px-4 py-2 rounded-xl text-white font-medium">
               + {t('medical.recordVitals')}
@@ -892,6 +919,49 @@ export default function PatientDetail() {
                 <button type="submit" className="flex-1 btn-gradient text-white py-2 rounded-lg">{t('common.save')}</button>
               </div>
             </form>
+        </div>
+      </Modal>
+
+      {/* AI Patient Summary Modal */}
+      <Modal isOpen={showSummaryModal} onClose={() => setShowSummaryModal(false)} title="✨ AI Clinical Summary">
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Review and edit the generated summary before saving to medical records.</p>
+          <textarea
+            value={generatedSummaryText}
+            onChange={(e) => setGeneratedSummaryText(e.target.value)}
+            rows={22}
+            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm resize-none"
+          />
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowSummaryModal(false)}
+              className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
+            >
+              Discard
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  await createMedicalRecord({
+                    patientId: id,
+                    type: 'AI_CLINICAL_NOTE',
+                    title: `Clinical Summary - ${new Date().toLocaleDateString()}`,
+                    description: generatedSummaryText,
+                    data: { generatedBy: 'claude-opus-4-6' },
+                  }).unwrap();
+                  showToast('Summary saved to medical records', 'success');
+                  setShowSummaryModal(false);
+                  setGeneratedSummaryText('');
+                } catch {
+                  showToast('Failed to save summary', 'error');
+                }
+              }}
+              disabled={isSavingSummary}
+              className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors"
+            >
+              {isSavingSummary ? 'Saving...' : 'Save to Records'}
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

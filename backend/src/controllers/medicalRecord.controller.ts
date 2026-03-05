@@ -1,5 +1,6 @@
 import { Response } from 'express';
 import prisma from '../utils/prisma';
+import aiService from '../services/ai.service';
 import type { AuthRequest } from '../types/express.d';
 
 export const getPatientMedicalHistory = async (req: AuthRequest, res: Response) => {
@@ -249,5 +250,86 @@ export const createMedicalRecord = async (req: AuthRequest, res: Response) => {
     res.json(record);
   } catch (error) {
     res.status(500).json({ error: 'Failed to create medical record' });
+  }
+};
+
+export const generateVisitNote = async (req: AuthRequest, res: Response) => {
+  try {
+    const clinicId = req.user!.clinicId;
+    const appointmentId = req.params.id;
+
+    const appointment = await prisma.appointment.findFirst({
+      where: { id: appointmentId, clinicId },
+      include: {
+        doctor: true,
+        patient: true,
+      },
+    });
+
+    if (!appointment) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+
+    const history = await prisma.patient.findFirst({
+      where: { id: appointment.patientId, clinicId },
+      include: {
+        vitals: { orderBy: { recordedAt: 'desc' }, take: 3 },
+        diagnoses: { orderBy: { diagnosedAt: 'desc' }, take: 10 },
+        prescriptions: { orderBy: { createdAt: 'desc' }, take: 10 },
+        allergies: true,
+        conditions: true,
+      },
+    });
+
+    const generatedText = await aiService.generateVisitNote({
+      appointment: {
+        dateTime: appointment.dateTime.toISOString(),
+        notes: appointment.notes,
+        type: (appointment as any).type ?? null,
+        status: appointment.status,
+        doctor: appointment.doctor as any,
+        patient: appointment.patient as any,
+      },
+      history: history as any || {},
+    });
+
+    res.json({ generatedText, patientId: appointment.patientId });
+  } catch (error) {
+    console.error('generateVisitNote error:', error);
+    res.status(500).json({ error: 'Failed to generate visit note' });
+  }
+};
+
+export const generatePatientSummary = async (req: AuthRequest, res: Response) => {
+  try {
+    const clinicId = req.user!.clinicId;
+    const { patientId } = req.params;
+
+    const patient = await prisma.patient.findFirst({
+      where: { id: patientId, clinicId },
+      include: {
+        vitals: { orderBy: { recordedAt: 'desc' }, take: 10 },
+        diagnoses: { orderBy: { diagnosedAt: 'desc' } },
+        prescriptions: { orderBy: { createdAt: 'desc' } },
+        allergies: true,
+        conditions: true,
+        labResults: { orderBy: { orderedAt: 'desc' }, take: 10 },
+        medicalRecords: { orderBy: { date: 'desc' }, take: 5 },
+      },
+    });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+    const generatedText = await aiService.generatePatientSummary({
+      patient: patient as any,
+      history: patient as any,
+    });
+
+    res.json({ generatedText, patientId });
+  } catch (error) {
+    console.error('generatePatientSummary error:', error);
+    res.status(500).json({ error: 'Failed to generate patient summary' });
   }
 };

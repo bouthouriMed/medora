@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation } from '../api';
+import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation, useGenerateVisitNoteMutation, useCreateMedicalRecordMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportAppointments, generateICS } from '../utils/export';
 import CalendarView from '../components/CalendarView';
@@ -13,6 +13,9 @@ export default function Appointments() {
   const [showModal, setShowModal] = useState(false);
   const [showRecurring, setShowRecurring] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [generatedNoteText, setGeneratedNoteText] = useState('');
+  const [notePatientId, setNotePatientId] = useState('');
   const [view, setView] = useState<'list' | 'calendar'>('list');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [searchParams, setSearchParams] = useSearchParams();
@@ -105,6 +108,8 @@ export default function Appointments() {
   const { data: recurringAppointments } = useGetRecurringAppointmentsQuery(undefined);
   const [createRecurringAppointment] = useCreateRecurringAppointmentMutation();
   const [deleteRecurringAppointment] = useDeleteRecurringAppointmentMutation();
+  const [generateVisitNote, { isLoading: isGeneratingNote }] = useGenerateVisitNoteMutation();
+  const [createMedicalRecord, { isLoading: isSavingNote }] = useCreateMedicalRecordMutation();
 
   const doctors = users?.filter((u: User) => u.role === 'DOCTOR') || [];
 
@@ -587,6 +592,31 @@ export default function Appointments() {
                 </div>
               )}
               <button
+                onClick={async () => {
+                  if (!selectedAppointment) return;
+                  try {
+                    const result = await generateVisitNote({ id: selectedAppointment.id }).unwrap();
+                    setGeneratedNoteText(result.generatedText);
+                    setNotePatientId(result.patientId);
+                    setShowNoteModal(true);
+                  } catch {
+                    showToast('Failed to generate note', 'error');
+                  }
+                }}
+                disabled={isGeneratingNote}
+                className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                {isGeneratingNote ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Generating...
+                  </>
+                ) : '✨ Generate AI Visit Note'}
+              </button>
+              <button
                 onClick={() => setSelectedAppointment(null)}
                 className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
               >
@@ -595,6 +625,49 @@ export default function Appointments() {
             </div>
           </div>
         </Modal>
+
+      {/* AI Visit Note Modal */}
+      <Modal isOpen={showNoteModal} onClose={() => setShowNoteModal(false)} title="✨ AI-Generated Visit Note">
+        <div className="p-6 space-y-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">Review and edit the generated note before saving to medical records.</p>
+          <textarea
+            value={generatedNoteText}
+            onChange={(e) => setGeneratedNoteText(e.target.value)}
+            rows={18}
+            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm resize-none"
+          />
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowNoteModal(false)}
+              className="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors"
+            >
+              Discard
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  await createMedicalRecord({
+                    patientId: notePatientId,
+                    type: 'AI_CLINICAL_NOTE',
+                    title: `Visit Note - ${new Date().toLocaleDateString()}`,
+                    description: generatedNoteText,
+                    data: { generatedBy: 'claude-opus-4-6', appointmentId: selectedAppointment?.id },
+                  }).unwrap();
+                  showToast('Visit note saved to medical records', 'success');
+                  setShowNoteModal(false);
+                  setGeneratedNoteText('');
+                } catch {
+                  showToast('Failed to save note', 'error');
+                }
+              }}
+              disabled={isSavingNote}
+              className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors"
+            >
+              {isSavingNote ? 'Saving...' : 'Save to Records'}
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Create Appointment Modal */}
       <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('appointments.newAppointment')}>
