@@ -14,7 +14,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Patient', 'Appointment', 'Invoice', 'Dashboard', 'Preset', 'Tag', 'CustomField', 'NoteTemplate', 'RecurringAppointment', 'LabResult', 'Task', 'PatientMedicalHistory'],
+  tagTypes: ['Patient', 'Appointment', 'Invoice', 'Dashboard', 'Preset', 'Tag', 'CustomField', 'NoteTemplate', 'RecurringAppointment', 'LabResult', 'Task', 'PatientMedicalHistory', 'Waitlist', 'Rating', 'Message', 'Insurance', 'PrescriptionRequest', 'Payment'],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (body) => ({
@@ -554,6 +554,139 @@ export const api = createApi({
         { type: 'PatientMedicalHistory', id: patientId },
       ],
     }),
+
+    // Analytics
+    getAnalytics: builder.query({
+      query: () => '/dashboard/analytics',
+      providesTags: ['Dashboard'],
+    }),
+    getSmartScheduling: builder.query({
+      query: () => '/dashboard/smart-scheduling',
+      providesTags: ['Dashboard', 'Waitlist', 'Appointment'],
+    }),
+
+    // Waitlist
+    getWaitlist: builder.query({
+      query: (status) => ({ url: '/waitlist', params: status ? { status } : undefined }),
+      providesTags: ['Waitlist'],
+    }),
+    createWaitlistEntry: builder.mutation({
+      query: (body) => ({ url: '/waitlist', method: 'POST', body }),
+      invalidatesTags: ['Waitlist'],
+    }),
+    updateWaitlistEntry: builder.mutation({
+      query: ({ id, ...body }) => ({ url: `/waitlist/${id}`, method: 'PUT', body }),
+      invalidatesTags: ['Waitlist'],
+    }),
+    deleteWaitlistEntry: builder.mutation({
+      query: (id) => ({ url: `/waitlist/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Waitlist'],
+    }),
+    bookFromWaitlist: builder.mutation({
+      query: ({ id, ...body }) => ({ url: `/waitlist/${id}/book`, method: 'POST', body }),
+      invalidatesTags: ['Waitlist', 'Appointment'],
+    }),
+
+    // Doctor Ratings
+    getDoctorRatingSummaries: builder.query({
+      query: () => '/ratings',
+      providesTags: ['Rating'],
+    }),
+    getDoctorRatings: builder.query({
+      query: (doctorId) => `/ratings/${doctorId}`,
+      providesTags: ['Rating'],
+    }),
+    createRating: builder.mutation({
+      query: (body) => ({ url: '/ratings', method: 'POST', body }),
+      invalidatesTags: ['Rating'],
+    }),
+
+    // Messages
+    getMessages: builder.query({
+      query: (patientId) => ({ url: '/messages', params: patientId ? { patientId } : undefined }),
+      providesTags: ['Message'],
+    }),
+    getConversation: builder.query({
+      query: (otherId) => `/messages/${otherId}`,
+      providesTags: ['Message'],
+    }),
+    sendMessage: builder.mutation({
+      query: (body) => ({ url: '/messages', method: 'POST', body }),
+      invalidatesTags: ['Message'],
+    }),
+    getUnreadCount: builder.query({
+      query: () => '/messages/unread',
+    }),
+
+    // Insurance Claims
+    getInsuranceClaims: builder.query({
+      query: (params) => ({ url: '/insurance', params }),
+      providesTags: ['Insurance'],
+    }),
+    getInsuranceStats: builder.query({
+      query: () => '/insurance/stats',
+      providesTags: ['Insurance'],
+    }),
+    createInsuranceClaim: builder.mutation({
+      query: (body) => ({ url: '/insurance', method: 'POST', body }),
+      invalidatesTags: ['Insurance'],
+    }),
+    updateInsuranceClaim: builder.mutation({
+      query: ({ id, ...body }) => ({ url: `/insurance/${id}`, method: 'PUT', body }),
+      invalidatesTags: ['Insurance'],
+    }),
+    deleteInsuranceClaim: builder.mutation({
+      query: (id) => ({ url: `/insurance/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Insurance'],
+    }),
+
+    // Prescription Requests
+    getPrescriptionRequests: builder.query({
+      query: (params) => ({ url: '/prescription-requests', params }),
+      providesTags: ['PrescriptionRequest'],
+    }),
+    reviewPrescriptionRequest: builder.mutation({
+      query: ({ id, ...body }) => ({ url: `/prescription-requests/${id}`, method: 'PUT', body }),
+      invalidatesTags: ['PrescriptionRequest'],
+    }),
+
+    // Clinical Decision Support
+    checkDrugInteractions: builder.mutation({
+      query: (body) => ({ url: '/clinical/drug-interactions', method: 'POST', body }),
+    }),
+    checkAllergyConflict: builder.mutation({
+      query: (body) => ({ url: '/clinical/allergy-check', method: 'POST', body }),
+    }),
+    getDoctorBriefing: builder.query({
+      query: ({ patientId, reason }) => ({ url: `/clinical/briefing/${patientId}`, params: reason ? { reason } : undefined }),
+    }),
+
+    // Portal Messages & Prescription Requests
+    getPortalMessages: builder.query({
+      query: (token) => `/public/patient/${token}/messages`,
+    }),
+    sendPortalMessage: builder.mutation({
+      query: ({ token, ...body }) => ({ url: `/public/patient/${token}/messages`, method: 'POST', body }),
+    }),
+    createPortalPrescriptionRequest: builder.mutation({
+      query: ({ token, ...body }) => ({ url: `/public/patient/${token}/prescription-request`, method: 'POST', body }),
+    }),
+    createPublicRating: builder.mutation({
+      query: ({ clinicId, ...body }) => ({ url: `/public/clinic/${clinicId}/rating`, method: 'POST', body }),
+    }),
+
+    // Payments
+    getPayments: builder.query({
+      query: () => '/payments',
+      providesTags: ['Payment'],
+    }),
+    createCheckoutSession: builder.mutation({
+      query: (body) => ({ url: '/payments/checkout', method: 'POST', body }),
+    }),
+    recordManualPayment: builder.mutation({
+      query: (body) => ({ url: '/payments/manual', method: 'POST', body }),
+      invalidatesTags: ['Payment', 'Invoice'],
+    }),
   }),
 });
 
@@ -635,4 +768,44 @@ export const {
   useGeneratePatientSummaryMutation,
   useCreateMedicalRecordMutation,
   useUpdateMedicalRecordMutation,
+  // Analytics
+  useGetAnalyticsQuery,
+  useGetSmartSchedulingQuery,
+  // Waitlist
+  useGetWaitlistQuery,
+  useCreateWaitlistEntryMutation,
+  useUpdateWaitlistEntryMutation,
+  useDeleteWaitlistEntryMutation,
+  useBookFromWaitlistMutation,
+  // Doctor Ratings
+  useGetDoctorRatingSummariesQuery,
+  useGetDoctorRatingsQuery,
+  useCreateRatingMutation,
+  // Messages
+  useGetMessagesQuery,
+  useGetConversationQuery,
+  useSendMessageMutation,
+  useGetUnreadCountQuery,
+  // Insurance
+  useGetInsuranceClaimsQuery,
+  useGetInsuranceStatsQuery,
+  useCreateInsuranceClaimMutation,
+  useUpdateInsuranceClaimMutation,
+  useDeleteInsuranceClaimMutation,
+  // Prescription Requests
+  useGetPrescriptionRequestsQuery,
+  useReviewPrescriptionRequestMutation,
+  // Clinical Decision Support
+  useCheckDrugInteractionsMutation,
+  useCheckAllergyConflictMutation,
+  useGetDoctorBriefingQuery,
+  // Portal extensions
+  useGetPortalMessagesQuery,
+  useSendPortalMessageMutation,
+  useCreatePortalPrescriptionRequestMutation,
+  useCreatePublicRatingMutation,
+  // Payments
+  useGetPaymentsQuery,
+  useCreateCheckoutSessionMutation,
+  useRecordManualPaymentMutation,
 } = api;

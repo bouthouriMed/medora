@@ -235,6 +235,170 @@ Patient's question: ${message}`;
     const result = await model.generateContent(prompt);
     return result.response.text();
   }
+
+  async generateDoctorBriefing(input: {
+    patient: { firstName: string; lastName: string; dateOfBirth?: string | null };
+    history: {
+      vitals?: Array<{ bloodPressureSystolic?: number | null; bloodPressureDiastolic?: number | null; heartRate?: number | null; temperature?: number | null; weight?: number | null; oxygenSat?: number | null; recordedAt: string }>;
+      diagnoses?: Array<{ icdCode: string; description: string; status: string; diagnosedAt: string }>;
+      prescriptions?: Array<{ medication: string; dosage: string; frequency: string; status: string; startDate: string }>;
+      allergies?: Array<{ allergen: string; severity: string; reaction?: string | null }>;
+      conditions?: Array<{ name: string; status: string }>;
+      labResults?: Array<{ testName: string; result: string | null; status: string; orderedAt: string }>;
+      appointments?: Array<{ dateTime: string; status: string; notes?: string | null }>;
+    };
+    appointmentReason?: string;
+  }): Promise<{ summary: string; risks: string[]; suggestedQuestions: string[]; keyAlerts: string[] }> {
+    const { patient, history, appointmentReason } = input;
+
+    const age = patient.dateOfBirth
+      ? Math.floor((Date.now() - new Date(patient.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+      : null;
+
+    const vitalsText = history.vitals?.slice(0, 3).map(v => {
+      const parts = [];
+      if (v.bloodPressureSystolic) parts.push(`BP ${v.bloodPressureSystolic}/${v.bloodPressureDiastolic}`);
+      if (v.heartRate) parts.push(`HR ${v.heartRate}`);
+      if (v.temperature) parts.push(`T ${v.temperature}°F`);
+      if (v.weight) parts.push(`Wt ${v.weight}kg`);
+      if (v.oxygenSat) parts.push(`SpO2 ${v.oxygenSat}%`);
+      return `[${new Date(v.recordedAt).toLocaleDateString()}] ${parts.join(', ')}`;
+    }).join('\n') || 'No vitals';
+
+    const diagnosesText = history.diagnoses?.map(d => `- [${d.status}] ${d.icdCode}: ${d.description}`).join('\n') || 'None';
+    const medsText = history.prescriptions?.map(p => `- [${p.status}] ${p.medication} ${p.dosage} ${p.frequency}`).join('\n') || 'None';
+    const allergiesText = history.allergies?.map(a => `- ${a.allergen} (${a.severity})${a.reaction ? ': ' + a.reaction : ''}`).join('\n') || 'NKDA';
+    const conditionsText = history.conditions?.map(c => `- [${c.status}] ${c.name}`).join('\n') || 'None';
+    const labsText = history.labResults?.slice(0, 5).map(l => `- ${l.testName}: ${l.result || 'Pending'} [${l.status}]`).join('\n') || 'None';
+    const recentVisits = history.appointments?.slice(0, 5).map(a => `- ${new Date(a.dateTime).toLocaleDateString()} [${a.status}]${a.notes ? ': ' + a.notes.substring(0, 100) : ''}`).join('\n') || 'No recent visits';
+
+    const prompt = `You are a clinical decision support system. Generate a pre-consultation briefing for a doctor about to see a patient.
+
+PATIENT: ${patient.firstName} ${patient.lastName}${age ? `, ${age} years old` : ''}
+${appointmentReason ? `REASON FOR VISIT: ${appointmentReason}` : ''}
+
+VITALS: ${vitalsText}
+DIAGNOSES: ${diagnosesText}
+MEDICATIONS: ${medsText}
+ALLERGIES: ${allergiesText}
+CONDITIONS: ${conditionsText}
+LAB RESULTS: ${labsText}
+RECENT VISITS: ${recentVisits}
+
+Respond in JSON only:
+{
+  "summary": "2-3 sentence patient overview for the doctor to read in 10 seconds",
+  "risks": ["list of important risk factors or concerns"],
+  "suggestedQuestions": ["3-5 questions the doctor should ask based on the patient's history"],
+  "keyAlerts": ["any critical alerts: drug interactions, abnormal labs, overdue screenings, allergy concerns"]
+}`;
+
+    try {
+      const model = getClient().getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      return { summary: 'Unable to generate briefing', risks: [], suggestedQuestions: [], keyAlerts: [] };
+    } catch {
+      return { summary: 'AI service unavailable', risks: [], suggestedQuestions: [], keyAlerts: [] };
+    }
+  }
+
+  async checkDrugInteractions(medications: string[]): Promise<{ interactions: Array<{ drug1: string; drug2: string; severity: string; description: string }> }> {
+    if (medications.length < 2) return { interactions: [] };
+
+    const prompt = `You are a pharmacology expert. Check for drug interactions between these medications:
+${medications.map(m => `- ${m}`).join('\n')}
+
+Respond in JSON only:
+{
+  "interactions": [
+    { "drug1": "med1", "drug2": "med2", "severity": "mild|moderate|severe|contraindicated", "description": "brief description of interaction" }
+  ]
+}
+
+Only include real, clinically significant interactions. If no interactions exist, return empty array.`;
+
+    try {
+      const model = getClient().getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      return { interactions: [] };
+    } catch {
+      return { interactions: [] };
+    }
+  }
+
+  async checkAllergyConflicts(allergies: string[], medication: string): Promise<{ hasConflict: boolean; details: string }> {
+    if (allergies.length === 0) return { hasConflict: false, details: '' };
+
+    const prompt = `You are a pharmacology expert. Check if prescribing "${medication}" could be dangerous for a patient with these allergies:
+${allergies.map(a => `- ${a}`).join('\n')}
+
+Respond in JSON only:
+{ "hasConflict": true/false, "details": "explanation if conflict exists, empty if not" }`;
+
+    try {
+      const model = getClient().getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) return JSON.parse(jsonMatch[0]);
+      return { hasConflict: false, details: '' };
+    } catch {
+      return { hasConflict: false, details: '' };
+    }
+  }
+
+  async triagePatient(symptoms: string, medicalHistory?: {
+    conditions?: Array<{ name: string; status: string }>;
+    medications?: Array<{ medication: string; dosage: string; frequency: string }>;
+    allergies?: Array<{ allergen: string; severity: string }>;
+  }): Promise<{ urgency: 'emergency' | 'urgent' | 'routine' | 'telehealth'; recommendation: string; reason: string }> {
+    const conditionsText = medicalHistory?.conditions?.map(c => `${c.name} [${c.status}]`).join('\n') || 'None';
+    const medicationsText = medicalHistory?.medications?.map(m => `${m.medication} ${m.dosage}`).join('\n') || 'None';
+    const allergiesText = medicalHistory?.allergies?.map(a => `${a.allergen} (${a.severity})`).join('\n') || 'None';
+
+    const prompt = `You are a medical triage assistant. Based on the patient's symptoms and medical history, determine the appropriate urgency level and recommendation.
+
+Respond in JSON format only:
+{
+  "urgency": "emergency" | "urgent" | "routine" | "telehealth",
+  "recommendation": "One sentence recommendation",
+  "reason": "Brief explanation (2-3 sentences max)"
+}
+
+Urgency definitions:
+- emergency: Requires immediate medical attention (call emergency services)
+- urgent: Should be seen within 24 hours
+- routine: Can wait for a regular appointment
+- telehealth: Suitable for video consultation
+
+Patient Symptoms: ${symptoms}
+
+Medical History:
+Conditions: ${conditionsText}
+Current Medications: ${medicationsText}
+Allergies: ${allergiesText}
+
+CRITICAL: If symptoms suggest heart attack, stroke, severe bleeding, difficulty breathing, or other life-threatening conditions, ALWAYS return "emergency".`;
+
+    try {
+      const model = getClient().getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      return { urgency: 'routine', recommendation: 'Schedule a regular appointment', reason: 'Unable to parse AI response' };
+    } catch (error) {
+      return { urgency: 'routine', recommendation: 'Schedule an appointment', reason: 'AI service unavailable' };
+    }
+  }
 }
 
 export default new AiService();

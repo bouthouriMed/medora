@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import path from 'path';
 import { execSync } from 'child_process';
 import routes from './routes/index';
+import { handleWebhook } from './controllers/payment.controller';
 import { connectRedis } from './utils/redis';
 
 import dotenv from 'dotenv';
@@ -16,6 +17,10 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
+
+// Stripe webhook needs raw body - must be before express.json()
+app.post('/api/payments/webhook', express.raw({ type: 'application/json' }), handleWebhook);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -1,8 +1,157 @@
 import { Response, Request } from 'express';
 import patientRepository from '../repositories/patient.repository';
+import clinicRepository from '../repositories/clinic.repository';
+import userRepository from '../repositories/user.repository';
+import appointmentRepository from '../repositories/appointment.repository';
 import aiService from '../services/ai.service';
+import prisma from '../utils/prisma';
 
 export class PublicPortalController {
+  async triageSymptoms(req: Request, res: Response) {
+    try {
+      const { symptoms, conditions, medications, allergies } = req.body;
+      
+      const result = await aiService.triagePatient(symptoms, {
+        conditions,
+        medications,
+        allergies,
+      });
+      
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  }
+
+  async getClinicDoctors(req: Request, res: Response) {
+    try {
+      const { clinicId } = req.params;
+      
+      const clinic = await clinicRepository.findById(clinicId);
+      if (!clinic) {
+        return res.status(404).json({ error: 'Clinic not found' });
+      }
+
+      const doctors = await userRepository.findByClinic(clinicId);
+      const doctorList = doctors
+        .filter(d => d.role === 'DOCTOR')
+        .map(d => ({
+          id: d.id,
+          firstName: d.firstName,
+          lastName: d.lastName,
+          email: d.email,
+        }));
+
+      res.json({ clinic: { name: clinic.name, address: clinic.address, phone: clinic.phone }, doctors: doctorList });
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  }
+
+  async requestAppointment(req: Request, res: Response) {
+    try {
+      const { clinicId } = req.params;
+      const { patientName, patientEmail, patientPhone, doctorId, dateTime, reason } = req.body;
+
+      const clinic = await clinicRepository.findById(clinicId);
+      if (!clinic) {
+        return res.status(404).json({ error: 'Clinic not found' });
+      }
+
+      let patient = null;
+      if (patientEmail) {
+        patient = await prisma.patient.findFirst({
+          where: { clinicId, email: patientEmail, deletedAt: null },
+        });
+      }
+
+      const appointmentDate = new Date(dateTime);
+      
+      if (patient) {
+        const appointment = await appointmentRepository.create({
+          patientId: patient.id,
+          doctorId,
+          clinicId,
+          dateTime: appointmentDate,
+          notes: reason,
+        });
+        
+        return res.status(201).json({ 
+          message: 'Appointment requested successfully',
+          appointmentId: appointment.id,
+          patientExists: true,
+        });
+      } else {
+        await prisma.appointmentRequest.create({
+          data: {
+            clinicId,
+            patientName,
+            patientEmail,
+            patientPhone,
+            doctorId,
+            requestedDateTime: appointmentDate,
+            reason,
+            status: 'PENDING',
+          },
+        });
+
+        return res.status(201).json({ 
+          message: 'Appointment requested successfully. The clinic will contact you to confirm.',
+          patientExists: false,
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  }
+
+  async getAvailableSlots(req: Request, res: Response) {
+    try {
+      const { clinicId, doctorId, date } = req.params;
+      
+      const dayStart = new Date(date);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      const existingAppointments = await prisma.appointment.findMany({
+        where: {
+          clinicId,
+          doctorId,
+          dateTime: { gte: dayStart, lte: dayEnd },
+          status: { not: 'CANCELLED' },
+          deletedAt: null,
+        },
+        select: { dateTime: true },
+      });
+
+      const bookedTimes = existingAppointments.map(a => {
+        const d = new Date(a.dateTime);
+        return d.getHours() * 60 + d.getMinutes();
+      });
+
+      const slots: string[] = [];
+      const startHour = 9;
+      const endHour = 17;
+      const slotDuration = 30;
+
+      for (let hour = startHour; hour < endHour; hour++) {
+        for (let min = 0; min < 60; min += slotDuration) {
+          const timeInMinutes = hour * 60 + min;
+          if (!bookedTimes.includes(timeInMinutes)) {
+            const slotDate = new Date(date);
+            slotDate.setHours(hour, min, 0, 0);
+            slots.push(slotDate.toISOString());
+          }
+        }
+      }
+
+      res.json({ slots });
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  }
+
   async getPatientByToken(req: Request, res: Response) {
     try {
       const token = req.params.token as string;

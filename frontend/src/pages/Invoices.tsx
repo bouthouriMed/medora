@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation, useGetPresetsQuery } from '../api';
+import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation, useGetPresetsQuery, useCreateCheckoutSessionMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportInvoices } from '../utils/export';
 import Modal from '../components/Modal';
@@ -23,6 +23,7 @@ export default function Invoices() {
   const [createInvoice, { isLoading: isCreating }] = useCreateInvoiceMutation();
   const [markAsPaid] = useMarkInvoiceAsPaidMutation();
   const [markAsUnpaid] = useMarkInvoiceAsUnpaidMutation();
+  const [createCheckout] = useCreateCheckoutSessionMutation();
 
   const handleStatusChange = (status: string) => {
     const newParams = new URLSearchParams(searchParams);
@@ -63,6 +64,15 @@ export default function Invoices() {
       showToast(t('other.invoiceMarkedPaid'), 'success');
     } catch (error) {
       showToast(error instanceof Error ? error.message : t('other.failedToUpdateInvoice'), 'error');
+    }
+  };
+
+  const handlePayOnline = async (invoiceId: string) => {
+    try {
+      const result = await createCheckout({ invoiceId, returnUrl: window.location.href }).unwrap();
+      if (result.url) window.location.href = result.url;
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Stripe not configured', 'error');
     }
   };
 
@@ -267,12 +277,20 @@ export default function Invoices() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                         {invoice.status === 'UNPAID' ? (
-                          <button
-                            onClick={() => handleMarkPaid(invoice.id)}
-                            className="text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
-                          >
-                            {t('invoices.markAsPaid')}
-                          </button>
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => handlePayOnline(invoice.id)}
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                            >
+                              {t('invoices.payOnline')}
+                            </button>
+                            <button
+                              onClick={() => handleMarkPaid(invoice.id)}
+                              className="text-green-600 hover:text-green-800 hover:bg-green-50 px-3 py-1.5 rounded-lg transition-colors font-medium"
+                            >
+                              {t('invoices.markAsPaid')}
+                            </button>
+                          </div>
                         ) : (
                           <button
                             onClick={() => handleMarkUnpaid(invoice.id)}
@@ -314,12 +332,20 @@ export default function Invoices() {
                   </span>
                 </div>
                 {invoice.status === 'UNPAID' ? (
-                  <button
-                    onClick={() => handleMarkPaid(invoice.id)}
-                    className="w-full text-green-600 hover:bg-green-50 px-4 py-2.5 rounded-xl transition-colors font-medium text-center"
-                  >
-                    ✓ {t('other.markAsPaid')}
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handlePayOnline(invoice.id)}
+                      className="flex-1 text-blue-600 hover:bg-blue-50 px-4 py-2.5 rounded-xl transition-colors font-medium text-center"
+                    >
+                      {t('invoices.payOnline')}
+                    </button>
+                    <button
+                      onClick={() => handleMarkPaid(invoice.id)}
+                      className="flex-1 text-green-600 hover:bg-green-50 px-4 py-2.5 rounded-xl transition-colors font-medium text-center"
+                    >
+                      ✓ {t('other.markAsPaid')}
+                    </button>
+                  </div>
                 ) : (
                   <button
                     onClick={() => handleMarkUnpaid(invoice.id)}

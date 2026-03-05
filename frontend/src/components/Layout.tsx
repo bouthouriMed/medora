@@ -28,6 +28,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { path: '/invoices', label: t('nav.invoices'), icon: Icons.invoice, permission: 'view_invoices' },
     { path: '/lab-results', label: t('nav.labResults'), icon: Icons.flask, permission: 'view_lab_results' },
     { path: '/tasks', label: t('nav.tasks'), icon: Icons.task, permission: 'view_tasks' },
+    { path: '/messages', label: t('nav.messages'), icon: Icons.mail, permission: '' },
   ];
   const navItems = allNavItems.filter(item => !item.permission || hasPermission(user, item.permission as any));
 
@@ -38,6 +39,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     { path: '/note-templates', label: t('nav.noteTemplates'), icon: Icons.file, permission: 'view_note_templates' },
     { path: '/users', label: t('nav.users'), icon: Icons.users, permission: 'view_users' },
     { path: '/email-settings', label: t('nav.emailSettings'), icon: Icons.mail, permission: 'view_settings' },
+    { path: '/analytics', label: t('nav.analytics'), icon: Icons.chart, permission: 'view_settings' },
+    { path: '/waitlist', label: t('nav.waitlist'), icon: Icons.clock, permission: 'view_settings' },
+    { path: '/insurance', label: t('nav.insurance'), icon: Icons.shield, permission: 'view_settings' },
+    { path: '/doctor-ratings', label: t('nav.doctorRatings'), icon: Icons.star, permission: 'view_settings' },
   ];
   const settingsItems = allSettingsItems.filter(item => hasPermission(user, item.permission as any));
 

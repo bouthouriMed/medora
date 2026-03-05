@@ -24,6 +24,12 @@ const Portal = lazy(() => import('./pages/Portal'));
 const LabResults = lazy(() => import('./pages/LabResults'));
 const Tasks = lazy(() => import('./pages/Tasks'));
 const PatientDetail = lazy(() => import('./pages/PatientDetail'));
+const PublicBooking = lazy(() => import('./pages/PublicBooking'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const Waitlist = lazy(() => import('./pages/Waitlist'));
+const Insurance = lazy(() => import('./pages/Insurance'));
+const DoctorRatings = lazy(() => import('./pages/DoctorRatings'));
+const Messages = lazy(() => import('./pages/Messages'));
 
 function LoadingFallback() {
   return (
@@ -57,6 +63,7 @@ function App() {
         <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <Login />} />
         <Route path="/register" element={isAuthenticated ? <Navigate to="/" /> : <Register />} />
         <Route path="/portal/:token" element={<Portal />} />
+        <Route path="/book/:clinicId" element={<PublicBooking />} />
         <Route
           path="/*"
           element={
@@ -78,6 +85,11 @@ function App() {
                     <Route path="/lab-results" element={<LabResults />} />
                     <Route path="/tasks" element={<Tasks />} />
                     <Route path="/users" element={<Users />} />
+                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/waitlist" element={<Waitlist />} />
+                    <Route path="/insurance" element={<Insurance />} />
+                    <Route path="/doctor-ratings" element={<DoctorRatings />} />
+                    <Route path="/messages" element={<Messages />} />
                   </Routes>
                 </Suspense>
               </Layout>

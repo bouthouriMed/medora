@@ -26,6 +26,7 @@ model User {
   appointments          Appointment[]
   prescriptions         Prescription[]
   recurringAppointments RecurringAppointment[]
+  appointmentRequests   AppointmentRequest[]
 
   @@index([clinicId])
 }
@@ -58,19 +59,38 @@ model Patient {
   prescriptions        Prescription[]
   allergies            Allergy[]
   conditions           Condition[]
+  waitlistEntries      WaitlistEntry[]
+  insuranceClaims      InsuranceClaim[]
+  prescriptionRequests PrescriptionRequest[]
+  payments             Payment[]
 
   @@index([clinicId])
 }
 
-model Clinic {
-  id        String    @id @default(uuid())
+model ClinicGroup {
+  id        String   @id @default(uuid())
   name      String
-  address   String?
-  phone     String?
-  email     String?   @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  ownerId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clinics   Clinic[]
+}
+
+model Clinic {
+  id            String    @id @default(uuid())
+  name          String
+  address       String?
+  phone         String?
+  email         String?   @unique
+  clinicGroupId String?
+  timezone      String    @default("UTC")
+  currency      String    @default("USD")
+  logo          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  clinicGroup ClinicGroup? @relation(fields: [clinicGroupId], references: [id])
 
   users                User[]
   patients             Patient[]
@@ -92,6 +112,13 @@ model Clinic {
   conditions           Condition[]
   inventoryItems       InventoryItem[]
   auditLogs            AuditLog[]
+  appointmentRequests  AppointmentRequest[]
+  waitlistEntries      WaitlistEntry[]
+  doctorRatings        DoctorRating[]
+  messages             Message[]
+  insuranceClaims      InsuranceClaim[]
+  prescriptionRequests PrescriptionRequest[]
+  payments             Payment[]
 }
 
 model Tag {
@@ -459,4 +486,160 @@ model ClinicSettings {
   fromEmail          String?
 
   clinic Clinic @relation(fields: [clinicId], references: [id])
+}
+
+model AppointmentRequest {
+  id                String    @id @default(uuid())
+  clinicId         String
+  patientName      String
+  patientEmail     String?
+  patientPhone     String?
+  doctorId         String
+  requestedDateTime DateTime
+  reason           String?
+  status           String    @default("PENDING")
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  doctor User  @relation(fields: [doctorId], references: [id])
+
+  @@index([clinicId])
+  @@index([status])
+}
+
+model WaitlistEntry {
+  id          String    @id @default(uuid())
+  clinicId    String
+  patientId   String
+  doctorId    String?
+  preferredDate DateTime?
+  preferredTimeStart String?
+  preferredTimeEnd   String?
+  reason      String?
+  priority    String    @default("NORMAL")
+  status      String    @default("WAITING")
+  notifiedAt  DateTime?
+  bookedAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model DoctorRating {
+  id            String   @id @default(uuid())
+  clinicId      String
+  doctorId      String
+  patientId     String?
+  appointmentId String?
+  bedsideManner Int
+  waitTime      Int
+  clarity       Int
+  overall       Int
+  comment       String?
+  isAnonymous   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([doctorId])
+}
+
+model Message {
+  id          String    @id @default(uuid())
+  clinicId    String
+  senderId    String
+  senderType  String
+  receiverId  String
+  receiverType String
+  patientId   String?
+  subject     String?
+  body        String
+  isRead      Boolean   @default(false)
+  readAt      DateTime?
+  parentId    String?
+  createdAt   DateTime  @default(now())
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([patientId])
+}
+
+model InsuranceClaim {
+  id              String    @id @default(uuid())
+  clinicId        String
+  patientId       String
+  invoiceId       String?
+  insuranceProvider String
+  policyNumber    String?
+  claimAmount     Float
+  approvedAmount  Float?
+  status          String    @default("SUBMITTED")
+  submittedAt     DateTime  @default(now())
+  processedAt     DateTime?
+  denialReason    String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model PrescriptionRequest {
+  id              String    @id @default(uuid())
+  clinicId        String
+  patientId       String
+  prescriptionId  String?
+  medication      String
+  reason          String?
+  status          String    @default("PENDING")
+  reviewedBy      String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model Payment {
+  id              String    @id @default(uuid())
+  clinicId        String
+  invoiceId       String
+  patientId       String
+  amount          Float
+  method          String    @default("CASH")
+  stripePaymentId String?
+  stripeSessionId String?
+  status          String    @default("COMPLETED")
+  notes           String?
+  paidAt          DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([invoiceId])
+  @@index([patientId])
 }

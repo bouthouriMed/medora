@@ -5,6 +5,7 @@ import { showToast } from '../components/Toast';
 import { exportAppointments, generateICS } from '../utils/export';
 import CalendarView from '../components/CalendarView';
 import Modal from '../components/Modal';
+import VoiceRecorder from '../components/VoiceRecorder';
 import type { Appointment, Patient, User, RecurringAppointment, NoteTemplate } from '../types';
 import { useTranslation } from 'react-i18next';
 
@@ -709,7 +710,7 @@ export default function Appointments() {
               )}
               <button
                 onClick={async () => {
-                  if (!selectedAppointment) return;
+                  // if (!selectedAppointment) return;
                   try {
                     const result = await generateVisitNote({ id: selectedAppointment.id }).unwrap();
                     setGeneratedNoteText(result.generatedText);
@@ -747,9 +748,12 @@ export default function Appointments() {
         <div className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500 dark:text-gray-400">AI-generated SOAP note — click to edit</p>
-            <button onClick={() => setNoteIsEditing(!noteIsEditing)} className="text-xs px-3 py-1 rounded-lg border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-              {noteIsEditing ? '👁 Preview' : '✏️ Edit'}
-            </button>
+            <div className="flex items-center gap-2">
+              <VoiceRecorder onTranscript={(text) => setGeneratedNoteText((prev) => prev + '\n' + text)} />
+              <button onClick={() => setNoteIsEditing(!noteIsEditing)} className="text-xs px-3 py-1 rounded-lg border border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+                {noteIsEditing ? '👁 Preview' : '✏️ Edit'}
+              </button>
+            </div>
           </div>
           {noteIsEditing ? (
             <textarea
@@ -916,6 +920,10 @@ export default function Appointments() {
                     ))}
                   </div>
                 )}
+                <div className="flex items-center gap-2 mb-1">
+                  <VoiceRecorder onTranscript={(text) => setFormData({ ...formData, notes: formData.notes + (formData.notes ? ' ' : '') + text })} />
+                  <span className="text-xs text-gray-400">Dictate notes</span>
+                </div>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}

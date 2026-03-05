@@ -15,6 +15,13 @@ import * as settingsController from '../controllers/settings.controller';
 import * as labResultController from '../controllers/labResult.controller';
 import * as taskController from '../controllers/task.controller';
 import * as medicalRecordController from '../controllers/medicalRecord.controller';
+import * as waitlistController from '../controllers/waitlist.controller';
+import * as ratingController from '../controllers/rating.controller';
+import * as messageController from '../controllers/message.controller';
+import * as insuranceController from '../controllers/insurance.controller';
+import * as prescriptionRequestController from '../controllers/prescriptionRequest.controller';
+import * as clinicalController from '../controllers/clinical.controller';
+import * as paymentController from '../controllers/payment.controller';
 import exportRoutes from './export';
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -44,12 +51,14 @@ router.post('/auth/users', authenticate, validate([
   body('password').isLength({ min: 6 }),
   body('firstName').notEmpty(),
   body('lastName').notEmpty(),
-  body('role').isIn(['DOCTOR', 'STAFF']),
+  body('role').isIn(['DOCTOR', 'NURSE', 'STAFF', 'ADMIN']),
 ]), authController.createUser);
 router.put('/auth/users/:id', authenticate, authController.updateUser);
 router.delete('/auth/users/:id', authenticate, authController.deleteUser);
 
 router.get('/dashboard', authenticate, dashboardController.getDashboard);
+router.get('/dashboard/analytics', authenticate, dashboardController.getAnalytics);
+router.get('/dashboard/smart-scheduling', authenticate, dashboardController.getSmartScheduling);
 
 router.get('/patients', authenticate, patientController.getAll);
 router.get('/patients/:id', authenticate, patientController.getById);
@@ -97,6 +106,11 @@ router.delete('/presets/:id', authenticate, presetController.delete);
 
 router.get('/public/patient/:token', publicPortalController.getPatientByToken);
 router.post('/public/patient/:token/chat', publicPortalController.chatWithAI);
+
+router.post('/public/triage', publicPortalController.triageSymptoms);
+router.get('/public/clinic/:clinicId/doctors', publicPortalController.getClinicDoctors);
+router.get('/public/clinic/:clinicId/:doctorId/slots/:date', publicPortalController.getAvailableSlots);
+router.post('/public/clinic/:clinicId/appointment/request', publicPortalController.requestAppointment);
 
 router.get('/tags', authenticate, tagController.getAllTags);
 router.post('/tags', authenticate, validate([
@@ -171,5 +185,81 @@ router.post('/appointments/:id/generate-note', authenticate, medicalRecordContro
 router.post('/patients/:patientId/generate-summary', authenticate, medicalRecordController.generatePatientSummary);
 
 router.use('/export', authenticate, exportRoutes);
+
+// Waitlist
+router.get('/waitlist', authenticate, waitlistController.getWaitlist);
+router.post('/waitlist', authenticate, validate([
+  body('patientId').notEmpty(),
+]), waitlistController.createWaitlistEntry);
+router.put('/waitlist/:id', authenticate, waitlistController.updateWaitlistEntry);
+router.delete('/waitlist/:id', authenticate, waitlistController.deleteWaitlistEntry);
+router.post('/waitlist/:id/book', authenticate, validate([
+  body('dateTime').isISO8601(),
+]), waitlistController.bookFromWaitlist);
+
+// Doctor Ratings
+router.get('/ratings', authenticate, ratingController.getAllDoctorRatingSummaries);
+router.get('/ratings/:doctorId', authenticate, ratingController.getDoctorRatings);
+router.post('/ratings', authenticate, validate([
+  body('doctorId').notEmpty(),
+  body('overall').isInt({ min: 1, max: 5 }),
+]), ratingController.createRating);
+
+// Messages
+router.get('/messages', authenticate, messageController.getMessages);
+router.get('/messages/unread', authenticate, messageController.getUnreadCount);
+router.get('/messages/:otherId', authenticate, messageController.getConversation);
+router.post('/messages', authenticate, validate([
+  body('receiverId').notEmpty(),
+  body('receiverType').notEmpty(),
+  body('body').notEmpty(),
+]), messageController.sendMessage);
+
+// Insurance Claims
+router.get('/insurance', authenticate, insuranceController.getClaims);
+router.get('/insurance/stats', authenticate, insuranceController.getClaimStats);
+router.get('/insurance/:id', authenticate, insuranceController.getClaim);
+router.post('/insurance', authenticate, validate([
+  body('patientId').notEmpty(),
+  body('insuranceProvider').notEmpty(),
+  body('claimAmount').isFloat({ min: 0 }),
+]), insuranceController.createClaim);
+router.put('/insurance/:id', authenticate, insuranceController.updateClaim);
+router.delete('/insurance/:id', authenticate, insuranceController.deleteClaim);
+
+// Prescription Requests
+router.get('/prescription-requests', authenticate, prescriptionRequestController.getPrescriptionRequests);
+router.put('/prescription-requests/:id', authenticate, validate([
+  body('status').isIn(['APPROVED', 'DENIED']),
+]), prescriptionRequestController.reviewPrescriptionRequest);
+
+// Clinical Decision Support
+router.post('/clinical/drug-interactions', authenticate, validate([
+  body('medications').isArray({ min: 2 }),
+]), clinicalController.checkDrugInteractions);
+router.post('/clinical/allergy-check', authenticate, validate([
+  body('patientId').notEmpty(),
+  body('medication').notEmpty(),
+]), clinicalController.checkAllergyConflict);
+router.get('/clinical/briefing/:patientId', authenticate, clinicalController.getDoctorBriefing);
+
+// Payments
+router.get('/payments', authenticate, paymentController.getPayments);
+router.post('/payments/checkout', authenticate, validate([
+  body('invoiceId').notEmpty(),
+  body('returnUrl').notEmpty(),
+]), paymentController.createCheckoutSession);
+router.post('/payments/manual', authenticate, validate([
+  body('invoiceId').notEmpty(),
+  body('patientId').notEmpty(),
+  body('amount').isFloat({ min: 0 }),
+  body('method').notEmpty(),
+]), paymentController.recordManualPayment);
+
+// Public Portal - Messages & Prescription Requests
+router.post('/public/patient/:token/messages', messageController.sendPortalMessage);
+router.get('/public/patient/:token/messages', messageController.getPortalMessages);
+router.post('/public/patient/:token/prescription-request', prescriptionRequestController.createPortalPrescriptionRequest);
+router.post('/public/clinic/:clinicId/rating', ratingController.createPublicRating);
 
 export default router;
