@@ -34,9 +34,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return saved === "true";
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >(() => {
     const saved = localStorage.getItem("medora-sidebar-sections");
-    return saved ? JSON.parse(saved) : { clinical: true, communication: true, billing: true, insights: false, admin: false };
+    return saved
+      ? JSON.parse(saved)
+      : {
+          clinical: true,
+          communication: true,
+          billing: true,
+          insights: false,
+          admin: false,
+        };
   });
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -45,7 +55,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [collapsed]);
 
   useEffect(() => {
-    localStorage.setItem("medora-sidebar-sections", JSON.stringify(expandedSections));
+    localStorage.setItem(
+      "medora-sidebar-sections",
+      JSON.stringify(expandedSections),
+    );
   }, [expandedSections]);
 
   // Close mobile menu on navigation
@@ -73,51 +86,156 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       key: "clinical",
       label: t("nav.sections.clinical"),
       items: [
-        { path: "/patients", label: t("nav.patients"), icon: Icons.patients, permission: "view_patients" },
-        { path: "/appointments", label: t("nav.appointments"), icon: Icons.calendar, permission: "view_appointments" },
-        { path: "/waitlist", label: t("nav.waitlist"), icon: Icons.clock, permission: "view_settings" },
-        { path: "/lab-results", label: t("nav.labResults"), icon: Icons.flask, permission: "view_lab_results" },
-        { path: "/telemedicine", label: t("nav.telemedicine"), icon: Icons.video, permission: "" },
-        { path: "/remote-monitoring", label: t("nav.remoteMonitoring"), icon: Icons.activity, permission: "view_settings" },
+        {
+          path: "/patients",
+          label: t("nav.patients"),
+          icon: Icons.patients,
+          permission: "view_patients",
+        },
+        {
+          path: "/appointments",
+          label: t("nav.appointments"),
+          icon: Icons.calendar,
+          permission: "view_appointments",
+        },
+        {
+          path: "/waitlist",
+          label: t("nav.waitlist"),
+          icon: Icons.clock,
+          permission: "view_settings",
+        },
+        {
+          path: "/lab-results",
+          label: t("nav.labResults"),
+          icon: Icons.flask,
+          permission: "view_lab_results",
+        },
+        {
+          path: "/telemedicine",
+          label: t("nav.telemedicine"),
+          icon: Icons.video,
+          permission: "",
+        },
+        {
+          path: "/remote-monitoring",
+          label: t("nav.remoteMonitoring"),
+          icon: Icons.activity,
+          permission: "view_settings",
+        },
       ],
     },
     {
       key: "communication",
       label: t("nav.sections.communication"),
       items: [
-        { path: "/messages", label: t("nav.messages"), icon: Icons.mail, permission: "" },
-        { path: "/tasks", label: t("nav.tasks"), icon: Icons.task, permission: "view_tasks" },
+        {
+          path: "/messages",
+          label: t("nav.messages"),
+          icon: Icons.mail,
+          permission: "",
+        },
+        {
+          path: "/tasks",
+          label: t("nav.tasks"),
+          icon: Icons.task,
+          permission: "view_tasks",
+        },
       ],
     },
     {
       key: "billing",
       label: t("nav.sections.billing"),
       items: [
-        { path: "/invoices", label: t("nav.invoices"), icon: Icons.invoice, permission: "view_invoices" },
-        { path: "/insurance", label: t("nav.insurance"), icon: Icons.shield, permission: "view_settings" },
-        { path: "/marketplace", label: t("nav.marketplace"), icon: Icons.cart, permission: "view_settings" },
+        {
+          path: "/invoices",
+          label: t("nav.invoices"),
+          icon: Icons.invoice,
+          permission: "view_invoices",
+        },
+        {
+          path: "/insurance",
+          label: t("nav.insurance"),
+          icon: Icons.shield,
+          permission: "view_settings",
+        },
+        {
+          path: "/marketplace",
+          label: t("nav.marketplace"),
+          icon: Icons.cart,
+          permission: "view_settings",
+        },
       ],
     },
     {
       key: "insights",
       label: t("nav.sections.insights"),
       items: [
-        { path: "/analytics", label: t("nav.analytics"), icon: Icons.chart, permission: "view_settings" },
-        { path: "/doctor-ratings", label: t("nav.doctorRatings"), icon: Icons.star, permission: "view_settings" },
+        {
+          path: "/analytics",
+          label: t("nav.analytics"),
+          icon: Icons.chart,
+          permission: "view_settings",
+        },
+        {
+          path: "/doctor-ratings",
+          label: t("nav.doctorRatings"),
+          icon: Icons.star,
+          permission: "view_settings",
+        },
       ],
     },
     {
       key: "admin",
       label: t("nav.sections.admin"),
       items: [
-        { path: "/settings", label: t("nav.settings"), icon: Icons.settings, permission: "view_settings" },
-        { path: "/users", label: t("nav.users"), icon: Icons.users, permission: "view_users" },
-        { path: "/presets", label: t("nav.presets"), icon: Icons.zap, permission: "view_presets" },
-        { path: "/tags", label: t("nav.tags"), icon: Icons.tag, permission: "view_tags" },
-        { path: "/custom-fields", label: t("nav.customFields"), icon: Icons.fileText, permission: "view_custom_fields" },
-        { path: "/note-templates", label: t("nav.noteTemplates"), icon: Icons.file, permission: "view_note_templates" },
-        { path: "/email-settings", label: t("nav.emailSettings"), icon: Icons.mail, permission: "view_settings" },
-        { path: "/audit-logs", label: t("nav.auditLogs"), icon: Icons.history, permission: "view_settings" },
+        {
+          path: "/settings",
+          label: t("nav.settings"),
+          icon: Icons.settings,
+          permission: "view_settings",
+        },
+        {
+          path: "/users",
+          label: t("nav.users"),
+          icon: Icons.users,
+          permission: "view_users",
+        },
+        {
+          path: "/presets",
+          label: t("nav.presets"),
+          icon: Icons.zap,
+          permission: "view_presets",
+        },
+        {
+          path: "/tags",
+          label: t("nav.tags"),
+          icon: Icons.tag,
+          permission: "view_tags",
+        },
+        {
+          path: "/custom-fields",
+          label: t("nav.customFields"),
+          icon: Icons.fileText,
+          permission: "view_custom_fields",
+        },
+        {
+          path: "/note-templates",
+          label: t("nav.noteTemplates"),
+          icon: Icons.file,
+          permission: "view_note_templates",
+        },
+        {
+          path: "/email-settings",
+          label: t("nav.emailSettings"),
+          icon: Icons.mail,
+          permission: "view_settings",
+        },
+        {
+          path: "/audit-logs",
+          label: t("nav.auditLogs"),
+          icon: Icons.history,
+          permission: "view_settings",
+        },
       ],
     },
   ];
@@ -127,7 +245,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     .map((section) => ({
       ...section,
       items: section.items.filter(
-        (item) => !item.permission || hasPermission(user, item.permission as any)
+        (item) =>
+          !item.permission || hasPermission(user, item.permission as any),
       ),
     }))
     .filter((section) => section.items.length > 0);
@@ -145,10 +264,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
         } ${collapsed && !isMobile ? "justify-center px-2" : ""}`}
       >
-        <span className={`flex-shrink-0 ${active ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"}`}>
+        <span
+          className={`flex-shrink-0 ${active ? "text-blue-600 dark:text-blue-400" : "text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300"}`}
+        >
           {item.icon({ size: 18 })}
         </span>
-        {(!collapsed || isMobile) && <span className="truncate">{item.label}</span>}
+        {(!collapsed || isMobile) && (
+          <span className="truncate">{item.label}</span>
+        )}
         {active && (!collapsed || isMobile) && (
           <span className="ml-auto w-1.5 h-1.5 rounded-full bg-blue-500"></span>
         )}
@@ -177,14 +300,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors"
         >
           <span className="flex items-center gap-2">
-            {hasActiveItem && <span className="w-1 h-1 rounded-full bg-blue-500"></span>}
+            {hasActiveItem && (
+              <span className="w-1 h-1 rounded-full bg-blue-500"></span>
+            )}
             {section.label}
           </span>
-          <span className={`transform transition-transform duration-200 ${isExpanded ? "rotate-0" : "-rotate-90"}`}>
+          <span
+            className={`transform transition-transform duration-200 ${isExpanded ? "rotate-0" : "-rotate-90"}`}
+          >
             {Icons.chevronDown({ size: 14 })}
           </span>
         </button>
-        <div className={`space-y-0.5 overflow-hidden transition-all duration-200 ${isExpanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}>
+        <div
+          className={`space-y-0.5 overflow-hidden transition-all duration-200 ${isExpanded ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
+        >
           {section.items.map((item) => renderNavItem(item, isMobile))}
         </div>
       </div>
@@ -200,9 +329,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         }`}
       >
         {/* Logo area */}
-        <div className={`flex items-center h-16 border-b border-gray-200 dark:border-gray-800 flex-shrink-0 ${collapsed ? "justify-center px-2" : "px-4 justify-between"}`}>
+        <div
+          className={`flex items-center h-16 border-b border-gray-200 dark:border-gray-800 flex-shrink-0 ${collapsed ? "justify-center px-2" : "px-4 justify-between"}`}
+        >
           {!collapsed && (
             <button
+              className="cursor-pointer"
               onClick={() => navigate("/")}
               className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
             >
@@ -210,11 +342,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
           )}
           <button
+            className="cursor-pointer"
             onClick={() => setCollapsed(!collapsed)}
             className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            {collapsed ? Icons.chevronRight({ size: 18 }) : Icons.chevronLeft({ size: 18 })}
+            {collapsed
+              ? Icons.chevronRight({ size: 18 })
+              : Icons.chevronLeft({ size: 18 })}
           </button>
         </div>
 
@@ -242,15 +377,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Bottom: Theme & Language */}
-        <div className={`flex-shrink-0 border-t border-gray-200 dark:border-gray-800 p-2 space-y-1 ${collapsed ? "items-center" : ""}`}>
+        <div
+          className={`flex-shrink-0 border-t border-gray-200 dark:border-gray-800 p-2 space-y-1 ${collapsed ? "items-center" : ""}`}
+        >
           {/* Theme toggle */}
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            title={theme === "dark" ? t("settings.lightTheme") : t("settings.darkTheme")}
+            title={
+              theme === "dark"
+                ? t("settings.lightTheme")
+                : t("settings.darkTheme")
+            }
             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${collapsed ? "justify-center px-2" : ""}`}
           >
-            <span className="flex-shrink-0">{theme === "dark" ? Icons.sun({ size: 18 }) : Icons.moon({ size: 18 })}</span>
-            {!collapsed && <span>{theme === "dark" ? t("settings.lightTheme") : t("settings.darkTheme")}</span>}
+            <span className="flex-shrink-0">
+              {theme === "dark"
+                ? Icons.sun({ size: 18 })
+                : Icons.moon({ size: 18 })}
+            </span>
+            {!collapsed && (
+              <span>
+                {theme === "dark"
+                  ? t("settings.lightTheme")
+                  : t("settings.darkTheme")}
+              </span>
+            )}
           </button>
 
           {/* Language switcher */}
@@ -273,7 +424,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           )}
           {collapsed && (
             <button
-              onClick={() => setLanguage(language === "en" ? "fr" : language === "fr" ? "ar" : "en")}
+              onClick={() =>
+                setLanguage(
+                  language === "en" ? "fr" : language === "fr" ? "ar" : "en",
+                )
+              }
               title={`Language: ${language.toUpperCase()}`}
               className="w-full flex items-center justify-center px-2 py-2 rounded-lg text-xs font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
@@ -284,7 +439,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content area */}
-      <div className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${collapsed ? "lg:ml-[68px]" : "lg:ml-60"}`}>
+      <div
+        className={`flex-1 flex flex-col min-h-screen transition-all duration-300 ${collapsed ? "lg:ml-[68px]" : "lg:ml-60"}`}
+      >
         {/* Top bar */}
         <header className="sticky top-0 z-30 h-16 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 lg:px-6">
           {/* Left: Mobile menu + page context */}
@@ -293,9 +450,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              {mobileMenuOpen ? Icons.x({ size: 20 }) : Icons.menu({ size: 20 })}
+              {mobileMenuOpen
+                ? Icons.x({ size: 20 })
+                : Icons.menu({ size: 20 })}
             </button>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white lg:hidden">Medora</h2>
+            <h2
+              onClick={() => navigate("/")}
+              className="cursor-pointer text-lg font-semibold text-gray-900 dark:text-white lg:hidden"
+            >
+              Medora
+            </h2>
           </div>
 
           {/* Center: Keyboard shortcut hint */}
@@ -303,26 +467,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <kbd className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
               Ctrl+K
             </kbd>
-            <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">{t("common.search")}</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">
+              {t("common.search")}
+            </span>
           </div>
 
           {/* Quick Actions */}
           <div className="hidden md:flex items-center gap-2">
             <button
-              onClick={() => navigate('/patients?action=new')}
+              onClick={() => navigate("/patients?action=new")}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              title={t('patients.addPatient')}
+              title={t("patients.addPatient")}
             >
               {Icons.user({ size: 16 })}
-              <span className="hidden lg:inline">{t('patients.addPatient')}</span>
+              <span className="hidden lg:inline">
+                {t("patients.addPatient")}
+              </span>
             </button>
             <button
-              onClick={() => navigate('/appointments?action=new')}
+              onClick={() => navigate("/appointments?action=new")}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
-              title={t('appointments.newAppointment')}
+              title={t("appointments.newAppointment")}
             >
               {Icons.plus({ size: 16 })}
-              <span className="hidden lg:inline">{t('appointments.newAppointment')}</span>
+              <span className="hidden lg:inline">
+                {t("appointments.newAppointment")}
+              </span>
             </button>
           </div>
 
@@ -336,7 +506,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className="lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
-              {theme === "dark" ? Icons.sun({ size: 18 }) : Icons.moon({ size: 18 })}
+              {theme === "dark"
+                ? Icons.sun({ size: 18 })
+                : Icons.moon({ size: 18 })}
             </button>
 
             {/* User dropdown */}
@@ -356,17 +528,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               {profileOpen && (
                 <>
-                  <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setProfileOpen(false)}
+                  />
                   <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 py-2 z-50">
                     <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {user?.firstName} {user?.lastName}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
-                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5 capitalize">{user?.role?.toLowerCase()}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        {user?.email}
+                      </p>
+                      <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5 capitalize">
+                        {user?.role?.toLowerCase()}
+                      </p>
                     </div>
                     <button
-                      onClick={() => { setProfileOpen(false); navigate("/settings"); }}
+                      onClick={() => {
+                        setProfileOpen(false);
+                        navigate("/settings");
+                      }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                       {Icons.settings({ size: 16 })}
@@ -374,7 +556,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     </button>
                     {/* Language switcher for mobile in dropdown */}
                     <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 sm:hidden">
-                      <p className="text-xs font-medium text-gray-400 uppercase mb-1.5">{t("settings.language")}</p>
+                      <p className="text-xs font-medium text-gray-400 uppercase mb-1.5">
+                        {t("settings.language")}
+                      </p>
                       <div className="flex gap-1">
                         {(["en", "fr", "ar"] as const).map((lang) => (
                           <button
@@ -392,7 +576,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       </div>
                     </div>
                     <button
-                      onClick={() => { setProfileOpen(false); handleLogout(); }}
+                      onClick={() => {
+                        setProfileOpen(false);
+                        handleLogout();
+                      }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors border-t border-gray-100 dark:border-gray-700"
                     >
                       {Icons.logout({ size: 16 })}
@@ -408,11 +595,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Mobile Sidebar Overlay */}
         {mobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-50 flex">
-            <div className="fixed inset-0 bg-black/50" onClick={() => setMobileMenuOpen(false)} />
+            <div
+              className="fixed inset-0 bg-black/50"
+              onClick={() => setMobileMenuOpen(false)}
+            />
             <aside className="relative w-72 max-w-[80vw] bg-white dark:bg-gray-900 h-full overflow-y-auto shadow-2xl sidebar-slide-in">
               {/* Mobile sidebar header */}
               <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-800">
                 <button
+                  className="cursor-pointer"
                   onClick={() => navigate("/")}
                   className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
                 >
@@ -443,7 +634,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
               {/* Mobile nav sections */}
               <nav className="px-2 py-1 space-y-0.5">
-                {filteredSections.map((section) => renderSection(section, true))}
+                {filteredSections.map((section) =>
+                  renderSection(section, true),
+                )}
               </nav>
 
               {/* Mobile bottom controls */}
@@ -459,7 +652,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
                       }`}
                     >
-                      {lang === "en" ? "English" : lang === "fr" ? "Français" : "العربية"}
+                      {lang === "en"
+                        ? "English"
+                        : lang === "fr"
+                          ? "Français"
+                          : "العربية"}
                     </button>
                   ))}
                 </div>

@@ -14,6 +14,10 @@
   html[dir="rtl"] {
     direction: rtl;
   }
+
+  button {
+    cursor: pointer
+  }
 }
 
 @layer components {
