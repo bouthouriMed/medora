@@ -98,7 +98,14 @@
     "messages": "Messages",
     "telemedicine": "Telemedicine",
     "remoteMonitoring": "Remote Monitoring",
-    "marketplace": "Marketplace"
+    "marketplace": "Marketplace",
+    "sections": {
+      "clinical": "Clinical",
+      "communication": "Communication",
+      "billing": "Billing",
+      "insights": "Insights",
+      "admin": "Administration"
+    }
   },
   "dashboard": {
     "title": "Dashboard",

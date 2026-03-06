@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useGetDashboardQuery } from '../api';
+import { useAppSelector } from '../store/hooks';
 import type { Appointment } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { useTranslation } from 'react-i18next';
@@ -13,8 +14,16 @@ const formatCurrency = (value: number) => {
   return `$${value}`;
 };
 
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+};
+
 export default function Dashboard() {
   const { data, isLoading, error } = useGetDashboardQuery(undefined);
+  const { user } = useAppSelector((state) => state.auth);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -92,8 +101,10 @@ export default function Dashboard() {
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcome')}</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+          {getGreeting()}, {user?.firstName || t('dashboard.welcome')}
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400 mt-1 sm:mt-2">{t('dashboard.welcomeSubtitle')}</p>
       </div>
 
       {/* Stats Grid */}

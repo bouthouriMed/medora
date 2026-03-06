@@ -98,7 +98,14 @@
     "messages": "الرسائل",
     "telemedicine": "الطب عن بعد",
     "remoteMonitoring": "المراقبة عن بعد",
-    "marketplace": "السوق الطبي"
+    "marketplace": "السوق الطبي",
+    "sections": {
+      "clinical": "السريرية",
+      "communication": "التواصل",
+      "billing": "الفوترة",
+      "insights": "التحليلات",
+      "admin": "الإدارة"
+    }
   },
   "dashboard": {
     "title": "لوحة التحكم",
