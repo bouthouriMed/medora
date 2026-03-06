@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetPatientsQuery, useGetPatientAppointmentsQuery, useCreatePatientMutation, useDeletePatientMutation, useGetPatientQuery, useRegeneratePatientTokenMutation, useGetTagsQuery, useGetPatientTagsQuery, useAddTagToPatientMutation, useRemoveTagFromPatientMutation, useGetPatientCustomFieldsQuery, useSavePatientCustomFieldMutation } from '../api';
+import { useGetPatientsQuery, useGetPatientAppointmentsQuery, useCreatePatientMutation, useDeletePatientMutation, useRestorePatientMutation, useGetPatientQuery, useRegeneratePatientTokenMutation, useGetTagsQuery, useGetPatientTagsQuery, useAddTagToPatientMutation, useRemoveTagFromPatientMutation, useGetPatientCustomFieldsQuery, useSavePatientCustomFieldMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportPatients } from '../utils/export';
 import Modal from '../components/Modal';
@@ -16,6 +16,7 @@ export default function Patients() {
   const [showTagDropdown, setShowTagDropdown] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Patients() {
     dateFrom: '',
     dateTo: '',
   });
-  const { data: patients, isLoading } = useGetPatientsQuery(search);
+  const { data: patients, isLoading } = useGetPatientsQuery({ search, includeArchived: showArchived });
   
   const filteredPatients = useMemo(() => {
     if (!patients) return [];
@@ -85,6 +86,7 @@ export default function Patients() {
 
   const [createPatient, { isLoading: isCreating }] = useCreatePatientMutation();
   const [deletePatient] = useDeletePatientMutation();
+  const [restorePatient] = useRestorePatientMutation();
   const [regenerateToken] = useRegeneratePatientTokenMutation();
   const [addTagToPatient] = useAddTagToPatientMutation();
   const [removeTagFromPatient] = useRemoveTagFromPatientMutation();
@@ -126,6 +128,15 @@ export default function Patients() {
     }
   };
 
+  const handleRestore = async (id: string) => {
+    try {
+      await restorePatient(id).unwrap();
+      showToast('Patient restored successfully', 'success');
+    } catch {
+      showToast('Failed to restore patient', 'error');
+    }
+  };
+
   const handleViewPatient = (patient: Patient) => {
     navigate(`/patients/${patient.id}`);
   };
@@ -154,16 +165,29 @@ export default function Patients() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <input
-          type="text"
-          placeholder={t('patients.searchPlaceholder')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-3 pl-12 border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all text-gray-900 dark:text-white placeholder-gray-400"
-        />
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+      {/* Search + Archived Toggle */}
+      <div className="flex gap-3 items-center">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            placeholder={t('patients.searchPlaceholder')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-4 py-3 pl-12 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all text-gray-900 dark:text-white placeholder-gray-400"
+          />
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+        </div>
+        <button
+          onClick={() => setShowArchived(!showArchived)}
+          className={`flex items-center gap-2 px-4 py-3 rounded-xl border font-medium text-sm transition-all whitespace-nowrap ${
+            showArchived
+              ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400'
+              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
+          {showArchived ? 'Showing Archived' : 'Show Archived'}
+        </button>
       </div>
 
       {/* Filters */}
@@ -263,13 +287,18 @@ export default function Patients() {
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {filteredPatients?.map((patient: Patient) => (
-                  <tr key={patient.id} className="hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                  <tr key={patient.id} className={`hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${patient.deletedAt ? 'opacity-60' : ''}`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold shadow-md ${patient.deletedAt ? 'bg-gray-400' : 'bg-gradient-to-br from-purple-400 to-pink-500'}`}>
                           {patient.firstName[0]}{patient.lastName[0]}
                         </div>
-                        <span className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.firstName} {patient.lastName}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-900 dark:text-white">{patient.firstName} {patient.lastName}</span>
+                          {patient.deletedAt && (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full">Archived</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-400">{patient.email || '-'}</td>
@@ -333,13 +362,23 @@ export default function Patients() {
                               {t('other.patientPortal')}
                             </button>
                             <hr className="my-1 border-gray-100 dark:border-gray-700" />
-                            <button
-                              onClick={() => { handleDelete(patient.id); setOpenMenuId(null); }}
-                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                              {t('other.archive')}
-                            </button>
+                            {patient.deletedAt ? (
+                              <button
+                                onClick={() => { handleRestore(patient.id); setOpenMenuId(null); }}
+                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                Restore
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => { handleDelete(patient.id); setOpenMenuId(null); }}
+                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                {t('other.archive')}
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -353,9 +392,9 @@ export default function Patients() {
       )}
 
       {/* Mobile Cards View */}
-      {patients && patients.length > 0 && (
+      {filteredPatients && filteredPatients.length > 0 && (
         <div className="md:hidden grid grid-cols-1 gap-4">
-          {patients?.map((patient: Patient) => (
+          {filteredPatients?.map((patient: Patient) => (
             <div 
               key={patient.id} 
               className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4 hover-lift"
@@ -407,12 +446,21 @@ export default function Patients() {
                 >
                   {t('other.patientPortal')}
                 </button>
-                <button
-                  onClick={() => handleDelete(patient.id)}
-                  className="flex-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
-                >
-                  {t('other.archive')}
-                </button>
+                {patient.deletedAt ? (
+                  <button
+                    onClick={() => handleRestore(patient.id)}
+                    className="flex-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                  >
+                    Restore
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleDelete(patient.id)}
+                    className="flex-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                  >
+                    {t('other.archive')}
+                  </button>
+                )}
               </div>
             </div>
           ))}

@@ -2,14 +2,16 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGetPatientsQuery, useGetAppointmentsQuery, useGetUsersQuery } from '../api';
 import { useTranslation } from 'react-i18next';
-import { Search, User, Calendar, FileText, ChevronRight } from 'lucide-react';
+import { Search, User, Calendar, FileText, ChevronRight, Plus, Clock } from 'lucide-react';
 
 type SearchResult = {
   id: string;
-  type: 'patient' | 'appointment' | 'user';
+  type: 'patient' | 'appointment' | 'user' | 'action';
   title: string;
   subtitle: string;
-  path: string;
+  path?: string;
+  action?: () => void;
+  icon?: React.ReactNode;
 };
 
 export default function QuickSearch() {
@@ -27,10 +29,48 @@ export default function QuickSearch() {
   );
   const { data: users } = useGetUsersQuery(undefined, { skip: query.length < 2 });
 
-  const results = useMemo<SearchResult[]>(() => {
-    if (query.length < 2) return [];
+  const quickActions = useMemo<SearchResult[]>(() => {
+    const actions: SearchResult[] = [
+      {
+        id: 'action-new-patient',
+        type: 'action',
+        title: t('patients.addPatient'),
+        subtitle: t('other.createNewPatient'),
+        path: '/patients',
+        icon: <User className="w-4 h-4" />,
+      },
+      {
+        id: 'action-new-appointment',
+        type: 'action',
+        title: t('appointments.newAppointment'),
+        subtitle: t('other.scheduleAppointment'),
+        path: '/appointments',
+        icon: <Calendar className="w-4 h-4" />,
+      },
+      {
+        id: 'action-today',
+        type: 'action',
+        title: t('dashboard.todaysSchedule'),
+        subtitle: t('other.viewTodayAppointments'),
+        path: '/appointments?filter=today',
+        icon: <Clock className="w-4 h-4" />,
+      },
+    ];
+    return actions;
+  }, [t]);
 
+  const results = useMemo<SearchResult[]>(() => {
     const items: SearchResult[] = [];
+
+    if (query.length < 2) {
+      return quickActions;
+    }
+
+    const lowerQuery = query.toLowerCase();
+    const filteredActions = quickActions.filter(
+      a => a.title.toLowerCase().includes(lowerQuery) || a.subtitle.toLowerCase().includes(lowerQuery)
+    );
+    items.push(...filteredActions);
 
     patients?.slice(0, 5).forEach((p: any) => {
       items.push({
@@ -63,7 +103,7 @@ export default function QuickSearch() {
     });
 
     return items;
-  }, [patients, appointments, users, query, t]);
+  }, [patients, appointments, users, query, t, quickActions]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -93,7 +133,11 @@ export default function QuickSearch() {
   }, [query]);
 
   const handleSelect = (result: SearchResult) => {
-    navigate(result.path);
+    if (result.action) {
+      result.action();
+    } else if (result.path) {
+      navigate(result.path);
+    }
     setIsOpen(false);
     setQuery('');
   };
@@ -118,6 +162,8 @@ export default function QuickSearch() {
         return <Calendar className="w-4 h-4" />;
       case 'user':
         return <FileText className="w-4 h-4" />;
+      case 'action':
+        return <Plus className="w-4 h-4" />;
       default:
         return <Search className="w-4 h-4" />;
     }
@@ -137,7 +183,7 @@ export default function QuickSearch() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={t('other.quickSearchPlaceholder')}
+            placeholder={query.length < 2 ? t('other.quickSearchPlaceholder') : t('other.searchPatients')}
             className="flex-1 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 outline-none text-base"
           />
           <kbd className="hidden sm:inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-gray-500 bg-gray-100 dark:bg-gray-700 rounded-md">
@@ -147,6 +193,11 @@ export default function QuickSearch() {
 
         {results.length > 0 && (
           <div className="max-h-[400px] overflow-y-auto py-2">
+            {query.length < 2 && (
+              <div className="px-4 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                {t('other.quickActions')}
+              </div>
+            )}
             {results.map((result, index) => (
               <button
                 key={`${result.type}-${result.id}`}
@@ -158,11 +209,12 @@ export default function QuickSearch() {
                 }`}
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  result.type === 'action' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
                   result.type === 'patient' ? 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400' :
                   result.type === 'appointment' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' :
                   'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400'
                 }`}>
-                  {getIcon(result.type)}
+                  {result.icon || getIcon(result.type)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 dark:text-white truncate">{result.title}</p>
@@ -182,7 +234,7 @@ export default function QuickSearch() {
 
         {query.length < 2 && (
           <div className="px-4 py-6 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t('other.typeAtLeast2Chars')}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t('other.typeToSearch')}</p>
           </div>
         )}
 

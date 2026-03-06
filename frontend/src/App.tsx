@@ -33,6 +33,8 @@ const Messages = lazy(() => import('./pages/Messages'));
 const RemoteMonitoring = lazy(() => import('./pages/RemoteMonitoring'));
 const Telemedicine = lazy(() => import('./pages/Telemedicine'));
 const Marketplace = lazy(() => import('./pages/Marketplace'));
+const AuditLogs = lazy(() => import('./pages/AuditLogs'));
+const Notifications = lazy(() => import('./pages/Notifications'));
 
 function LoadingFallback() {
   return (
@@ -96,6 +98,8 @@ function App() {
                     <Route path="/remote-monitoring" element={<RemoteMonitoring />} />
                     <Route path="/telemedicine" element={<Telemedicine />} />
                     <Route path="/marketplace" element={<Marketplace />} />
+                    <Route path="/audit-logs" element={<AuditLogs />} />
+                    <Route path="/notifications" element={<Notifications />} />
                   </Routes>
                 </Suspense>
               </Layout>

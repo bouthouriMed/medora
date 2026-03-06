@@ -4,6 +4,7 @@ import clinicRepository from '../repositories/clinic.repository';
 import userRepository from '../repositories/user.repository';
 import appointmentRepository from '../repositories/appointment.repository';
 import aiService from '../services/ai.service';
+import notificationService from '../services/notification.service';
 import prisma from '../utils/prisma';
 
 export class PublicPortalController {
@@ -58,6 +59,8 @@ export class PublicPortalController {
         return res.status(404).json({ error: 'Clinic not found' });
       }
 
+      const doctor = await prisma.user.findUnique({ where: { id: doctorId } });
+
       let patient = null;
       if (patientEmail) {
         patient = await prisma.patient.findFirst({
@@ -76,13 +79,33 @@ export class PublicPortalController {
           notes: reason,
         });
         
-        return res.status(201).json({ 
+        await prisma.message.create({
+          data: {
+            clinicId,
+            senderId: 'system',
+            senderType: 'SYSTEM',
+            receiverId: doctorId,
+            receiverType: 'USER',
+            patientId: patient.id,
+            subject: 'New Appointment Booked',
+            body: `A new appointment has been booked by ${patient.firstName} ${patient.lastName}.\n\n📅 Date: ${appointmentDate.toLocaleDateString()}\n⏰ Time: ${appointmentDate.toLocaleTimeString()}\n📝 Reason: ${reason || 'Not provided'}\n\nPlease review and confirm this appointment.`,
+          },
+        });
+
+        notificationService.notifyAppointmentRequest(
+          doctorId,
+          `${patient.firstName} ${patient.lastName}`,
+          appointmentDate,
+          appointment.id
+        ).catch(() => {});
+
+        return res.status(201).json({
           message: 'Appointment requested successfully',
           appointmentId: appointment.id,
           patientExists: true,
         });
       } else {
-        await prisma.appointmentRequest.create({
+        const appointmentRequest = await prisma.appointmentRequest.create({
           data: {
             clinicId,
             patientName,
@@ -95,7 +118,26 @@ export class PublicPortalController {
           },
         });
 
-        return res.status(201).json({ 
+        await prisma.message.create({
+          data: {
+            clinicId,
+            senderId: 'system',
+            senderType: 'SYSTEM',
+            receiverId: doctorId,
+            receiverType: 'USER',
+            subject: 'New Appointment Request',
+            body: `A new appointment request has been submitted.\n\n👤 Patient: ${patientName}\n📞 Phone: ${patientPhone || 'Not provided'}\n📧 Email: ${patientEmail || 'Not provided'}\n📅 Date: ${appointmentDate.toLocaleDateString()}\n⏰ Time: ${appointmentDate.toLocaleTimeString()}\n📝 Reason: ${reason || 'Not provided'}\n\nPlease review and approve this request.`,
+          },
+        });
+
+        notificationService.notifyAppointmentRequest(
+          doctorId,
+          patientName,
+          appointmentDate,
+          appointmentRequest.id
+        ).catch(() => {});
+
+        return res.status(201).json({
           message: 'Appointment requested successfully. The clinic will contact you to confirm.',
           patientExists: false,
         });

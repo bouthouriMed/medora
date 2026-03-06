@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation, useGenerateVisitNoteMutation, useCreateMedicalRecordMutation } from '../api';
+import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation, useGenerateVisitNoteMutation, useCreateMedicalRecordMutation, useGetAppointmentRequestsQuery, useApproveAppointmentRequestMutation, useRejectAppointmentRequestMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportAppointments, generateICS } from '../utils/export';
 import CalendarView from '../components/CalendarView';
@@ -87,7 +87,11 @@ export default function Appointments() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-  
+
+  // Auto-open highlighted appointment from notification deep-link
+  const highlightId = searchParams.get('highlight');
+  const [highlightHandled, setHighlightHandled] = useState<string | null>(null);
+
   const { data: noteTemplates } = useGetNoteTemplatesQuery('APPOINTMENT');
 
   const getTodayString = () => {
@@ -178,8 +182,22 @@ export default function Appointments() {
   const [deleteRecurringAppointment] = useDeleteRecurringAppointmentMutation();
   const [generateVisitNote, { isLoading: isGeneratingNote }] = useGenerateVisitNoteMutation();
   const [createMedicalRecord, { isLoading: isSavingNote }] = useCreateMedicalRecordMutation();
+  const { data: appointmentRequests } = useGetAppointmentRequestsQuery('PENDING');
+  const [approveRequest, { isLoading: isApproving }] = useApproveAppointmentRequestMutation();
+  const [rejectRequest] = useRejectAppointmentRequestMutation();
 
   const doctors = users?.filter((u: User) => u.role === 'DOCTOR') || [];
+
+  // When appointments load & we have a highlight param, auto-open that appointment
+  useEffect(() => {
+    if (highlightId && highlightId !== highlightHandled && allAppointments?.length) {
+      const found = allAppointments.find((a: Appointment) => a.id === highlightId);
+      if (found) {
+        setSelectedAppointment(found);
+        setHighlightHandled(highlightId);
+      }
+    }
+  }, [highlightId, highlightHandled, allAppointments]);
 
   const [formData, setFormData] = useState({
     patientId: '',
@@ -254,11 +272,52 @@ export default function Appointments() {
 
   const getStatusClass = (status: string) => {
     switch (status) {
-      case 'SCHEDULED': return 'status-scheduled';
-      case 'COMPLETED': return 'status-completed';
-      case 'CANCELLED': return 'status-cancelled';
-      case 'NO_SHOW': return 'status-no-show';
-      default: return 'status-no-show';
+      case 'SCHEDULED': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+      case 'CONFIRMED': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300';
+      case 'CHECKED_IN': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'IN_PROGRESS': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300';
+      case 'COMPLETED': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300';
+      case 'CANCELLED': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
+      case 'NO_SHOW': return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+      default: return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'SCHEDULED': return 'Pending Review';
+      case 'CONFIRMED': return 'Confirmed';
+      case 'CHECKED_IN': return t('appointments.checkedIn');
+      case 'IN_PROGRESS': return t('appointments.inProgress');
+      case 'COMPLETED': return 'Completed';
+      case 'CANCELLED': return 'Cancelled';
+      case 'NO_SHOW': return 'No Show';
+      default: return status;
+    }
+  };
+
+  // Status workflow steps for the progress indicator
+  const WORKFLOW_STEPS = ['SCHEDULED', 'CONFIRMED', 'CHECKED_IN', 'IN_PROGRESS', 'COMPLETED'] as const;
+  const getStepIndex = (status: string) => {
+    const idx = WORKFLOW_STEPS.indexOf(status as any);
+    return idx >= 0 ? idx : -1;
+  };
+
+  const handleCheckIn = async (appointmentId: string) => {
+    try {
+      await updateAppointment({ id: appointmentId, status: 'CHECKED_IN' }).unwrap();
+      showToast(t('appointments.checkedInSuccess'), 'success');
+    } catch {
+      showToast(t('common.error'), 'error');
+    }
+  };
+
+  const handleStartConsultation = async (appointmentId: string) => {
+    try {
+      await updateAppointment({ id: appointmentId, status: 'IN_PROGRESS' }).unwrap();
+      showToast(t('appointments.consultationStarted'), 'success');
+    } catch {
+      showToast(t('common.error'), 'error');
     }
   };
 
@@ -431,6 +490,78 @@ export default function Appointments() {
           </div>
         )}
       </div>
+      {/* Pending Appointment Requests from Public Booking */}
+      {appointmentRequests?.length > 0 && (
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-5 mb-1">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white">Pending Appointment Requests</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{appointmentRequests.length} request{appointmentRequests.length !== 1 ? 's' : ''} from online booking awaiting your review</p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {appointmentRequests.map((req: any) => (
+              <div key={req.id} className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {req.patientName?.split(' ')[0]?.[0]}{req.patientName?.split(' ')[1]?.[0] || ''}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">{req.patientName}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
+                      {req.patientEmail && <span>{req.patientEmail}</span>}
+                      {req.patientPhone && <span>{req.patientPhone}</span>}
+                      <span>Dr. {req.doctor?.firstName} {req.doctor?.lastName}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="text-right mr-2">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{new Date(req.requestedDateTime).toLocaleDateString()}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(req.requestedDateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                  </div>
+                  {req.reason && (
+                    <span className="hidden sm:inline-block text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-lg max-w-[150px] truncate" title={req.reason}>
+                      {req.reason}
+                    </span>
+                  )}
+                  <button
+                    onClick={async () => {
+                      try {
+                        await approveRequest(req.id).unwrap();
+                        showToast('Appointment approved and patient created', 'success');
+                      } catch (e: any) {
+                        showToast(e?.data?.error || 'Failed to approve', 'error');
+                      }
+                    }}
+                    disabled={isApproving}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await rejectRequest({ id: req.id, reason: '' }).unwrap();
+                        showToast('Request rejected', 'success');
+                      } catch {
+                        showToast('Failed to reject', 'error');
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-sm font-medium rounded-lg transition-colors"
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {view === 'list' && (
         <>
           {loading ? (
@@ -487,7 +618,7 @@ export default function Appointments() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(apt.status)}`}>
-                              {apt.status}
+                              {getStatusLabel(apt.status)}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm max-w-xs truncate">
@@ -517,18 +648,11 @@ export default function Appointments() {
                                   {apt.status === 'SCHEDULED' && (
                                     <>
                                       <button
-                                        onClick={() => { handleStatusChange(apt.id, 'COMPLETED'); setOpenMenuId(null); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                                        onClick={() => { handleStatusChange(apt.id, 'CONFIRMED'); setOpenMenuId(null); }}
+                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
                                       >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                        {t('appointments.complete')}
-                                      </button>
-                                      <button
-                                        onClick={() => { handleStatusChange(apt.id, 'NO_SHOW'); setOpenMenuId(null); }}
-                                        className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                                      >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
-                                        {t('appointments.noShow')}
+                                        Confirm
                                       </button>
                                       <hr className="my-1 border-gray-100 dark:border-gray-700" />
                                       <button
@@ -536,9 +660,36 @@ export default function Appointments() {
                                         className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                       >
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-                                        {t('appointments.cancel')}
+                                        Reject
                                       </button>
                                     </>
+                                  )}
+                                  {apt.status === 'CONFIRMED' && (
+                                    <button
+                                      onClick={() => { handleCheckIn(apt.id); setOpenMenuId(null); }}
+                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-yellow-600 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                                      Check In
+                                    </button>
+                                  )}
+                                  {apt.status === 'CHECKED_IN' && (
+                                    <button
+                                      onClick={() => { handleStartConsultation(apt.id); setOpenMenuId(null); }}
+                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                      Start Consultation
+                                    </button>
+                                  )}
+                                  {apt.status === 'IN_PROGRESS' && (
+                                    <button
+                                      onClick={() => { handleStatusChange(apt.id, 'COMPLETED'); setOpenMenuId(null); }}
+                                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                      Complete Visit
+                                    </button>
                                   )}
                                 </div>
                               )}
@@ -566,7 +717,7 @@ export default function Appointments() {
                         </div>
                       </div>
                       <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(apt.status)}`}>
-                        {apt.status}
+                        {getStatusLabel(apt.status)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-3">
@@ -585,31 +736,41 @@ export default function Appointments() {
                       {apt.status === 'SCHEDULED' && (
                         <>
                           <button
-                            onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
+                            onClick={() => handleStatusChange(apt.id, 'CONFIRMED')}
                             className="flex-1 min-w-[80px] text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                           >
-                            {t('appointments.complete')}
-                          </button>
-                          <button
-                            onClick={() => handleStatusChange(apt.id, 'NO_SHOW')}
-                            className="flex-1 min-w-[80px] text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
-                          >
-                            {t('appointments.noShow')}
+                            Confirm
                           </button>
                           <button
                             onClick={() => handleCancel(apt.id)}
                             className="flex-1 min-w-[80px] text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                           >
-                            {t('appointments.cancel')}
+                            Reject
                           </button>
                         </>
                       )}
-                      {apt.status !== 'SCHEDULED' && (
+                      {apt.status === 'CONFIRMED' && (
                         <button
-                          onClick={() => handleStatusChange(apt.id, 'SCHEDULED')}
-                          className="flex-1 min-w-[80px] text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                          onClick={() => handleCheckIn(apt.id)}
+                          className="flex-1 min-w-[80px] text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                         >
-                          {t('appointments.reschedule')}
+                          Check In
+                        </button>
+                      )}
+                      {apt.status === 'CHECKED_IN' && (
+                        <button
+                          onClick={() => handleStartConsultation(apt.id)}
+                          className="flex-1 min-w-[80px] text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                        >
+                          Start Consultation
+                        </button>
+                      )}
+                      {apt.status === 'IN_PROGRESS' && (
+                        <button
+                          onClick={() => handleStatusChange(apt.id, 'COMPLETED')}
+                          className="flex-1 min-w-[80px] text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
+                        >
+                          Complete Visit
                         </button>
                       )}
                     </div>
@@ -643,105 +804,261 @@ export default function Appointments() {
         />
       )}
 
-      {/* Appointment Details Modal */}
+      {/* Appointment Details Modal — Clinical Workflow */}
       <Modal isOpen={!!selectedAppointment} onClose={() => setSelectedAppointment(null)} title={t('appointments.appointmentDetails')}>
-        <div className="p-6">
-          <div className="space-y-4">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.patient')}</p>
-              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{selectedAppointment?.patient?.firstName} {selectedAppointment?.patient?.lastName}</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.doctor')}</p>
-              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{t('appointments.dr')} {selectedAppointment?.doctor?.firstName} {selectedAppointment?.doctor?.lastName}</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.dateTime')}</p>
-              <p className="font-semibold text-gray-900 dark:text-white dark:text-white">
-                {selectedAppointment && new Date(selectedAppointment.dateTime).toLocaleDateString()} at {selectedAppointment && new Date(selectedAppointment.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.status')}</p>
-                <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
-                  selectedAppointment?.status === 'COMPLETED' ? 'status-completed' :
-                  selectedAppointment?.status === 'CANCELLED' ? 'status-cancelled' :
-                  selectedAppointment?.status === 'NO_SHOW' ? 'status-no-show' : 'status-scheduled'
-                }`}>
-                  {selectedAppointment?.status}
-                </span>
-              </div>
-              {selectedAppointment?.notes && (
+        {selectedAppointment && (() => {
+          const apt = selectedAppointment;
+          const stepIdx = getStepIndex(apt.status);
+          const isClosed = apt.status === 'CANCELLED' || apt.status === 'NO_SHOW' || apt.status === 'COMPLETED';
+
+          return (
+            <div className="p-6 space-y-5">
+              {/* Workflow Progress Bar */}
+              {!isClosed && (
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2">
+                    {WORKFLOW_STEPS.map((step, i) => {
+                      const isActive = i === stepIdx;
+                      const isDone = i < stepIdx;
+                      const labels = ['Pending', 'Confirmed', 'Checked In', 'In Progress', 'Completed'];
+                      return (
+                        <div key={step} className="flex flex-col items-center flex-1">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                            isDone ? 'bg-green-500 text-white' :
+                            isActive ? 'bg-blue-600 text-white ring-4 ring-blue-100 dark:ring-blue-900/30' :
+                            'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500'
+                          }`}>
+                            {isDone ? '✓' : i + 1}
+                          </div>
+                          <span className={`text-[10px] mt-1 font-medium ${
+                            isActive ? 'text-blue-600 dark:text-blue-400' :
+                            isDone ? 'text-green-600 dark:text-green-400' :
+                            'text-gray-400 dark:text-gray-500'
+                          }`}>{labels[i]}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {/* Progress line */}
+                  <div className="absolute top-4 left-8 right-8 h-0.5 bg-gray-200 dark:bg-gray-700 -z-10">
+                    <div
+                      className="h-full bg-green-500 transition-all duration-500"
+                      style={{ width: `${Math.max(0, (stepIdx / (WORKFLOW_STEPS.length - 1)) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Patient & Doctor Info */}
+              <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.notes')}</p>
-                  <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedAppointment?.notes}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('other.patient')}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{apt.patient?.firstName} {apt.patient?.lastName}</p>
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('other.doctor')}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{t('appointments.dr')} {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('other.dateTime')}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">
+                    {new Date(apt.dateTime).toLocaleDateString()} at {new Date(apt.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('common.status')}</p>
+                  <span className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${getStatusClass(apt.status)}`}>
+                    {getStatusLabel(apt.status)}
+                  </span>
+                </div>
+              </div>
+
+              {apt.notes && (
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">{t('common.notes')}</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">{apt.notes}</p>
                 </div>
               )}
-              {selectedAppointment?.status === 'SCHEDULED' && (
-                <div className="flex gap-2 pt-2">
-                  <button
-                    onClick={() => {
-                      handleStatusChange(selectedAppointment!.id, 'COMPLETED');
-                      setSelectedAppointment(null);
-                    }}
-                    className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors"
-                  >
-                    ✓ {t('appointments.complete')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleStatusChange(selectedAppointment!.id, 'NO_SHOW');
-                      setSelectedAppointment(null);
-                    }}
-                    className="flex-1 px-4 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-medium transition-colors"
-                  >
-                    {t('appointments.noShow')}
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleCancel(selectedAppointment!.id);
-                      setSelectedAppointment(null);
-                    }}
-                    className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
-                  >
-                    {t('appointments.cancel')}
-                  </button>
-                </div>
-              )}
-              <button
-                onClick={async () => {
-                  // if (!selectedAppointment) return;
-                  try {
-                    const result = await generateVisitNote({ id: selectedAppointment.id }).unwrap();
-                    setGeneratedNoteText(result.generatedText);
-                    setNotePatientId(result.patientId);
-                    setShowNoteModal(true);
-                  } catch {
-                    showToast('Failed to generate note', 'error');
-                  }
-                }}
-                disabled={isGeneratingNote}
-                className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors flex items-center justify-center gap-2"
-              >
-                {isGeneratingNote ? (
+
+              {/* ── Workflow Actions ── */}
+              <div className="space-y-2 pt-2">
+                {/* SCHEDULED: Doctor can Confirm or Reject */}
+                {apt.status === 'SCHEDULED' && (
                   <>
-                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Generating...
+                    <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-3">
+                      <p className="text-sm font-medium text-blue-800 dark:text-blue-300">New appointment request — please review and confirm or reject.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={async () => {
+                          await handleStatusChange(apt.id, 'CONFIRMED');
+                          setSelectedAppointment({ ...apt, status: 'CONFIRMED' });
+                        }}
+                        className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        Confirm Appointment
+                      </button>
+                      <button
+                        onClick={() => { handleCancel(apt.id); setSelectedAppointment(null); }}
+                        className="px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        Reject
+                      </button>
+                    </div>
                   </>
-                ) : '✨ Generate AI Visit Note'}
-              </button>
-              <button
-                onClick={() => setSelectedAppointment(null)}
-                className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
-              >
-{t('common.close')}
-              </button>
+                )}
+
+                {/* CONFIRMED: Doctor can Check In patient */}
+                {apt.status === 'CONFIRMED' && (
+                  <>
+                    <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 mb-3">
+                      <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">Appointment confirmed. Check in the patient when they arrive.</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        await handleCheckIn(apt.id);
+                        setSelectedAppointment({ ...apt, status: 'CHECKED_IN' });
+                      }}
+                      className="w-full px-4 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                      Check In Patient
+                    </button>
+                  </>
+                )}
+
+                {/* CHECKED_IN: Doctor can Start Consultation */}
+                {apt.status === 'CHECKED_IN' && (
+                  <>
+                    <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-3">
+                      <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Patient is checked in and waiting. Start the consultation when ready.</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        await handleStartConsultation(apt.id);
+                        setSelectedAppointment({ ...apt, status: 'IN_PROGRESS' });
+                      }}
+                      className="w-full px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      Start Consultation
+                    </button>
+                  </>
+                )}
+
+                {/* IN_PROGRESS: Doctor can generate notes and Complete */}
+                {apt.status === 'IN_PROGRESS' && (
+                  <>
+                    <div className="bg-orange-50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-3">
+                      <p className="text-sm font-medium text-orange-800 dark:text-orange-300">Consultation in progress. Generate a visit note and complete when done.</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        try {
+                          const result = await generateVisitNote({ id: apt.id }).unwrap();
+                          setGeneratedNoteText(result.generatedText);
+                          setNotePatientId(result.patientId);
+                          setShowNoteModal(true);
+                        } catch {
+                          showToast('Failed to generate note', 'error');
+                        }
+                      }}
+                      disabled={isGeneratingNote}
+                      className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      {isGeneratingNote ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+                          Generate AI Visit Note
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={async () => {
+                        await handleStatusChange(apt.id, 'COMPLETED');
+                        setSelectedAppointment({ ...apt, status: 'COMPLETED' });
+                      }}
+                      className="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      Complete Visit
+                    </button>
+                  </>
+                )}
+
+                {/* COMPLETED: Show summary */}
+                {apt.status === 'COMPLETED' && (
+                  <div className="bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 rounded-xl p-4">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      <p className="text-sm font-semibold text-green-800 dark:text-green-300">Visit completed successfully.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* CANCELLED */}
+                {apt.status === 'CANCELLED' && (
+                  <div className="bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-xl p-4">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      <p className="text-sm font-semibold text-red-800 dark:text-red-300">This appointment has been cancelled.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* NO_SHOW */}
+                {apt.status === 'NO_SHOW' && (
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                    <div className="flex items-center gap-2">
+                      <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                      <p className="text-sm font-semibold text-gray-600 dark:text-gray-400">Patient did not show up for this appointment.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Secondary actions for non-terminal states */}
+                {!isClosed && apt.status !== 'SCHEDULED' && (
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={() => { handleStatusChange(apt.id, 'NO_SHOW'); setSelectedAppointment(null); }}
+                      className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-colors"
+                    >
+                      Mark No Show
+                    </button>
+                    <button
+                      onClick={() => { handleCancel(apt.id); setSelectedAppointment(null); }}
+                      className="flex-1 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-colors"
+                    >
+                      {t('appointments.cancel')}
+                    </button>
+                  </div>
+                )}
+
+                {/* Close button */}
+                <button
+                  onClick={() => setSelectedAppointment(null)}
+                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 font-medium transition-colors mt-2"
+                >
+                  {t('common.close')}
+                </button>
+              </div>
             </div>
-          </div>
-        </Modal>
+          );
+        })()}
+      </Modal>
 
       {/* AI Visit Note Modal */}
       <Modal isOpen={showNoteModal} onClose={() => { setShowNoteModal(false); setNoteIsEditing(false); }} title="✨ AI-Generated Visit Note">

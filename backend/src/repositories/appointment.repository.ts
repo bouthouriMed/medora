@@ -81,7 +81,7 @@ export class AppointmentRepository {
 
   async update(id: string, clinicId: string, data: {
     dateTime?: Date;
-    status?: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+    status?: string;
     notes?: string;
   }) {
     return prisma.appointment.updateMany({

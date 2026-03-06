@@ -6,6 +6,7 @@ import { useTheme } from "../hooks/useTheme";
 import { Icons } from "./Icons";
 import { hasPermission } from "../utils/permissions";
 import { useTranslation } from "react-i18next";
+import NotificationBell from "./NotificationBell";
 
 interface NavItem {
   path: string;
@@ -116,6 +117,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         { path: "/custom-fields", label: t("nav.customFields"), icon: Icons.fileText, permission: "view_custom_fields" },
         { path: "/note-templates", label: t("nav.noteTemplates"), icon: Icons.file, permission: "view_note_templates" },
         { path: "/email-settings", label: t("nav.emailSettings"), icon: Icons.mail, permission: "view_settings" },
+        { path: "/audit-logs", label: t("nav.auditLogs"), icon: Icons.history, permission: "view_settings" },
       ],
     },
   ];
@@ -304,8 +306,31 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">{t("common.search")}</span>
           </div>
 
+          {/* Quick Actions */}
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              onClick={() => navigate('/patients?action=new')}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+              title={t('patients.addPatient')}
+            >
+              {Icons.user({ size: 16 })}
+              <span className="hidden lg:inline">{t('patients.addPatient')}</span>
+            </button>
+            <button
+              onClick={() => navigate('/appointments?action=new')}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+              title={t('appointments.newAppointment')}
+            >
+              {Icons.plus({ size: 16 })}
+              <span className="hidden lg:inline">{t('appointments.newAppointment')}</span>
+            </button>
+          </div>
+
           {/* Right: User profile & logout */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {/* Notifications */}
+            <NotificationBell />
+
             {/* Mobile theme toggle */}
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

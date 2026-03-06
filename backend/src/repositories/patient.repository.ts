@@ -27,8 +27,11 @@ export class PatientRepository {
     return prisma.patient.findFirst({ where: { id, clinicId, deletedAt: null } });
   }
 
-  async findByClinic(clinicId: string, search?: string) {
-    const where: Record<string, unknown> = { clinicId, deletedAt: null };
+  async findByClinic(clinicId: string, search?: string, includeArchived?: boolean) {
+    const where: Record<string, unknown> = { clinicId };
+    if (!includeArchived) {
+      where.deletedAt = null;
+    }
     
     if (search) {
       where.OR = [
@@ -104,6 +107,13 @@ export class PatientRepository {
     return prisma.patient.updateMany({
       where: { id, clinicId },
       data: { deletedAt: new Date() },
+    });
+  }
+
+  async restore(id: string, clinicId: string) {
+    return prisma.patient.updateMany({
+      where: { id, clinicId },
+      data: { deletedAt: null },
     });
   }
 }

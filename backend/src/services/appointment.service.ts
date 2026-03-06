@@ -31,7 +31,7 @@ export class AppointmentService {
 
   async update(id: string, clinicId: string, data: {
     dateTime?: Date;
-    status?: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+    status?: string;
     notes?: string;
   }) {
     return appointmentRepository.update(id, clinicId, data);

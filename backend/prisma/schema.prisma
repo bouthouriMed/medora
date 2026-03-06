@@ -28,8 +28,53 @@ model User {
   recurringAppointments RecurringAppointment[]
   appointmentRequests   AppointmentRequest[]
   videoSessions         VideoSession[]
+  notifications         Notification[]
 
   @@index([clinicId])
+}
+
+enum NotificationType {
+  APPOINTMENT_REQUEST
+  APPOINTMENT_APPROVED
+  APPOINTMENT_REJECTED
+  APPOINTMENT_CANCELLED
+  APPOINTMENT_REMINDER
+  MESSAGE
+  LAB_RESULT
+  PRESCRIPTION_REQUEST
+  PRESCRIPTION_READY
+  SYSTEM_ALERT
+  WAITLIST
+  INVOICE
+  RATING
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  priority    NotificationPriority @default(NORMAL)
+  isRead      Boolean  @default(false)
+  actionUrl   String?
+  actionLabel String?
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  readAt      DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@index([createdAt])
 }
 
 model Patient {

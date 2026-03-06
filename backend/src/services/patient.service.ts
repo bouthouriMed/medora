@@ -17,8 +17,8 @@ export class PatientService {
     return patientRepository.findById(id, clinicId);
   }
 
-  async getAll(clinicId: string, search?: string) {
-    return patientRepository.findByClinic(clinicId, search);
+  async getAll(clinicId: string, search?: string, includeArchived?: boolean) {
+    return patientRepository.findByClinic(clinicId, search, includeArchived);
   }
 
   async update(id: string, clinicId: string, data: {
@@ -35,6 +35,10 @@ export class PatientService {
 
   async archive(id: string, clinicId: string) {
     return patientRepository.delete(id, clinicId);
+  }
+
+  async restore(id: string, clinicId: string) {
+    return patientRepository.restore(id, clinicId);
   }
 
   async regenerateToken(id: string, clinicId: string) {

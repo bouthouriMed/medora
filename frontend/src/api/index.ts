@@ -14,7 +14,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ['Patient', 'Appointment', 'Invoice', 'Dashboard', 'Preset', 'Tag', 'CustomField', 'NoteTemplate', 'RecurringAppointment', 'LabResult', 'Task', 'PatientMedicalHistory', 'Waitlist', 'Rating', 'Message', 'Insurance', 'PrescriptionRequest', 'Payment', 'DeviceReading', 'VideoSession', 'Marketplace'],
+  tagTypes: ['Patient', 'Appointment', 'Invoice', 'Dashboard', 'Preset', 'Tag', 'CustomField', 'NoteTemplate', 'RecurringAppointment', 'LabResult', 'Task', 'PatientMedicalHistory', 'Waitlist', 'Rating', 'Message', 'Insurance', 'PrescriptionRequest', 'Payment', 'DeviceReading', 'VideoSession', 'Marketplace', 'Reminder', 'Notification', 'AppointmentRequest'],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (body) => ({
@@ -61,10 +61,15 @@ export const api = createApi({
       providesTags: ['Dashboard'],
     }),
     getPatients: builder.query({
-      query: (search) => ({
-        url: '/patients',
-        params: search ? { search } : undefined,
-      }),
+      query: (arg) => {
+        if (typeof arg === 'string') {
+          return { url: '/patients', params: arg ? { search: arg } : undefined };
+        }
+        const params: Record<string, string> = {};
+        if (arg?.search) params.search = arg.search;
+        if (arg?.includeArchived) params.includeArchived = 'true';
+        return { url: '/patients', params: Object.keys(params).length ? params : undefined };
+      },
       providesTags: ['Patient'],
     }),
     getPatient: builder.query({
@@ -91,6 +96,13 @@ export const api = createApi({
       query: (id) => ({
         url: `/patients/${id}`,
         method: 'DELETE',
+      }),
+      invalidatesTags: ['Patient', 'Dashboard'],
+    }),
+    restorePatient: builder.mutation({
+      query: (id) => ({
+        url: `/patients/${id}/restore`,
+        method: 'POST',
       }),
       invalidatesTags: ['Patient', 'Dashboard'],
     }),
@@ -138,6 +150,28 @@ export const api = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['Appointment', 'Dashboard'],
+    }),
+    getAppointmentRequests: builder.query({
+      query: (status) => ({
+        url: '/appointment-requests',
+        params: status ? { status } : undefined,
+      }),
+      providesTags: ['AppointmentRequest'],
+    }),
+    approveAppointmentRequest: builder.mutation({
+      query: (id) => ({
+        url: `/appointment-requests/${id}/approve`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['AppointmentRequest', 'Appointment', 'Patient', 'Dashboard'],
+    }),
+    rejectAppointmentRequest: builder.mutation({
+      query: ({ id, reason }) => ({
+        url: `/appointment-requests/${id}/reject`,
+        method: 'POST',
+        body: { reason },
+      }),
+      invalidatesTags: ['AppointmentRequest'],
     }),
     getInvoices: builder.query({
       query: (status) => ({
@@ -675,6 +709,20 @@ export const api = createApi({
       query: ({ clinicId, ...body }) => ({ url: `/public/clinic/${clinicId}/rating`, method: 'POST', body }),
     }),
 
+    // Public Booking
+    getClinicDoctors: builder.query<{ clinic: { name: string; address: string | null; phone: string | null }; doctors: Array<{ id: string; firstName: string; lastName: string; email: string; specialty?: string }> }, string>({
+      query: (clinicId) => `/public/clinic/${clinicId}/doctors`,
+    }),
+    getAvailableSlots: builder.query<{ slots: string[] }, { clinicId: string; doctorId: string; date: string }>({
+      query: ({ clinicId, doctorId, date }) => `/public/clinic/${clinicId}/${doctorId}/slots/${date}`,
+    }),
+    requestAppointment: builder.mutation({
+      query: ({ clinicId, ...body }) => ({ url: `/public/clinic/${clinicId}/appointment/request`, method: 'POST', body }),
+    }),
+    triageSymptoms: builder.mutation({
+      query: (body) => ({ url: '/public/triage', method: 'POST', body }),
+    }),
+
     // Payments
     getPayments: builder.query({
       query: () => '/payments',
@@ -775,9 +823,36 @@ export const api = createApi({
     // Reminders
     getPendingReminders: builder.query({
       query: () => '/reminders',
+      providesTags: ['Reminder'],
     }),
     triggerReminders: builder.mutation({
       query: () => ({ url: '/reminders/send', method: 'POST' }),
+      invalidatesTags: ['Reminder'],
+    }),
+
+    // Notifications
+    getNotifications: builder.query({
+      query: (params) => ({
+        url: '/notifications',
+        params: params || {},
+      }),
+      providesTags: ['Notification'],
+    }),
+    getNotificationUnreadCount: builder.query({
+      query: () => '/notifications/unread-count',
+      providesTags: ['Notification'],
+    }),
+    markNotificationRead: builder.mutation({
+      query: (id) => ({ url: `/notifications/${id}/read`, method: 'PUT' }),
+      invalidatesTags: ['Notification'],
+    }),
+    markAllNotificationsRead: builder.mutation({
+      query: () => ({ url: '/notifications/read-all', method: 'PUT' }),
+      invalidatesTags: ['Notification'],
+    }),
+    deleteNotification: builder.mutation({
+      query: (id) => ({ url: `/notifications/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['Notification'],
     }),
   }),
 });
@@ -796,6 +871,7 @@ export const {
   useCreatePatientMutation,
   useUpdatePatientMutation,
   useDeletePatientMutation,
+  useRestorePatientMutation,
   useRegeneratePatientTokenMutation,
   useGetAppointmentsQuery,
   useGetAppointmentQuery,
@@ -803,6 +879,10 @@ export const {
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
   useCancelAppointmentMutation,
+  // Appointment Requests
+  useGetAppointmentRequestsQuery,
+  useApproveAppointmentRequestMutation,
+  useRejectAppointmentRequestMutation,
   useGetInvoicesQuery,
   useGetUnpaidInvoicesQuery,
   useGetInvoiceQuery,
@@ -896,6 +976,11 @@ export const {
   useSendPortalMessageMutation,
   useCreatePortalPrescriptionRequestMutation,
   useCreatePublicRatingMutation,
+  // Public Booking
+  useGetClinicDoctorsQuery,
+  useGetAvailableSlotsQuery,
+  useRequestAppointmentMutation,
+  useTriageSymptomsMutation,
   // Payments
   useGetPaymentsQuery,
   useCreateCheckoutSessionMutation,
@@ -927,4 +1012,10 @@ export const {
   // Reminders
   useGetPendingRemindersQuery,
   useTriggerRemindersMutation,
+  // Notifications
+  useGetNotificationsQuery,
+  useGetNotificationUnreadCountQuery,
+  useMarkNotificationReadMutation,
+  useMarkAllNotificationsReadMutation,
+  useDeleteNotificationMutation,
 } = api;

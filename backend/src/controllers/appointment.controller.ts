@@ -1,5 +1,7 @@
 import { Response } from 'express';
 import appointmentService from '../services/appointment.service';
+import notificationService from '../services/notification.service';
+import prisma from '../utils/prisma';
 import type { AuthRequest } from '../types/express.d';
 
 export class AppointmentController {
@@ -15,16 +17,10 @@ export class AppointmentController {
   async getAll(req: AuthRequest, res: Response) {
     try {
       const { startDate, endDate, filter } = req.query;
-      
-      console.log('==== APPOINTMENT GETALL ====');
-      console.log('filter param:', filter);
-      console.log('startDate param:', startDate);
-      console.log('endDate param:', endDate);
-      
+
       const parseLocalDate = (dateStr: string) => {
         const [year, month, day] = dateStr.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        return date;
+        return new Date(year, month - 1, day);
       };
 
       let start: Date | undefined;
@@ -47,16 +43,7 @@ export class AppointmentController {
         end = endDateSingle;
       }
 
-      const appointments = await appointmentService.getAll(
-        req.user!.clinicId,
-        start,
-        end
-      );
-      console.log('Returning appointments count:', appointments.length);
-      res.set('X-Debug-Count', appointments.length.toString());
-      res.set('X-Debug-Filter', filter as string || 'none');
-      res.set('X-Debug-Start', start?.toISOString() || 'none');
-      res.set('X-Debug-End', end?.toISOString() || 'none');
+      const appointments = await appointmentService.getAll(req.user!.clinicId, start, end);
       res.json(appointments);
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
@@ -89,12 +76,73 @@ export class AppointmentController {
 
   async update(req: AuthRequest, res: Response) {
     try {
-      const appointment = await appointmentService.update(
-        req.params.id as string,
-        req.user!.clinicId,
-        req.body
-      );
-      res.json(appointment);
+      const appointmentId = req.params.id as string;
+      const clinicId = req.user!.clinicId;
+      const { status } = req.body;
+
+      // Fetch appointment before update to get patient/doctor info for notifications
+      const existing = await prisma.appointment.findFirst({
+        where: { id: appointmentId, clinicId, deletedAt: null },
+        include: { patient: true, doctor: true },
+      });
+
+      const result = await appointmentService.update(appointmentId, clinicId, req.body);
+
+      // Fire-and-forget notifications on status changes
+      if (status && existing?.patient && existing?.doctor) {
+        const doctorName = `${existing.doctor.firstName} ${existing.doctor.lastName}`;
+        const patientName = `${existing.patient.firstName} ${existing.patient.lastName}`;
+        const dateTime = new Date(existing.dateTime);
+
+        if (status === 'CONFIRMED') {
+          // Notify the doctor's own dashboard that they confirmed
+          notificationService.create({
+            userId: existing.doctorId,
+            type: 'APPOINTMENT_APPROVED',
+            title: 'Appointment Confirmed',
+            message: `You confirmed ${patientName}'s appointment for ${dateTime.toLocaleDateString()} at ${dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
+            priority: 'LOW',
+            actionUrl: `/appointments?highlight=${appointmentId}`,
+            metadata: { appointmentId, patientName },
+          }).catch(() => {});
+        } else if (status === 'CANCELLED') {
+          // Notify doctor about cancellation
+          notificationService.create({
+            userId: existing.doctorId,
+            type: 'APPOINTMENT_CANCELLED',
+            title: 'Appointment Cancelled',
+            message: `${patientName}'s appointment for ${dateTime.toLocaleDateString()} has been cancelled.`,
+            priority: 'NORMAL',
+            actionUrl: `/appointments`,
+            metadata: { appointmentId, patientName },
+          }).catch(() => {});
+        } else if (status === 'CHECKED_IN') {
+          // Notify doctor that patient has checked in
+          notificationService.create({
+            userId: existing.doctorId,
+            type: 'APPOINTMENT_REMINDER',
+            title: `${patientName} has checked in`,
+            message: `${patientName} has arrived and is ready for their ${dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} appointment.`,
+            priority: 'HIGH',
+            actionUrl: `/appointments?highlight=${appointmentId}`,
+            actionLabel: 'Start Consultation',
+            metadata: { appointmentId, patientName },
+          }).catch(() => {});
+        } else if (status === 'COMPLETED') {
+          // Notify doctor about completion
+          notificationService.create({
+            userId: existing.doctorId,
+            type: 'APPOINTMENT_APPROVED',
+            title: 'Visit Completed',
+            message: `Visit with ${patientName} has been completed.`,
+            priority: 'LOW',
+            actionUrl: `/appointments?highlight=${appointmentId}`,
+            metadata: { appointmentId, patientName },
+          }).catch(() => {});
+        }
+      }
+
+      res.json(result);
     } catch (error) {
       res.status(400).json({ error: (error as Error).message });
     }

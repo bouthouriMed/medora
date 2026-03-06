@@ -14,8 +14,12 @@ export class PatientController {
 
   async getAll(req: AuthRequest, res: Response) {
     try {
-      const { search } = req.query;
-      const patients = await patientService.getAll(req.user!.clinicId, search as string);
+      const { search, includeArchived } = req.query;
+      const patients = await patientService.getAll(
+        req.user!.clinicId,
+        search as string,
+        includeArchived === 'true'
+      );
       res.json(patients);
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
@@ -46,6 +50,15 @@ export class PatientController {
   async archive(req: AuthRequest, res: Response) {
     try {
       await patientService.archive(req.params.id as string, req.user!.clinicId);
+      res.status(204).send();
+    } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  async restore(req: AuthRequest, res: Response) {
+    try {
+      await patientService.restore(req.params.id as string, req.user!.clinicId);
       res.status(204).send();
     } catch (error) {
       res.status(400).json({ error: (error as Error).message });

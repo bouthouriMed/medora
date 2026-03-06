@@ -27,6 +27,9 @@ import * as deviceReadingController from '../controllers/deviceReading.controlle
 import * as videoSessionController from '../controllers/videoSession.controller';
 import * as marketplaceController from '../controllers/marketplace.controller';
 import * as reminderController from '../controllers/reminder.controller';
+import * as auditLogController from '../controllers/auditLog.controller';
+import * as notificationController from '../controllers/notification.controller';
+import * as appointmentRequestController from '../controllers/appointmentRequest.controller';
 import exportRoutes from './export';
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -73,6 +76,7 @@ router.post('/patients', authenticate, validate([
 ]), patientController.create);
 router.put('/patients/:id', authenticate, patientController.update);
 router.delete('/patients/:id', authenticate, patientController.archive);
+router.post('/patients/:id/restore', authenticate, patientController.restore);
 router.post('/patients/:id/regenerate-token', authenticate, patientController.regenerateToken);
 
 router.get('/appointments', authenticate, appointmentController.getAll);
@@ -319,5 +323,21 @@ router.post('/public/patient/:token/prescription-request', prescriptionRequestCo
 router.post('/public/clinic/:clinicId/rating', ratingController.createPublicRating);
 router.get('/public/clinic/:clinicId/marketplace', marketplaceController.getPublicItems);
 router.post('/public/patient/:token/marketplace/order', marketplaceController.createPublicOrder);
+
+// Appointment Requests
+router.get('/appointment-requests', authenticate, appointmentRequestController.getAppointmentRequests);
+router.post('/appointment-requests/:id/approve', authenticate, appointmentRequestController.approveAppointmentRequest);
+router.post('/appointment-requests/:id/reject', authenticate, appointmentRequestController.rejectAppointmentRequest);
+
+// Audit Logs
+router.get('/audit-logs', authenticate, auditLogController.getAuditLogs);
+router.get('/audit-logs/stats', authenticate, auditLogController.getAuditLogStats);
+
+// Notifications
+router.get('/notifications', authenticate, notificationController.getNotifications);
+router.get('/notifications/unread-count', authenticate, notificationController.getUnreadCount);
+router.put('/notifications/:id/read', authenticate, notificationController.markAsRead);
+router.put('/notifications/read-all', authenticate, notificationController.markAllAsRead);
+router.delete('/notifications/:id', authenticate, notificationController.deleteNotification);
 
 export default router;
