@@ -95,7 +95,10 @@
     "waitlist": "Liste d'attente",
     "insurance": "Assurance",
     "doctorRatings": "Evaluations",
-    "messages": "Messages"
+    "messages": "Messages",
+    "telemedicine": "Télémédecine",
+    "remoteMonitoring": "Surveillance à distance",
+    "marketplace": "Marketplace"
   },
   "dashboard": {
     "title": "Tableau de bord",
@@ -846,5 +849,57 @@
     "typePlaceholder": "Tapez un message...",
     "send": "Envoyer",
     "unread": "non lus"
+  },
+  "monitoring": {
+    "title": "Surveillance patient à distance",
+    "subtitle": "Suivre les signes vitaux des patients",
+    "addReading": "Ajouter une mesure",
+    "totalReadings": "Total des mesures",
+    "abnormal": "Anormal",
+    "allDevices": "Tous les appareils",
+    "allPatients": "Tous les patients",
+    "noReadings": "Aucune mesure",
+    "noReadingsDesc": "Commencez à suivre les signes vitaux",
+    "patient": "Patient",
+    "selectPatient": "Sélectionner un patient",
+    "deviceType": "Type d'appareil",
+    "value": "Valeur",
+    "systolic": "Systolique",
+    "diastolic": "Diastolique",
+    "readingAdded": "Mesure ajoutée",
+    "readingDeleted": "Mesure supprimée"
+  },
+  "telemedicine": {
+    "title": "Télémédecine",
+    "subtitle": "Consultations vidéo avec les patients",
+    "newSession": "Nouvelle session vidéo",
+    "noSessions": "Aucune session vidéo",
+    "doctor": "Médecin",
+    "currentDoctor": "Médecin actuel (moi)",
+    "sessionCreated": "Session créée",
+    "linkCopied": "Lien copié",
+    "startCall": "Démarrer l'appel",
+    "endCall": "Terminer l'appel",
+    "copyLink": "Copier le lien",
+    "createAndShare": "Créer et partager"
+  },
+  "marketplace": {
+    "title": "Marketplace médical",
+    "subtitle": "Tests de laboratoire, médicaments et services",
+    "addItem": "Ajouter un article",
+    "newOrder": "Nouvelle commande",
+    "catalog": "Catalogue",
+    "orders": "Commandes",
+    "noOrders": "Aucune commande",
+    "itemCreated": "Article ajouté",
+    "orderCreated": "Commande passée",
+    "itemType": "Type d'article",
+    "price": "Prix",
+    "category": "Catégorie",
+    "selectItem": "Sélectionner un article",
+    "quantity": "Quantité",
+    "placeOrder": "Passer la commande",
+    "confirm": "Confirmer",
+    "complete": "Terminer"
   }
 }

@@ -30,6 +30,9 @@ const Waitlist = lazy(() => import('./pages/Waitlist'));
 const Insurance = lazy(() => import('./pages/Insurance'));
 const DoctorRatings = lazy(() => import('./pages/DoctorRatings'));
 const Messages = lazy(() => import('./pages/Messages'));
+const RemoteMonitoring = lazy(() => import('./pages/RemoteMonitoring'));
+const Telemedicine = lazy(() => import('./pages/Telemedicine'));
+const Marketplace = lazy(() => import('./pages/Marketplace'));
 
 function LoadingFallback() {
   return (
@@ -90,6 +93,9 @@ function App() {
                     <Route path="/insurance" element={<Insurance />} />
                     <Route path="/doctor-ratings" element={<DoctorRatings />} />
                     <Route path="/messages" element={<Messages />} />
+                    <Route path="/remote-monitoring" element={<RemoteMonitoring />} />
+                    <Route path="/telemedicine" element={<Telemedicine />} />
+                    <Route path="/marketplace" element={<Marketplace />} />
                   </Routes>
                 </Suspense>
               </Layout>

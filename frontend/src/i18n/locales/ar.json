@@ -95,7 +95,10 @@
     "waitlist": "قائمة الانتظار",
     "insurance": "التأمين",
     "doctorRatings": "تقييمات الأطباء",
-    "messages": "الرسائل"
+    "messages": "الرسائل",
+    "telemedicine": "الطب عن بعد",
+    "remoteMonitoring": "المراقبة عن بعد",
+    "marketplace": "السوق الطبي"
   },
   "dashboard": {
     "title": "لوحة التحكم",
@@ -846,5 +849,57 @@
     "typePlaceholder": "اكتب رسالة...",
     "send": "إرسال",
     "unread": "غير مقروءة"
+  },
+  "monitoring": {
+    "title": "مراقبة المريض عن بعد",
+    "subtitle": "تتبع العلامات الحيوية للمرضى",
+    "addReading": "إضافة قراءة",
+    "totalReadings": "إجمالي القراءات",
+    "abnormal": "غير طبيعي",
+    "allDevices": "جميع الأجهزة",
+    "allPatients": "جميع المرضى",
+    "noReadings": "لا توجد قراءات",
+    "noReadingsDesc": "ابدأ بتتبع العلامات الحيوية",
+    "patient": "المريض",
+    "selectPatient": "اختر مريض",
+    "deviceType": "نوع الجهاز",
+    "value": "القيمة",
+    "systolic": "الانقباضي",
+    "diastolic": "الانبساطي",
+    "readingAdded": "تمت إضافة القراءة",
+    "readingDeleted": "تم حذف القراءة"
+  },
+  "telemedicine": {
+    "title": "الطب عن بعد",
+    "subtitle": "استشارات فيديو مع المرضى",
+    "newSession": "جلسة فيديو جديدة",
+    "noSessions": "لا توجد جلسات فيديو",
+    "doctor": "الطبيب",
+    "currentDoctor": "الطبيب الحالي (أنا)",
+    "sessionCreated": "تم إنشاء الجلسة",
+    "linkCopied": "تم نسخ الرابط",
+    "startCall": "بدء المكالمة",
+    "endCall": "إنهاء المكالمة",
+    "copyLink": "نسخ الرابط",
+    "createAndShare": "إنشاء ومشاركة"
+  },
+  "marketplace": {
+    "title": "السوق الطبي",
+    "subtitle": "فحوصات مخبرية وأدوية وخدمات صحية",
+    "addItem": "إضافة عنصر",
+    "newOrder": "طلب جديد",
+    "catalog": "الكتالوج",
+    "orders": "الطلبات",
+    "noOrders": "لا توجد طلبات",
+    "itemCreated": "تمت إضافة العنصر",
+    "orderCreated": "تم تقديم الطلب",
+    "itemType": "نوع العنصر",
+    "price": "السعر",
+    "category": "الفئة",
+    "selectItem": "اختر عنصر",
+    "quantity": "الكمية",
+    "placeOrder": "تقديم الطلب",
+    "confirm": "تأكيد",
+    "complete": "إكمال"
   }
 }

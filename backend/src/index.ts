@@ -7,6 +7,8 @@ import { execSync } from 'child_process';
 import routes from './routes/index';
 import { handleWebhook } from './controllers/payment.controller';
 import { connectRedis } from './utils/redis';
+import { auditLog } from './middleware/auditLog';
+import reminderService from './services/reminder.service';
 
 import dotenv from 'dotenv';
 dotenv.config({ override: false });
@@ -28,7 +30,7 @@ app.get('/health', async (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.use('/api', routes);
+app.use('/api', auditLog(), routes);
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
@@ -67,6 +69,7 @@ const startServer = async () => {
     
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
+      reminderService.start(60); // Check for reminders every hour
     });
   } catch (error) {
     console.error('Failed to start server:', error);

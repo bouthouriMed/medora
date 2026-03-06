@@ -95,7 +95,10 @@
     "waitlist": "Waitlist",
     "insurance": "Insurance",
     "doctorRatings": "Doctor Ratings",
-    "messages": "Messages"
+    "messages": "Messages",
+    "telemedicine": "Telemedicine",
+    "remoteMonitoring": "Remote Monitoring",
+    "marketplace": "Marketplace"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -861,5 +864,57 @@
     "typePlaceholder": "Type a message...",
     "send": "Send",
     "unread": "unread"
+  },
+  "monitoring": {
+    "title": "Remote Patient Monitoring",
+    "subtitle": "Track patient vitals from connected devices",
+    "addReading": "Add Reading",
+    "totalReadings": "Total Readings",
+    "abnormal": "Abnormal",
+    "allDevices": "All Devices",
+    "allPatients": "All Patients",
+    "noReadings": "No readings yet",
+    "noReadingsDesc": "Start tracking patient vitals by adding device readings",
+    "patient": "Patient",
+    "selectPatient": "Select Patient",
+    "deviceType": "Device Type",
+    "value": "Value",
+    "systolic": "Systolic",
+    "diastolic": "Diastolic",
+    "readingAdded": "Reading added successfully",
+    "readingDeleted": "Reading deleted"
+  },
+  "telemedicine": {
+    "title": "Telemedicine",
+    "subtitle": "Video consultations with patients",
+    "newSession": "New Video Session",
+    "noSessions": "No video sessions",
+    "doctor": "Doctor",
+    "currentDoctor": "Current Doctor (me)",
+    "sessionCreated": "Session created",
+    "linkCopied": "Room link copied to clipboard",
+    "startCall": "Start Call",
+    "endCall": "End Call",
+    "copyLink": "Copy Link",
+    "createAndShare": "Create & Share Link"
+  },
+  "marketplace": {
+    "title": "Medical Marketplace",
+    "subtitle": "Lab tests, medications, and health services",
+    "addItem": "Add Item",
+    "newOrder": "New Order",
+    "catalog": "Catalog",
+    "orders": "Orders",
+    "noOrders": "No orders yet",
+    "itemCreated": "Item added to marketplace",
+    "orderCreated": "Order placed successfully",
+    "itemType": "Item Type",
+    "price": "Price",
+    "category": "Category",
+    "selectItem": "Select Item",
+    "quantity": "Quantity",
+    "placeOrder": "Place Order",
+    "confirm": "Confirm",
+    "complete": "Complete"
   }
 }

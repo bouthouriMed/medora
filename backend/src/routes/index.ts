@@ -22,6 +22,11 @@ import * as insuranceController from '../controllers/insurance.controller';
 import * as prescriptionRequestController from '../controllers/prescriptionRequest.controller';
 import * as clinicalController from '../controllers/clinical.controller';
 import * as paymentController from '../controllers/payment.controller';
+import * as clinicGroupController from '../controllers/clinicGroup.controller';
+import * as deviceReadingController from '../controllers/deviceReading.controller';
+import * as videoSessionController from '../controllers/videoSession.controller';
+import * as marketplaceController from '../controllers/marketplace.controller';
+import * as reminderController from '../controllers/reminder.controller';
 import exportRoutes from './export';
 import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validate';
@@ -256,10 +261,63 @@ router.post('/payments/manual', authenticate, validate([
   body('method').notEmpty(),
 ]), paymentController.recordManualPayment);
 
+// Clinic Groups (Multi-clinic / Franchise)
+router.get('/clinic-group', authenticate, clinicGroupController.getClinicGroup);
+router.post('/clinic-group', authenticate, validate([
+  body('name').notEmpty(),
+]), clinicGroupController.createClinicGroup);
+router.post('/clinic-group/add-clinic', authenticate, validate([
+  body('clinicName').notEmpty(),
+]), clinicGroupController.addClinicToGroup);
+router.get('/clinic-group/analytics', authenticate, clinicGroupController.getGroupAnalytics);
+
+// Remote Patient Monitoring - Device Readings
+router.get('/device-readings', authenticate, deviceReadingController.getReadings);
+router.get('/device-readings/patient/:patientId', authenticate, deviceReadingController.getPatientReadings);
+router.get('/device-readings/patient/:patientId/alerts', authenticate, deviceReadingController.getPatientAlerts);
+router.post('/device-readings', authenticate, validate([
+  body('patientId').notEmpty(),
+  body('deviceType').notEmpty(),
+  body('value').isFloat(),
+  body('unit').notEmpty(),
+]), deviceReadingController.createReading);
+router.delete('/device-readings/:id', authenticate, deviceReadingController.deleteReading);
+
+// Video Sessions (Telemedicine)
+router.get('/video-sessions', authenticate, videoSessionController.getSessions);
+router.get('/video-sessions/:id', authenticate, videoSessionController.getSession);
+router.post('/video-sessions', authenticate, validate([
+  body('patientId').notEmpty(),
+]), videoSessionController.createSession);
+router.put('/video-sessions/:id', authenticate, videoSessionController.updateSession);
+router.get('/video-sessions/room/:roomId', authenticate, videoSessionController.joinByRoom);
+
+// Medical Marketplace
+router.get('/marketplace/items', authenticate, marketplaceController.getItems);
+router.post('/marketplace/items', authenticate, validate([
+  body('type').isIn(['LAB_TEST', 'MEDICATION', 'SERVICE']),
+  body('name').notEmpty(),
+  body('price').isFloat({ min: 0 }),
+]), marketplaceController.createItem);
+router.put('/marketplace/items/:id', authenticate, marketplaceController.updateItem);
+router.delete('/marketplace/items/:id', authenticate, marketplaceController.deleteItem);
+router.get('/marketplace/orders', authenticate, marketplaceController.getOrders);
+router.post('/marketplace/orders', authenticate, validate([
+  body('patientId').notEmpty(),
+  body('itemId').notEmpty(),
+]), marketplaceController.createOrder);
+router.put('/marketplace/orders/:id', authenticate, marketplaceController.updateOrder);
+
+// Appointment Reminders
+router.get('/reminders', authenticate, reminderController.getPendingReminders);
+router.post('/reminders/send', authenticate, reminderController.triggerReminders);
+
 // Public Portal - Messages & Prescription Requests
 router.post('/public/patient/:token/messages', messageController.sendPortalMessage);
 router.get('/public/patient/:token/messages', messageController.getPortalMessages);
 router.post('/public/patient/:token/prescription-request', prescriptionRequestController.createPortalPrescriptionRequest);
 router.post('/public/clinic/:clinicId/rating', ratingController.createPublicRating);
+router.get('/public/clinic/:clinicId/marketplace', marketplaceController.getPublicItems);
+router.post('/public/patient/:token/marketplace/order', marketplaceController.createPublicOrder);
 
 export default router;

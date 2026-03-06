@@ -27,6 +27,7 @@ model User {
   prescriptions         Prescription[]
   recurringAppointments RecurringAppointment[]
   appointmentRequests   AppointmentRequest[]
+  videoSessions         VideoSession[]
 
   @@index([clinicId])
 }
@@ -63,6 +64,9 @@ model Patient {
   insuranceClaims      InsuranceClaim[]
   prescriptionRequests PrescriptionRequest[]
   payments             Payment[]
+  deviceReadings       DeviceReading[]
+  videoSessions        VideoSession[]
+  marketplaceOrders    MarketplaceOrder[]
 
   @@index([clinicId])
 }
@@ -119,6 +123,10 @@ model Clinic {
   insuranceClaims      InsuranceClaim[]
   prescriptionRequests PrescriptionRequest[]
   payments             Payment[]
+  deviceReadings       DeviceReading[]
+  videoSessions        VideoSession[]
+  marketplaceItems     MarketplaceItem[]
+  marketplaceOrders    MarketplaceOrder[]
 }
 
 model Tag {
@@ -642,4 +650,91 @@ model Payment {
   @@index([clinicId])
   @@index([invoiceId])
   @@index([patientId])
+}
+
+model DeviceReading {
+  id          String   @id @default(uuid())
+  clinicId    String
+  patientId   String
+  deviceType  String   // BLOOD_PRESSURE, GLUCOSE, HEART_RATE, OXYGEN, TEMPERATURE, WEIGHT
+  value       Float
+  unit        String
+  systolic    Float?   // for blood pressure
+  diastolic   Float?   // for blood pressure
+  isAbnormal  Boolean  @default(false)
+  notes       String?
+  recordedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([deviceType])
+  @@index([recordedAt])
+}
+
+model VideoSession {
+  id            String    @id @default(uuid())
+  clinicId      String
+  appointmentId String?
+  doctorId      String
+  patientId     String
+  roomId        String    @unique @default(uuid())
+  status        String    @default("WAITING") // WAITING, IN_PROGRESS, COMPLETED, CANCELLED
+  startedAt     DateTime?
+  endedAt       DateTime?
+  duration      Int?      // minutes
+  notes         String?
+  createdAt     DateTime  @default(now())
+
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  doctor  User    @relation(fields: [doctorId], references: [id])
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([clinicId])
+  @@index([doctorId])
+  @@index([patientId])
+  @@index([roomId])
+}
+
+model MarketplaceItem {
+  id          String   @id @default(uuid())
+  clinicId    String
+  type        String   // LAB_TEST, MEDICATION, SERVICE
+  name        String
+  description String?
+  price       Float
+  category    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clinic Clinic            @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  orders MarketplaceOrder[]
+
+  @@index([clinicId])
+  @@index([type])
+}
+
+model MarketplaceOrder {
+  id          String   @id @default(uuid())
+  clinicId    String
+  patientId   String
+  itemId      String
+  quantity    Int      @default(1)
+  totalPrice  Float
+  status      String   @default("PENDING") // PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  clinic  Clinic          @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  patient Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  item    MarketplaceItem @relation(fields: [itemId], references: [id])
+
+  @@index([clinicId])
+  @@index([patientId])
+  @@index([status])
 }

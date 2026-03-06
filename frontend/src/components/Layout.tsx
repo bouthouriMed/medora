@@ -64,6 +64,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       icon: Icons.mail,
       permission: "",
     },
+    {
+      path: "/telemedicine",
+      label: t("nav.telemedicine"),
+      icon: Icons.video,
+      permission: "",
+    },
   ];
   const navItems = allNavItems.filter(
     (item) => !item.permission || hasPermission(user, item.permission as any),
@@ -128,6 +134,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       path: "/doctor-ratings",
       label: t("nav.doctorRatings"),
       icon: Icons.star,
+      permission: "view_settings",
+    },
+    {
+      path: "/remote-monitoring",
+      label: t("nav.remoteMonitoring"),
+      icon: Icons.activity,
+      permission: "view_settings",
+    },
+    {
+      path: "/marketplace",
+      label: t("nav.marketplace"),
+      icon: Icons.cart,
       permission: "view_settings",
     },
   ];
