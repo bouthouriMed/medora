@@ -37,7 +37,7 @@ export class AppointmentRepository {
     return prisma.appointment.findMany({
       where,
       include: { patient: true, doctor: true },
-      orderBy: { dateTime: 'desc' },
+      orderBy: { createdAt: 'desc' },
     });
   }
 

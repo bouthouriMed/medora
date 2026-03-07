@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useGetAppointmentsQuery, useGetPatientsQuery, useGetUsersQuery, useCreateAppointmentMutation, useCancelAppointmentMutation, useUpdateAppointmentMutation, useGetNoteTemplatesQuery, useGetRecurringAppointmentsQuery, useCreateRecurringAppointmentMutation, useDeleteRecurringAppointmentMutation, useGenerateVisitNoteMutation, useCreateMedicalRecordMutation, useGetAppointmentRequestsQuery, useApproveAppointmentRequestMutation, useRejectAppointmentRequestMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportAppointments, generateICS } from '../utils/export';
@@ -312,13 +312,10 @@ export default function Appointments() {
     }
   };
 
-  const handleStartConsultation = async (appointmentId: string) => {
-    try {
-      await updateAppointment({ id: appointmentId, status: 'IN_PROGRESS' }).unwrap();
-      showToast(t('appointments.consultationStarted'), 'success');
-    } catch {
-      showToast(t('common.error'), 'error');
-    }
+  const navigate = useNavigate();
+
+  const handleStartConsultation = (appointmentId: string, patientId: string) => {
+    navigate(`/patients/${patientId}?appointmentId=${appointmentId}&mode=consultation`);
   };
 
   return (
@@ -675,7 +672,7 @@ export default function Appointments() {
                                   )}
                                   {apt.status === 'CHECKED_IN' && (
                                     <button
-                                      onClick={() => { handleStartConsultation(apt.id); setOpenMenuId(null); }}
+                                      onClick={() => { handleStartConsultation(apt.id, apt.patientId); setOpenMenuId(null); }}
                                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -759,7 +756,7 @@ export default function Appointments() {
                       )}
                       {apt.status === 'CHECKED_IN' && (
                         <button
-                          onClick={() => handleStartConsultation(apt.id)}
+                          onClick={() => handleStartConsultation(apt.id, apt.patientId)}
                           className="flex-1 min-w-[80px] text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
                         >
                           Start Consultation
@@ -939,10 +936,7 @@ export default function Appointments() {
                       <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Patient is checked in and waiting. Start the consultation when ready.</p>
                     </div>
                     <button
-                      onClick={async () => {
-                        await handleStartConsultation(apt.id);
-                        setSelectedAppointment({ ...apt, status: 'IN_PROGRESS' });
-                      }}
+                      onClick={() => handleStartConsultation(apt.id, apt.patientId)}
                       className="w-full px-4 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>

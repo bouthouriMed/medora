@@ -537,6 +537,8 @@ model ClinicSettings {
   smtpUser           String?
   smtpPassword       String?
   fromEmail          String?
+  consultationFee    Float   @default(100.00)
+  invoiceItemPresets Json?
 
   clinic Clinic @relation(fields: [clinicId], references: [id])
 }

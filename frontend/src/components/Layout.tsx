@@ -334,17 +334,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         >
           {!collapsed && (
             <button
-              className="cursor-pointer"
               onClick={() => navigate("/")}
-              className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+              className="cursor-pointer text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
             >
               Medora
             </button>
           )}
           <button
-            className="cursor-pointer"
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="cursor-pointer p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed
@@ -603,9 +601,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               {/* Mobile sidebar header */}
               <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-800">
                 <button
-                  className="cursor-pointer"
                   onClick={() => navigate("/")}
-                  className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+                  className="cursor-pointer text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
                 >
                   Medora
                 </button>

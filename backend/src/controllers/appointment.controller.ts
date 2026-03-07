@@ -166,6 +166,68 @@ export class AppointmentController {
     }
   }
 
+  async completeWithInvoice(req: AuthRequest, res: Response) {
+    try {
+      const appointmentId = req.params.id;
+      const clinicId = req.user!.clinicId;
+      const { items, notes } = req.body;
+
+      const appointment = await prisma.appointment.findFirst({
+        where: { id: appointmentId, clinicId, deletedAt: null },
+        include: { 
+          patient: true, 
+          doctor: true,
+          clinic: true,
+        },
+      });
+
+      if (!appointment) {
+        return res.status(404).json({ error: 'Appointment not found' });
+      }
+
+      if (appointment.status === 'COMPLETED') {
+        return res.status(400).json({ error: 'Appointment already completed' });
+      }
+
+      const clinicSettings = await prisma.clinicSettings.findUnique({
+        where: { clinicId },
+      });
+
+      const consultationFee = clinicSettings?.consultationFee || 100.00;
+
+      const lineItems = items && items.length > 0 ? items : [
+        { description: 'Consultation Fee', amount: consultationFee, quantity: 1 }
+      ];
+
+      const subtotal = lineItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
+
+      const invoice = await prisma.invoice.create({
+        data: {
+          patientId: appointment.patientId,
+          appointmentId: appointment.id,
+          clinicId,
+          amount: subtotal,
+          status: 'UNPAID',
+          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          items: lineItems,
+          notes: notes || null,
+        },
+      });
+
+      await prisma.appointment.update({
+        where: { id: appointmentId },
+        data: { status: 'COMPLETED' },
+      });
+
+      res.json({ 
+        appointment: { ...appointment, status: 'COMPLETED' }, 
+        invoice 
+      });
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  }
+
   async delete(req: AuthRequest, res: Response) {
     try {
       await appointmentService.delete(req.params.id as string, req.user!.clinicId);

@@ -136,13 +136,21 @@ export const api = createApi({
       }),
       invalidatesTags: ['Appointment', 'Dashboard'],
     }),
-    updateAppointment: builder.mutation({
+updateAppointment: builder.mutation({
       query: ({ id, ...body }) => ({
         url: `/appointments/${id}`,
         method: 'PUT',
         body,
       }),
       invalidatesTags: ['Appointment', 'Dashboard'],
+    }),
+    completeWithInvoice: builder.mutation({
+      query: ({ id, items, notes }) => ({
+        url: `/appointments/${id}/complete-with-invoice`,
+        method: 'POST',
+        body: { items, notes },
+      }),
+      invalidatesTags: ['Appointment', 'Invoice', 'Dashboard'],
     }),
     cancelAppointment: builder.mutation({
       query: (id) => ({
@@ -878,6 +886,7 @@ export const {
   useGetPatientAppointmentsQuery,
   useCreateAppointmentMutation,
   useUpdateAppointmentMutation,
+  useCompleteWithInvoiceMutation,
   useCancelAppointmentMutation,
   // Appointment Requests
   useGetAppointmentRequestsQuery,

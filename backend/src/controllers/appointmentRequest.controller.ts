@@ -78,7 +78,7 @@ export const approveAppointmentRequest = async (req: AuthRequest, res: Response)
       });
     }
 
-    // Create the actual appointment
+    // Create the actual appointment (status CONFIRMED since doctor already approved it)
     const appointment = await prisma.appointment.create({
       data: {
         patientId: patient.id,
@@ -96,12 +96,20 @@ export const approveAppointmentRequest = async (req: AuthRequest, res: Response)
       data: { status: 'APPROVED' },
     });
 
-    // Notify patient if they have a userId
+    // Send notification to patient if email provided (for portal patients)
     if (patient.portalToken) {
-      // Patient doesn't have userId (they're external), but the appointment is created
+      // Patient has portal access - create notification
+      // Note: We need patient user ID for notifications, but portal patients don't have users
+      // Instead, we can send an email notification (not implemented yet)
+      // For now, just return success
     }
 
-    res.json({ appointment, patient });
+    // Notify the doctor who approved (optional - they already know)
+    res.json({ 
+      appointment, 
+      patient,
+      message: patient ? `Appointment created. Patient "${patient.firstName} ${patient.lastName}" already existed.` : `New patient created and appointment scheduled.`
+    });
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }
@@ -115,6 +123,7 @@ export const rejectAppointmentRequest = async (req: AuthRequest, res: Response) 
 
     const request = await prisma.appointmentRequest.findFirst({
       where: { id, clinicId, status: 'PENDING' },
+      include: { doctor: true },
     });
 
     if (!request) {
@@ -126,6 +135,9 @@ export const rejectAppointmentRequest = async (req: AuthRequest, res: Response) 
       data: { status: 'REJECTED' },
     });
 
+    // Note: In production, you would send an email notification to the patient here
+    // The patient email is in request.patientEmail
+    
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });

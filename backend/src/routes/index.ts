@@ -89,6 +89,7 @@ router.post('/appointments', authenticate, validate([
 ]), appointmentController.create);
 router.put('/appointments/:id', authenticate, appointmentController.update);
 router.delete('/appointments/:id', authenticate, appointmentController.cancel);
+router.post('/appointments/:id/complete-with-invoice', authenticate, appointmentController.completeWithInvoice);
 
 router.get('/invoices', authenticate, invoiceController.getAll);
 router.get('/invoices/unpaid', authenticate, invoiceController.getUnpaid);

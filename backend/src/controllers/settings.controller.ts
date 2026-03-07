@@ -27,7 +27,7 @@ export const getClinicSettings = async (req: AuthRequest, res: Response) => {
 export const updateClinicSettings = async (req: AuthRequest, res: Response) => {
   try {
     const { clinicId } = req.user!;
-    const { emailNotifications, smtpHost, smtpPort, smtpUser, smtpPassword, fromEmail } = req.body;
+    const { emailNotifications, smtpHost, smtpPort, smtpUser, smtpPassword, fromEmail, consultationFee, invoiceItemPresets } = req.body;
     
     const settings = await prisma.clinicSettings.upsert({
       where: { clinicId },
@@ -38,6 +38,8 @@ export const updateClinicSettings = async (req: AuthRequest, res: Response) => {
         smtpUser: smtpUser || null,
         smtpPassword: smtpPassword && smtpPassword !== '***' ? smtpPassword : undefined,
         fromEmail: fromEmail || null,
+        consultationFee: consultationFee !== undefined ? consultationFee : undefined,
+        invoiceItemPresets: invoiceItemPresets !== undefined ? invoiceItemPresets : undefined,
       },
       create: {
         clinicId,
@@ -47,6 +49,8 @@ export const updateClinicSettings = async (req: AuthRequest, res: Response) => {
         smtpUser: smtpUser || null,
         smtpPassword: smtpPassword || null,
         fromEmail: fromEmail || null,
+        consultationFee: consultationFee || 100.00,
+        invoiceItemPresets: invoiceItemPresets || [],
       },
     });
     

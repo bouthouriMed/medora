@@ -15,6 +15,8 @@ export default function Settings() {
     smtpUser: '',
     smtpPassword: '',
     fromEmail: '',
+    consultationFee: 100,
+    invoiceItemPresets: [] as { description: string; amount: number }[],
   });
 
   useEffect(() => {
@@ -26,6 +28,8 @@ export default function Settings() {
         smtpUser: settings.smtpUser || '',
         smtpPassword: settings.smtpPassword || '',
         fromEmail: settings.fromEmail || '',
+        consultationFee: settings.consultationFee || 100,
+        invoiceItemPresets: settings.invoiceItemPresets || [],
       });
     }
   }, [settings]);
@@ -141,6 +145,82 @@ export default function Settings() {
             </button>
           </div>
         )}
+
+        <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg font-medium disabled:opacity-50"
+          >
+            {isSaving ? t('settings.saving') : t('settings.saveSettings')}
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 p-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Consultation & Billing</h2>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Default Consultation Fee ($)</label>
+            <input
+              type="number"
+              value={formData.consultationFee}
+              onChange={(e) => setFormData({ ...formData, consultationFee: parseFloat(e.target.value) || 0 })}
+              className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="100"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Invoice Item Presets</label>
+            <div className="space-y-2">
+              {formData.invoiceItemPresets.map((item, index) => (
+                <div key={index} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={item.description}
+                    onChange={(e) => {
+                      const newPresets = [...formData.invoiceItemPresets];
+                      newPresets[index].description = e.target.value;
+                      setFormData({ ...formData, invoiceItemPresets: newPresets });
+                    }}
+                    className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Service description"
+                  />
+                  <input
+                    type="number"
+                    value={item.amount}
+                    onChange={(e) => {
+                      const newPresets = [...formData.invoiceItemPresets];
+                      newPresets[index].amount = parseFloat(e.target.value) || 0;
+                      setFormData({ ...formData, invoiceItemPresets: newPresets });
+                    }}
+                    className="w-24 px-3 py-2 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Amount"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newPresets = formData.invoiceItemPresets.filter((_, i) => i !== index);
+                      setFormData({ ...formData, invoiceItemPresets: newPresets });
+                    }}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, invoiceItemPresets: [...formData.invoiceItemPresets, { description: '', amount: 0 }] })}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                + Add Item Preset
+              </button>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-600">
           <button

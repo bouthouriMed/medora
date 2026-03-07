@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useGetPatientQuery, useGetPatientMedicalHistoryQuery, useCreateVitalMutation, useCreateDiagnosisMutation, useUpdateDiagnosisMutation, useDeleteDiagnosisMutation, useCreatePrescriptionMutation, useUpdatePrescriptionMutation, useDeletePrescriptionMutation, useCreateAllergyMutation, useDeleteAllergyMutation, useCreateConditionMutation, useDeleteConditionMutation, useGetUsersQuery, useGeneratePatientSummaryMutation, useCreateMedicalRecordMutation, useUpdateMedicalRecordMutation } from '../api';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useGetPatientQuery, useGetPatientMedicalHistoryQuery, useCreateVitalMutation, useCreateDiagnosisMutation, useUpdateDiagnosisMutation, useDeleteDiagnosisMutation, useCreatePrescriptionMutation, useUpdatePrescriptionMutation, useDeletePrescriptionMutation, useCreateAllergyMutation, useDeleteAllergyMutation, useCreateConditionMutation, useDeleteConditionMutation, useGetUsersQuery, useGeneratePatientSummaryMutation, useCreateMedicalRecordMutation, useUpdateMedicalRecordMutation, useCompleteWithInvoiceMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { Icons } from '../components/Icons';
 import Modal from '../components/Modal';
@@ -177,8 +177,13 @@ function MarkdownContent({ text }: { text: string }) {
 export default function PatientDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
+  
+  const consultationMode = searchParams.get('mode') === 'consultation';
+  const consultationAppointmentId = searchParams.get('appointmentId');
+  
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [showVitalModal, setShowVitalModal] = useState(false);
   const [showDiagnosisModal, setShowDiagnosisModal] = useState(false);
@@ -189,6 +194,15 @@ export default function PatientDetail() {
   const [generatedSummaryText, setGeneratedSummaryText] = useState('');
   const [summaryIsEditing, setSummaryIsEditing] = useState(false);
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceItems, setInvoiceItems] = useState([{ description: 'Consultation Fee', amount: 100, quantity: 1 }]);
+  const [invoiceNotes, setInvoiceNotes] = useState('');
+  
+  // Consultation notes
+  const [chiefComplaint, setChiefComplaint] = useState('');
+  const [physicalExam, setPhysicalExam] = useState('');
+  const [assessmentPlan, setAssessmentPlan] = useState('');
+  const [isEditingConsultation, setIsEditingConsultation] = useState(false);
 
   const { data: patient } = useGetPatientQuery(id || '');
   const { data: history, isLoading } = useGetPatientMedicalHistoryQuery(id || '', { skip: !id });
@@ -208,6 +222,7 @@ export default function PatientDetail() {
   const [generatePatientSummary, { isLoading: isGeneratingSummary }] = useGeneratePatientSummaryMutation();
   const [createMedicalRecord, { isLoading: isSavingSummary }] = useCreateMedicalRecordMutation();
   const [updateMedicalRecord, { isLoading: isUpdatingSummary }] = useUpdateMedicalRecordMutation();
+  const [completeWithInvoice, { isLoading: isCompleting }] = useCompleteWithInvoiceMutation();
 
   const [vitalForm, setVitalForm] = useState({
     bloodPressureSystolic: '',
@@ -344,7 +359,7 @@ export default function PatientDetail() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+            {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
           <button onClick={() => navigate('/patients')} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400">
@@ -416,6 +431,155 @@ export default function PatientDetail() {
           )}
         </div>
       </div>
+      
+      {/* Consultation Mode Banner */}
+      {consultationMode && (
+        <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 shadow-lg">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <Icons.stethoscope className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-white font-semibold text-lg">Consultation in Progress</h2>
+                <p className="text-orange-100 text-sm">Recording visit details for this appointment</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowInvoiceModal(true)}
+              className="px-6 py-3 bg-white text-orange-600 rounded-xl font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+            >
+              <Icons.check className="w-5 h-5" />
+              Complete Visit
+            </button>
+          </div>
+          
+          {/* Quick Actions */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            <button
+              onClick={() => setShowVitalModal(true)}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            >
+              <Icons.activity className="w-4 h-4" /> Add Vitals
+            </button>
+            <button
+              onClick={() => setShowDiagnosisModal(true)}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            >
+              <Icons.fileText className="w-4 h-4" /> Add Diagnosis
+            </button>
+            <button
+              onClick={() => setShowPrescriptionModal(true)}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            >
+              <Icons.pill className="w-4 h-4" /> Add Prescription
+            </button>
+            <button
+              onClick={() => setShowSummaryModal(true)}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+            >
+              <Icons.sparkle className="w-4 h-4" /> AI Summary
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Consultation Notes Section */}
+      {consultationMode && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Icons.fileText className="w-5 h-5 text-white" />
+              <h3 className="text-white font-semibold">Visit Documentation</h3>
+            </div>
+            <button
+              onClick={() => setIsEditingConsultation(!isEditingConsultation)}
+              className="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-1"
+            >
+              {isEditingConsultation ? <Icons.check size={16} /> : <Icons.edit size={16} />}
+              {isEditingConsultation ? 'Save Notes' : 'Edit Notes'}
+            </button>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            {/* Chief Complaint */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <Icons.alert className="w-4 h-4 text-orange-500" />
+                Chief Complaint / Reason for Visit
+              </label>
+              {isEditingConsultation ? (
+                <textarea
+                  value={chiefComplaint}
+                  onChange={(e) => setChiefComplaint(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="What brings the patient in today? Describe the main symptoms or concerns..."
+                />
+              ) : (
+                <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800 rounded-xl p-4">
+                  {chiefComplaint ? (
+                    <p className="text-gray-700 dark:text-gray-300">{chiefComplaint}</p>
+                  ) : (
+                    <p className="text-orange-400 italic">No chief complaint recorded. Click edit to add.</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Physical Examination */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <Icons.heart className="w-4 h-4 text-red-500" />
+                Physical Examination Findings
+              </label>
+              {isEditingConsultation ? (
+                <textarea
+                  value={physicalExam}
+                  onChange={(e) => setPhysicalExam(e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Document relevant physical examination findings: general appearance, vital signs, system-specific findings..."
+                />
+              ) : (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-xl p-4">
+                  {physicalExam ? (
+                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{physicalExam}</p>
+                  ) : (
+                    <p className="text-red-400 italic">No examination findings recorded. Click edit to add.</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Assessment & Plan */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+                <Icons.clipboard className="w-4 h-4 text-green-500" />
+                Assessment & Plan
+              </label>
+              {isEditingConsultation ? (
+                <textarea
+                  value={assessmentPlan}
+                  onChange={(e) => setAssessmentPlan(e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Your clinical assessment and treatment plan: diagnosis, medications, follow-up, patient education..."
+                />
+              ) : (
+                <div className="bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-xl p-4">
+                  {assessmentPlan ? (
+                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{assessmentPlan}</p>
+                  ) : (
+                    <p className="text-green-400 italic">No assessment/plan recorded. Click edit to add.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
@@ -1151,6 +1315,216 @@ export default function PatientDetail() {
               className="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white rounded-xl font-medium transition-colors"
             >
               {(isSavingSummary || isUpdatingSummary) ? 'Saving...' : 'Save to Records'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Complete Visit - Invoice Modal */}
+      <Modal isOpen={showInvoiceModal} onClose={() => setShowInvoiceModal(false)} title="Complete Visit" size="xl">
+        <div className="space-y-6">
+          {/* Invoice Preview - Real World Design */}
+          <div className="bg-white border-2 border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
+            {/* Invoice Header */}
+            <div className="bg-gradient-to-r from-slate-800 to-slate-700 text-white p-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="text-2xl font-bold">INVOICE</h3>
+                  <p className="text-slate-300 text-sm">Medora Health Clinic</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-lg font-semibold">#{new Date().getFullYear()}-{Math.random().toString(36).substr(2, 6).toUpperCase()}</p>
+                  <p className="text-slate-300 text-sm">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Patient & Provider Info */}
+            <div className="p-6 border-b border-gray-200 dark:border-gray-600">
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Bill To</p>
+                  <p className="font-semibold text-gray-900 dark:text-white text-lg">{patient?.firstName} {patient?.lastName}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Patient ID: {patient?.id?.slice(0, 8)}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{patient?.dateOfBirth ? `DOB: ${new Date(patient.dateOfBirth).toLocaleDateString()}` : ''}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Provider</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{user?.firstName} {user?.lastName}</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">{user?.role}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Invoice Items Table */}
+            <div className="p-6">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b-2 border-gray-200 dark:border-gray-600">
+                    <th className="text-left py-3 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Description</th>
+                    <th className="text-center py-3 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 w-20">Qty</th>
+                    <th className="text-right py-3 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 w-28">Unit Price</th>
+                    <th className="text-right py-3 text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 w-28">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoiceItems.filter(item => item.description && item.amount > 0).map((item, index) => (
+                    <tr key={index} className="border-b border-gray-100 dark:border-gray-700">
+                      <td className="py-3 text-gray-900 dark:text-white">{item.description}</td>
+                      <td className="py-3 text-center text-gray-600 dark:text-gray-300">{item.quantity}</td>
+                      <td className="py-3 text-right text-gray-600 dark:text-gray-300">${item.amount.toFixed(2)}</td>
+                      <td className="py-3 text-right font-medium text-gray-900 dark:text-white">${(item.amount * item.quantity).toFixed(2)}</td>
+                    </tr>
+                  ))}
+                  {invoiceItems.filter(item => item.description && item.amount > 0).length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="py-8 text-center text-gray-400">No items added yet</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Totals */}
+            <div className="bg-gray-50 dark:bg-gray-800 p-6">
+              <div className="flex justify-end">
+                <div className="w-64 space-y-2">
+                  <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                    <span>Subtotal</span>
+                    <span>${invoiceItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600 dark:text-gray-300">
+                    <span>Tax (0%)</span>
+                    <span>$0.00</span>
+                  </div>
+                  <div className="border-t-2 border-gray-300 dark:border-gray-600 pt-2 flex justify-between text-lg font-bold text-gray-900 dark:text-white">
+                    <span>Total</span>
+                    <span className="text-green-600">${invoiceItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0).toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="bg-slate-100 dark:bg-slate-700 p-4 text-center">
+              <p className="text-xs text-slate-500 dark:text-slate-400">Thank you for choosing Medora Health Clinic!</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Payment is due within 30 days. Please contact us for payment arrangements.</p>
+            </div>
+          </div>
+
+          {/* Edit Section - Collapsible */}
+          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
+            <button
+              onClick={() => {
+                const el = document.getElementById('invoice-edit-section');
+                if (el) el.classList.toggle('hidden');
+              }}
+              className="w-full px-4 py-3 flex items-center justify-between text-amber-800 dark:text-amber-200 font-medium"
+            >
+              <span className="flex items-center gap-2">
+                <Icons.edit size={18} />
+                Edit Invoice Items
+              </span>
+              <Icons.chevronDown size={18} />
+            </button>
+            <div id="invoice-edit-section" className="hidden px-4 pb-4 space-y-4">
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {invoiceItems.map((item, index) => (
+                  <div key={index} className="flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-lg">
+                    <input
+                      type="text"
+                      value={item.description}
+                      onChange={(e) => {
+                        const newItems = [...invoiceItems];
+                        newItems[index].description = e.target.value;
+                        setInvoiceItems(newItems);
+                      }}
+                      className="flex-1 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                      placeholder="Description"
+                    />
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => {
+                        const newItems = [...invoiceItems];
+                        newItems[index].quantity = parseInt(e.target.value) || 1;
+                        setInvoiceItems(newItems);
+                      }}
+                      className="w-16 px-2 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm text-center"
+                      placeholder="Qty"
+                    />
+                    <input
+                      type="number"
+                      value={item.amount}
+                      onChange={(e) => {
+                        const newItems = [...invoiceItems];
+                        newItems[index].amount = parseFloat(e.target.value) || 0;
+                        setInvoiceItems(newItems);
+                      }}
+                      className="w-24 px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                      placeholder="Amount"
+                    />
+                    <button
+                      onClick={() => setInvoiceItems(invoiceItems.filter((_, i) => i !== index))}
+                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                    >
+                      <Icons.trash size={16} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setInvoiceItems([...invoiceItems, { description: '', amount: 0, quantity: 1 }])}
+                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+                >
+                  <Icons.plus size={16} /> Add Item
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Notes</label>
+                <textarea
+                  value={invoiceNotes}
+                  onChange={(e) => setInvoiceNotes(e.target.value)}
+                  rows={2}
+                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                  placeholder="Optional notes for the invoice..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowInvoiceModal(false)}
+              className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                if (!consultationAppointmentId) return;
+                try {
+                  const result = await completeWithInvoice({
+                    id: consultationAppointmentId,
+                    items: invoiceItems.filter(item => item.description && item.amount > 0),
+                    notes: invoiceNotes,
+                  }).unwrap();
+                  showToast(`Visit completed! Invoice #${result.invoice.id.slice(0, 8)} created.`, 'success');
+                  setShowInvoiceModal(false);
+                  navigate('/appointments');
+                } catch (err: any) {
+                  showToast(err?.data?.error || 'Failed to complete visit', 'error');
+                }
+              }}
+              disabled={isCompleting || invoiceItems.filter(i => i.description && i.amount > 0).length === 0}
+              className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 disabled:opacity-60 text-white rounded-xl font-medium flex items-center justify-center gap-2"
+            >
+              {isCompleting ? (
+                <><svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Processing...</>
+              ) : (
+                <><Icons.check size={18} /> Complete Visit & Create Invoice</>
+              )}
             </button>
           </div>
         </div>

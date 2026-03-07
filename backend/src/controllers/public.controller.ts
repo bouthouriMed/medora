@@ -49,7 +49,7 @@ export class PublicPortalController {
     }
   }
 
-  async requestAppointment(req: Request, res: Response) {
+async requestAppointment(req: Request, res: Response) {
     try {
       const { clinicId } = req.params;
       const { patientName, patientEmail, patientPhone, doctorId, dateTime, reason } = req.body;
@@ -70,78 +70,52 @@ export class PublicPortalController {
 
       const appointmentDate = new Date(dateTime);
       
-      if (patient) {
-        const appointment = await appointmentRepository.create({
-          patientId: patient.id,
-          doctorId,
+      // Always create an appointment request first - doctor must approve all online bookings
+      const appointmentRequest = await prisma.appointmentRequest.create({
+        data: {
           clinicId,
-          dateTime: appointmentDate,
-          notes: reason,
-        });
-        
-        await prisma.message.create({
-          data: {
-            clinicId,
-            senderId: 'system',
-            senderType: 'SYSTEM',
-            receiverId: doctorId,
-            receiverType: 'USER',
-            patientId: patient.id,
-            subject: 'New Appointment Booked',
-            body: `A new appointment has been booked by ${patient.firstName} ${patient.lastName}.\n\n📅 Date: ${appointmentDate.toLocaleDateString()}\n⏰ Time: ${appointmentDate.toLocaleTimeString()}\n📝 Reason: ${reason || 'Not provided'}\n\nPlease review and confirm this appointment.`,
-          },
-        });
-
-        notificationService.notifyAppointmentRequest(
+          patientName: patient ? `${patient.firstName} ${patient.lastName}` : patientName,
+          patientEmail,
+          patientPhone,
           doctorId,
-          `${patient.firstName} ${patient.lastName}`,
-          appointmentDate,
-          appointment.id
-        ).catch(() => {});
+          requestedDateTime: appointmentDate,
+          reason,
+          status: 'PENDING',
+        },
+      });
 
-        return res.status(201).json({
-          message: 'Appointment requested successfully',
-          appointmentId: appointment.id,
-          patientExists: true,
-        });
-      } else {
-        const appointmentRequest = await prisma.appointmentRequest.create({
-          data: {
-            clinicId,
-            patientName,
-            patientEmail,
-            patientPhone,
-            doctorId,
-            requestedDateTime: appointmentDate,
-            reason,
-            status: 'PENDING',
-          },
-        });
+      // Create internal message for the doctor
+      await prisma.message.create({
+        data: {
+          clinicId,
+          senderId: 'system',
+          senderType: 'SYSTEM',
+          receiverId: doctorId,
+          receiverType: 'USER',
+          patientId: patient?.id,
+          subject: 'New Appointment Request',
+          body: `A new appointment request from online booking.\n\n${patient ? `Existing Patient: ${patient.firstName} ${patient.lastName}` : `New Patient: ${patientName}`}\n📞 Phone: ${patientPhone || 'Not provided'}\n📧 Email: ${patientEmail || 'Not provided'}\n📅 Date: ${appointmentDate.toLocaleDateString()}\n⏰ Time: ${appointmentDate.toLocaleTimeString()}\n📝 Reason: ${reason || 'Not provided'}\n\nPlease review and approve this request.`,
+        },
+      });
 
-        await prisma.message.create({
-          data: {
-            clinicId,
-            senderId: 'system',
-            senderType: 'SYSTEM',
-            receiverId: doctorId,
-            receiverType: 'USER',
-            subject: 'New Appointment Request',
-            body: `A new appointment request has been submitted.\n\n👤 Patient: ${patientName}\n📞 Phone: ${patientPhone || 'Not provided'}\n📧 Email: ${patientEmail || 'Not provided'}\n📅 Date: ${appointmentDate.toLocaleDateString()}\n⏰ Time: ${appointmentDate.toLocaleTimeString()}\n📝 Reason: ${reason || 'Not provided'}\n\nPlease review and approve this request.`,
-          },
-        });
+      // Send notification to doctor
+      await notificationService.notifyAppointmentRequest(
+        doctorId,
+        patient ? `${patient.firstName} ${patient.lastName}` : patientName,
+        appointmentDate,
+        appointmentRequest.id
+      );
 
-        notificationService.notifyAppointmentRequest(
-          doctorId,
-          patientName,
-          appointmentDate,
-          appointmentRequest.id
-        ).catch(() => {});
+      // Check if this is a new patient that needs portal account
+      const isNewPatient = !patient;
 
-        return res.status(201).json({
-          message: 'Appointment requested successfully. The clinic will contact you to confirm.',
-          patientExists: false,
-        });
-      }
+      return res.status(201).json({ 
+        message: isNewPatient 
+          ? 'Your appointment request has been submitted. The clinic will contact you to confirm.'
+          : 'Your appointment request has been submitted. You will receive a confirmation once the clinic reviews it.',
+        appointmentRequestId: appointmentRequest.id,
+        isNewPatient,
+      });
     } catch (error) {
       res.status(500).json({ error: (error as Error).message });
     }

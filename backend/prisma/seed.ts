@@ -17,6 +17,7 @@ async function main() {
   await prisma.tag.deleteMany({});
   await prisma.invoice.deleteMany({});
   await prisma.appointment.deleteMany({});
+  await prisma.appointmentRequest.deleteMany({});
   await prisma.patient.deleteMany({});
   await prisma.user.deleteMany({});
   await prisma.clinicSettings.deleteMany({});
