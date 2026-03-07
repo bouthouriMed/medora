@@ -371,18 +371,6 @@ export default function PatientDetail() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => navigate(`/appointments?patientId=${patient?.id}&action=new`)}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2 text-sm"
-          >
-            {Icons.calendar({ size: 16 })} {t('appointments.newAppointment')}
-          </button>
-          <button
-            onClick={() => navigate(`/invoices?patientId=${patient?.id}&action=new`)}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2 text-sm"
-          >
-            {Icons.plus({ size: 16 })} {t('invoices.createInvoice')}
-          </button>
           {hasAISummary ? (
             <button
               onClick={async () => {
@@ -431,7 +419,7 @@ export default function PatientDetail() {
           )}
         </div>
       </div>
-      
+
       {/* Consultation Mode Banner */}
       {consultationMode && (
         <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-5 shadow-lg">
