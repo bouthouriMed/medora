@@ -39,6 +39,8 @@
     "clear": "Clear",
     "apply": "Apply",
     "reset": "Reset",
+    "copy": "Copy",
+    "generate": "Generate",
     "noData": "No data available",
     "noResultsFound": "No results found",
     "perPage": "Per page",
@@ -446,7 +448,9 @@
     "error": "Error",
     "bookingError": "Failed to book appointment. Please try again.",
     "confirmationEmail": "A confirmation email will be sent to you.",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "welcomePatient": "Welcome, {{name}}!",
+    "personalizedBooking": "Your information has been pre-filled for a faster booking experience."
   },
   "staff": {
     "title": "Staff",
@@ -858,7 +862,17 @@
     "describeSymptoms": "Describe your symptoms in more detail:",
     "symptomsPlaceholder": "E.g., headache for 2 days, mild fever...",
     "checkUrgency": "Check Urgency",
-    "urgencyResults": "Urgency Assessment"
+    "urgencyResults": "Urgency Assessment",
+    "onlineBooking": "Online Booking",
+    "generateBookingLinks": "Generate and share booking links for your clinic",
+    "generalBookingLink": "General Booking Link",
+    "generalBookingDesc": "Anyone can use this link to book an appointment",
+    "patientBookingLink": "Patient-Specific Booking Link",
+    "patientBookingDesc": "Pre-fills patient info for faster booking",
+    "bookingLink": "Booking Link",
+    "linkCopied": "Link copied to clipboard!",
+    "failedToCopy": "Failed to copy link",
+    "selectPatientFirst": "Please select a patient first"
   },
   "analytics": {
     "title": "Analytics",

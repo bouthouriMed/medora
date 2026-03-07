@@ -35,6 +35,8 @@
     "warning": "تحذير",
     "create": "إنشاء",
     "update": "تحديث",
+    "copy": "نسخ",
+    "generate": "إنشاء",
     "noData": "لا تتوفر بيانات",
     "selectOption": "اختر خياراً",
     "selectPatient": "اختر مريضاً",
@@ -370,7 +372,9 @@
     "yourInformation": "معلوماتك",
     "appointmentHistory": "سجل المواعيد",
     "upcomingAppointments": "المواعيد القادمة",
-    "readOnlyPortal": "هذه بوابة للقراءة فقط. لأية أسئلة، يرجى الاتصال بالعيادة مباشرة."
+    "readOnlyPortal": "هذه بوابة للقراءة فقط. لأية أسئلة، يرجى الاتصال بالعيادة مباشرة.",
+    "welcomePatient": "مرحباً، {{name}}!",
+    "personalizedBooking": "تم ملء معلوماتك مسبقاً لتجربة حجز أسرع."
   },
   "staff": {
     "title": "الموظفون",
@@ -777,7 +781,17 @@
     "describeSymptoms": "صف أعراضك بمزيد من التفصيل:",
     "symptomsPlaceholder": "مثال: صداع منذ يومين، حمى خفيفة...",
     "checkUrgency": "فحص الطوارئ",
-    "urgencyResults": "تقييم الطوارئ"
+    "urgencyResults": "تقييم الطوارئ",
+    "onlineBooking": "الحجز عبر الإنترنت",
+    "generateBookingLinks": "أنشئ وشارك روابط الحجز لعيادتك",
+    "generalBookingLink": "رابط الحجز العام",
+    "generalBookingDesc": "يمكن لأي شخص استخدام هذا الرابط لحجز موعد",
+    "patientBookingLink": "رابط حجز خاص بالمريض",
+    "patientBookingDesc": "يملأ معلومات المريض مسبقاً لحجز أسرع",
+    "bookingLink": "رابط الحجز",
+    "linkCopied": "تم نسخ الرابط!",
+    "failedToCopy": "فشل نسخ الرابط",
+    "selectPatientFirst": "يرجى اختيار مريض أولاً"
   },
   "analytics": {
     "title": "التحليلات",

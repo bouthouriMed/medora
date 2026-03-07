@@ -12,10 +12,22 @@ import RecurringAppointments from '../components/RecurringAppointments';
 import AppointmentRequests from '../components/AppointmentRequests';
 import AppointmentsFilters from '../components/AppointmentsFilters';
 import type { Appointment } from '../types';
+import { useAppSelector } from '../store/hooks';
+import { Icons } from '../components/Icons';
 
 export default function Appointments() {
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { user } = useAppSelector((state) => state.auth);
+
+  const handleOpenBookingLink = () => {
+    const baseUrl = window.location.origin;
+    const clinicId = user?.clinicId;
+    if (clinicId) {
+      window.open(`${baseUrl}/book/${clinicId}`, '_blank');
+    }
+  };
 
   const {
     selectedDate,
@@ -94,6 +106,9 @@ export default function Appointments() {
         subtitle={t('appointments.manageAppointments')}
         actions={
           <>
+            <Button variant="secondary" onClick={handleOpenBookingLink}>
+              <Icons.globe className="w-4 h-4 inline-block mr-1" /> {t('other.onlineBooking')}
+            </Button>
             <Button variant="secondary" onClick={() => generateICS(allAppointments || [], 'all_appointments')}>
               📅 {t('appointments.exportICS')}
             </Button>

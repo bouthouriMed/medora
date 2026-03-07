@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import { useGetTagsQuery } from '../api';
+import { useGetTagsQuery, useRegeneratePatientTokenMutation } from '../api';
 import { exportPatients } from '../utils/export';
 import type { Patient } from '../types';
 import { useTranslation } from 'react-i18next';
 import { usePatientList } from '../hooks/usePatientList';
+import { useAppSelector } from '../store/hooks';
+import { showToast } from '../components/Toast';
 import { PageHeader } from '../components/ui/PageHeader';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/ui/EmptyState';
@@ -31,8 +33,10 @@ export default function Patients() {
     handleRestore,
   } = usePatientList(t);
 
+  const { user } = useAppSelector((state) => state.auth);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const { data: allTags } = useGetTagsQuery(undefined);
+  const [regenerateToken] = useRegeneratePatientTokenMutation();
 
   const handleViewPatient = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -41,6 +45,26 @@ export default function Patients() {
   const handlePortalClick = async (patient: Patient) => {
     if (patient.portalToken) {
       window.open(`${window.location.origin}/portal/${patient.portalToken}`, '_blank');
+    } else {
+      try {
+        const result = await regenerateToken(patient.id).unwrap();
+        window.open(`${window.location.origin}/portal/${result.portalToken}`, '_blank');
+      } catch {
+        showToast(t('other.failedToGeneratePortalLink'), 'error');
+      }
+    }
+  };
+
+  const handleBookingClick = (patient: Patient) => {
+    const baseUrl = window.location.origin;
+    const clinicId = user?.clinicId;
+    if (clinicId) {
+      const params = new URLSearchParams({
+        patientName: `${patient.firstName} ${patient.lastName}`,
+        ...(patient.email && { email: patient.email }),
+        ...(patient.phone && { phone: patient.phone }),
+      });
+      window.open(`${baseUrl}/book/${clinicId}?${params.toString()}`, '_blank');
     }
   };
 
@@ -97,6 +121,7 @@ export default function Patients() {
           onDelete={handleDelete}
           onRestore={handleRestore}
           onPortalClick={handlePortalClick}
+          onBookingClick={handleBookingClick}
           openMenuId={openMenuId}
           setOpenMenuId={setOpenMenuId}
           menuRef={menuRef}

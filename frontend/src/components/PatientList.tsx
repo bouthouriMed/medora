@@ -6,6 +6,7 @@ interface PatientListProps {
   onDelete: (id: string) => void;
   onRestore: (id: string) => void;
   onPortalClick: (patient: Patient) => void;
+  onBookingClick: (patient: Patient) => void;
   openMenuId: string | null;
   setOpenMenuId: (id: string | null) => void;
   menuRef: React.RefObject<HTMLDivElement>;
@@ -18,6 +19,7 @@ export default function PatientList({
   onDelete,
   onRestore,
   onPortalClick,
+  onBookingClick,
   openMenuId,
   setOpenMenuId,
   menuRef,
@@ -48,6 +50,7 @@ export default function PatientList({
                   onDelete={onDelete}
                   onRestore={onRestore}
                   onPortalClick={onPortalClick}
+                  onBookingClick={onBookingClick}
                   isMenuOpen={openMenuId === patient.id}
                   onMenuToggle={() => setOpenMenuId(openMenuId === patient.id ? null : patient.id)}
                   menuRef={menuRef}
@@ -69,6 +72,7 @@ export default function PatientList({
             onDelete={onDelete}
             onRestore={onRestore}
             onPortalClick={onPortalClick}
+            onBookingClick={onBookingClick}
             t={t}
           />
         ))}
@@ -77,7 +81,7 @@ export default function PatientList({
   );
 }
 
-function PatientRow({ patient, onView, onDelete, onRestore, onPortalClick, isMenuOpen, onMenuToggle, menuRef, t }: any) {
+function PatientRow({ patient, onView, onDelete, onRestore, onPortalClick, onBookingClick, isMenuOpen, onMenuToggle, menuRef, t }: any) {
   return (
     <tr className={`hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${patient.deletedAt ? 'opacity-60' : ''}`}>
       <td className="px-6 py-4 whitespace-nowrap">
@@ -130,6 +134,10 @@ function PatientRow({ patient, onView, onDelete, onRestore, onPortalClick, isMen
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                 {t('other.patientPortal')}
               </button>
+              <button onClick={() => { onBookingClick(patient); onMenuToggle(); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                {t('other.onlineBooking')}
+              </button>
               <hr className="my-1 border-gray-100 dark:border-gray-700" />
               {patient.deletedAt ? (
                 <button onClick={() => { onRestore(patient.id); onMenuToggle(); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20">
@@ -150,7 +158,7 @@ function PatientRow({ patient, onView, onDelete, onRestore, onPortalClick, isMen
   );
 }
 
-function PatientCard({ patient, onView, onDelete, onRestore, onPortalClick, t }: any) {
+function PatientCard({ patient, onView, onDelete, onRestore, onPortalClick, onBookingClick, t }: any) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4 hover-lift">
       <div className="flex items-start justify-between">
@@ -180,6 +188,9 @@ function PatientCard({ patient, onView, onDelete, onRestore, onPortalClick, t }:
         </button>
         <button onClick={() => onPortalClick(patient)} className="flex-1 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-3 py-2 rounded-lg text-sm font-medium text-center">
           {t('other.patientPortal')}
+        </button>
+        <button onClick={() => onBookingClick(patient)} className="flex-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg text-sm font-medium text-center">
+          {t('other.onlineBooking')}
         </button>
         {patient.deletedAt ? (
           <button onClick={() => onRestore(patient.id)} className="flex-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg text-sm font-medium text-center">

@@ -35,6 +35,8 @@
     "warning": "Avertissement",
     "create": "Créer",
     "update": "Mettre à jour",
+    "copy": "Copier",
+    "generate": "Générer",
     "noData": "Aucune donnée disponible",
     "selectOption": "Sélectionner une option",
     "selectPatient": "Sélectionner un patient",
@@ -370,7 +372,9 @@
     "yourInformation": "Vos informations",
     "appointmentHistory": "Historique des rendez-vous",
     "upcomingAppointments": "Rendez-vous à venir",
-    "readOnlyPortal": "Ceci est un portail en lecture seule. Pour toute question, veuillez contacter la clinique directement."
+    "readOnlyPortal": "Ceci est un portail en lecture seule. Pour toute question, veuillez contacter la clinique directement.",
+    "welcomePatient": "Bienvenue, {{name}} !",
+    "personalizedBooking": "Vos informations ont été pré-remplies pour une prise de rendez-vous plus rapide."
   },
   "staff": {
     "title": "Personnel",
@@ -777,7 +781,17 @@
     "describeSymptoms": "Décrivez vos symptômes en détail:",
     "symptomsPlaceholder": "Ex: maux de tête depuis 2 jours, fièvre légère...",
     "checkUrgency": "Vérifier l'urgence",
-    "urgencyResults": "Évaluation de l'urgence"
+    "urgencyResults": "Évaluation de l'urgence",
+    "onlineBooking": "Réservation en ligne",
+    "generateBookingLinks": "Générez et partagez des liens de réservation pour votre clinique",
+    "generalBookingLink": "Lien de réservation général",
+    "generalBookingDesc": "Tout le monde peut utiliser ce lien pour prendre rendez-vous",
+    "patientBookingLink": "Lien de réservation patient",
+    "patientBookingDesc": "Pré-remplit les informations du patient pour une réservation plus rapide",
+    "bookingLink": "Lien de réservation",
+    "linkCopied": "Lien copié dans le presse-papiers !",
+    "failedToCopy": "Échec de la copie du lien",
+    "selectPatientFirst": "Veuillez d'abord sélectionner un patient"
   },
   "analytics": {
     "title": "Analytiques",

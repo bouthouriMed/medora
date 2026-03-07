@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useGetClinicDoctorsQuery, useGetAvailableSlotsQuery, useRequestAppointmentMutation, useTriageSymptomsMutation } from '../api';
 import { Icons } from '../components/Icons';
@@ -35,18 +35,26 @@ const COMMON_SYMPTOMS = [
 
 export default function PublicBooking() {
   const { clinicId } = useParams<{ clinicId: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const patientName = searchParams.get('patientName');
+  const patientEmail = searchParams.get('email');
+  const patientPhone = searchParams.get('phone');
+  const isPatientSpecific = !!patientName;
+
+  const [firstName = '', lastName = ''] = patientName ? patientName.split(' ', 2) : [];
 
   const [step, setStep] = useState(1);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string>('');
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+    firstName: firstName,
+    lastName: lastName,
+    email: patientEmail || '',
+    phone: patientPhone || '',
     reason: '',
   });
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -283,6 +291,22 @@ export default function PublicBooking() {
       </div>
 
       <main className="max-w-2xl mx-auto px-4 py-6">
+        {isPatientSpecific && (
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-5 border border-blue-100 dark:border-blue-800 animate-in fade-in duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                {firstName[0]}{lastName[0]}
+              </div>
+              <div>
+                <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {t('portal.welcomePatient', { name: patientName })}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t('portal.personalizedBooking')}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {step === 1 && (
           <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
