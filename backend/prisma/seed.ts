@@ -8,6 +8,11 @@ async function main() {
   console.log('Starting seed...');
 
   // Clean existing data (in correct order to handle foreign keys)
+  await prisma.doctorRating.deleteMany({});
+  await prisma.notification.deleteMany({});
+  await prisma.waitlistEntry.deleteMany({});
+  await prisma.insuranceClaim.deleteMany({});
+  await prisma.message.deleteMany({});
   await prisma.patientCustomFieldValue.deleteMany({});
   await prisma.customField.deleteMany({});
   await prisma.noteTemplate.deleteMany({});
@@ -853,6 +858,235 @@ async function main() {
     },
   });
   console.log('Created 1 recurring appointment');
+
+  // Create Clinic Settings
+  await prisma.clinicSettings.upsert({
+    where: { clinicId: clinic.id },
+    update: {},
+    create: {
+      clinicId: clinic.id,
+      consultationFee: 120.00,
+      fromEmail: 'noreply@medorahealth.com',
+      smtpHost: 'smtp.example.com',
+      smtpPort: '587',
+      emailNotifications: true,
+    },
+  });
+  console.log('Created clinic settings');
+
+  // Create Messages (doctor-patient conversations)
+  const messages = await Promise.all([
+    prisma.message.create({
+      data: {
+        senderId: doctor.id,
+        senderType: 'USER',
+        receiverId: patients[0].id,
+        receiverType: 'PATIENT',
+        body: 'Hi Alice, your lab results are ready. Everything looks good! Please schedule a follow-up in 2 weeks.',
+        clinicId: clinic.id,
+        isRead: true,
+      },
+    }),
+    prisma.message.create({
+      data: {
+        senderId: patients[0].id,
+        senderType: 'PATIENT',
+        receiverId: doctor.id,
+        receiverType: 'USER',
+        body: 'Thank you Dr. Smith! I will book the appointment right away.',
+        clinicId: clinic.id,
+        isRead: true,
+      },
+    }),
+    prisma.message.create({
+      data: {
+        senderId: doctor.id,
+        senderType: 'USER',
+        receiverId: patients[1].id,
+        receiverType: 'PATIENT',
+        body: 'Bob, your A1C levels are still elevated. Let\'s discuss adjusting your medication at the next visit.',
+        clinicId: clinic.id,
+        isRead: false,
+      },
+    }),
+    prisma.message.create({
+      data: {
+        senderId: nurse.id,
+        senderType: 'USER',
+        receiverId: patients[2].id,
+        receiverType: 'PATIENT',
+        body: 'Hi Carol, just a reminder that your vaccination appointment is tomorrow at 10 AM.',
+        clinicId: clinic.id,
+        isRead: false,
+      },
+    }),
+  ]);
+  console.log('Created', messages.length, 'messages');
+
+  // Create Insurance Claims
+  const insuranceClaims = await Promise.all([
+    prisma.insuranceClaim.create({
+      data: {
+        patientId: patients[0].id,
+        clinicId: clinic.id,
+        insuranceProvider: 'Blue Cross Blue Shield',
+        policyNumber: 'BCBS-2024-001234',
+        claimAmount: 350.00,
+        status: 'APPROVED',
+        approvedAmount: 280.00,
+        submittedAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000),
+        processedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        notes: 'Annual checkup and blood work covered',
+      },
+    }),
+    prisma.insuranceClaim.create({
+      data: {
+        patientId: patients[1].id,
+        clinicId: clinic.id,
+        insuranceProvider: 'Aetna',
+        policyNumber: 'AET-2024-005678',
+        claimAmount: 500.00,
+        status: 'SUBMITTED',
+        submittedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+        notes: 'Diabetes management - quarterly visit',
+      },
+    }),
+    prisma.insuranceClaim.create({
+      data: {
+        patientId: patients[3].id,
+        clinicId: clinic.id,
+        insuranceProvider: 'United Healthcare',
+        policyNumber: 'UHC-2024-009012',
+        claimAmount: 200.00,
+        status: 'DENIED',
+        submittedAt: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+        processedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        denialReason: 'Pre-authorization not obtained',
+        notes: 'Follow-up visit denied - appealing',
+      },
+    }),
+  ]);
+  console.log('Created', insuranceClaims.length, 'insurance claims');
+
+  // Create Waitlist Entries
+  const waitlistEntries = await Promise.all([
+    prisma.waitlistEntry.create({
+      data: {
+        patientId: patients[2].id,
+        clinicId: clinic.id,
+        preferredDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        preferredTimeStart: '09:00',
+        priority: 'HIGH',
+        reason: 'Persistent headaches - needs urgent evaluation',
+        status: 'WAITING',
+      },
+    }),
+    prisma.waitlistEntry.create({
+      data: {
+        patientId: patients[4].id,
+        clinicId: clinic.id,
+        preferredDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        preferredTimeStart: '14:00',
+        priority: 'NORMAL',
+        reason: 'Annual wellness check',
+        status: 'WAITING',
+      },
+    }),
+  ]);
+  console.log('Created', waitlistEntries.length, 'waitlist entries');
+
+  // Create Notifications
+  const notifications = await Promise.all([
+    prisma.notification.create({
+      data: {
+        userId: doctor.id,
+        type: 'APPOINTMENT_REQUEST',
+        title: 'New Appointment Request',
+        message: 'Carol Davis has requested an appointment for next Tuesday.',
+        priority: 'NORMAL',
+        actionUrl: '/appointment-requests',
+        isRead: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: doctor.id,
+        type: 'LAB_RESULT',
+        title: 'Lab Results Ready',
+        message: 'CBC results for Alice Johnson are now available.',
+        priority: 'HIGH',
+        actionUrl: '/lab-results',
+        isRead: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: doctor.id,
+        type: 'PRESCRIPTION_REQUEST',
+        title: 'Prescription Refill Request',
+        message: 'Bob Williams has requested a refill for Metformin 500mg.',
+        priority: 'NORMAL',
+        actionUrl: '/prescription-requests',
+        isRead: false,
+      },
+    }),
+    prisma.notification.create({
+      data: {
+        userId: nurse.id,
+        type: 'APPOINTMENT_REMINDER',
+        title: 'Upcoming Appointments',
+        message: 'You have 3 appointments scheduled for today.',
+        priority: 'LOW',
+        actionUrl: '/appointments',
+        isRead: true,
+      },
+    }),
+  ]);
+  console.log('Created', notifications.length, 'notifications');
+
+  // Create Doctor Ratings
+  const ratings = await Promise.all([
+    prisma.doctorRating.create({
+      data: {
+        doctorId: doctor.id,
+        clinicId: clinic.id,
+        patientId: patients[0].id,
+        overall: 5,
+        bedsideManner: 5,
+        waitTime: 4,
+        clarity: 5,
+        isAnonymous: false,
+        comment: 'Dr. Smith is incredibly thorough and caring. Best doctor I have ever had!',
+      },
+    }),
+    prisma.doctorRating.create({
+      data: {
+        doctorId: doctor.id,
+        clinicId: clinic.id,
+        patientId: patients[3].id,
+        overall: 4,
+        bedsideManner: 5,
+        waitTime: 3,
+        clarity: 4,
+        isAnonymous: false,
+        comment: 'Great doctor, but wait times can be long. Worth the wait though.',
+      },
+    }),
+    prisma.doctorRating.create({
+      data: {
+        doctorId: doctor.id,
+        clinicId: clinic.id,
+        patientId: patients[4].id,
+        overall: 5,
+        bedsideManner: 5,
+        waitTime: 5,
+        clarity: 5,
+        isAnonymous: false,
+        comment: 'Always explains everything clearly. Very patient and professional.',
+      },
+    }),
+  ]);
+  console.log('Created', ratings.length, 'doctor ratings');
 
   // Summary
   const totalRevenue = await prisma.invoice.aggregate({

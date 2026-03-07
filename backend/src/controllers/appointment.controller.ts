@@ -1,7 +1,5 @@
 import { Response } from 'express';
 import appointmentService from '../services/appointment.service';
-import notificationService from '../services/notification.service';
-import prisma from '../utils/prisma';
 import type { AuthRequest } from '../types/express.d';
 
 export class AppointmentController {
@@ -80,66 +78,11 @@ export class AppointmentController {
       const clinicId = req.user!.clinicId;
       const { status } = req.body;
 
-      // Fetch appointment before update to get patient/doctor info for notifications
-      const existing = await prisma.appointment.findFirst({
-        where: { id: appointmentId, clinicId, deletedAt: null },
-        include: { patient: true, doctor: true },
-      });
-
       const result = await appointmentService.update(appointmentId, clinicId, req.body);
 
       // Fire-and-forget notifications on status changes
-      if (status && existing?.patient && existing?.doctor) {
-        const doctorName = `${existing.doctor.firstName} ${existing.doctor.lastName}`;
-        const patientName = `${existing.patient.firstName} ${existing.patient.lastName}`;
-        const dateTime = new Date(existing.dateTime);
-
-        if (status === 'CONFIRMED') {
-          // Notify the doctor's own dashboard that they confirmed
-          notificationService.create({
-            userId: existing.doctorId,
-            type: 'APPOINTMENT_APPROVED',
-            title: 'Appointment Confirmed',
-            message: `You confirmed ${patientName}'s appointment for ${dateTime.toLocaleDateString()} at ${dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.`,
-            priority: 'LOW',
-            actionUrl: `/appointments?highlight=${appointmentId}`,
-            metadata: { appointmentId, patientName },
-          }).catch(() => {});
-        } else if (status === 'CANCELLED') {
-          // Notify doctor about cancellation
-          notificationService.create({
-            userId: existing.doctorId,
-            type: 'APPOINTMENT_CANCELLED',
-            title: 'Appointment Cancelled',
-            message: `${patientName}'s appointment for ${dateTime.toLocaleDateString()} has been cancelled.`,
-            priority: 'NORMAL',
-            actionUrl: `/appointments`,
-            metadata: { appointmentId, patientName },
-          }).catch(() => {});
-        } else if (status === 'CHECKED_IN') {
-          // Notify doctor that patient has checked in
-          notificationService.create({
-            userId: existing.doctorId,
-            type: 'APPOINTMENT_REMINDER',
-            title: `${patientName} has checked in`,
-            message: `${patientName} has arrived and is ready for their ${dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} appointment.`,
-            priority: 'HIGH',
-            actionUrl: `/appointments?highlight=${appointmentId}`,
-            actionLabel: 'Start Consultation',
-            metadata: { appointmentId, patientName },
-          }).catch(() => {});
-        } else if (status === 'COMPLETED') {
-          // Notify doctor about completion
-          notificationService.create({
-            userId: existing.doctorId,
-            type: 'APPOINTMENT_APPROVED',
-            title: 'Visit Completed',
-            message: `Visit with ${patientName} has been completed.`,
-            priority: 'LOW',
-            actionUrl: `/appointments?highlight=${appointmentId}`,
-            metadata: { appointmentId, patientName },
-          }).catch(() => {});
-        }
+      if (status) {
+        appointmentService.notifyOnStatusChange(appointmentId, clinicId, status);
       }
 
       res.json(result);
@@ -168,63 +111,22 @@ export class AppointmentController {
 
   async completeWithInvoice(req: AuthRequest, res: Response) {
     try {
-      const appointmentId = req.params.id;
-      const clinicId = req.user!.clinicId;
-      const { items, notes } = req.body;
-
-      const appointment = await prisma.appointment.findFirst({
-        where: { id: appointmentId, clinicId, deletedAt: null },
-        include: { 
-          patient: true, 
-          doctor: true,
-          clinic: true,
-        },
-      });
-
-      if (!appointment) {
-        return res.status(404).json({ error: 'Appointment not found' });
-      }
-
-      if (appointment.status === 'COMPLETED') {
-        return res.status(400).json({ error: 'Appointment already completed' });
-      }
-
-      const clinicSettings = await prisma.clinicSettings.findUnique({
-        where: { clinicId },
-      });
-
-      const consultationFee = clinicSettings?.consultationFee || 100.00;
-
-      const lineItems = items && items.length > 0 ? items : [
-        { description: 'Consultation Fee', amount: consultationFee, quantity: 1 }
-      ];
-
-      const subtotal = lineItems.reduce((sum, item) => sum + (item.amount * item.quantity), 0);
-
-      const invoice = await prisma.invoice.create({
-        data: {
-          patientId: appointment.patientId,
-          appointmentId: appointment.id,
-          clinicId,
-          amount: subtotal,
-          status: 'UNPAID',
-          dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          items: lineItems,
-          notes: notes || null,
-        },
-      });
-
-      await prisma.appointment.update({
-        where: { id: appointmentId },
-        data: { status: 'COMPLETED' },
-      });
-
-      res.json({ 
-        appointment: { ...appointment, status: 'COMPLETED' }, 
-        invoice 
-      });
+      const result = await appointmentService.completeWithInvoice(
+        req.params.id,
+        req.user!.clinicId,
+        req.body.items,
+        req.body.notes
+      );
+      res.json(result);
     } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
+      const message = (error as Error).message;
+      if (message === 'Appointment not found') {
+        return res.status(404).json({ error: message });
+      }
+      if (message === 'Appointment already completed') {
+        return res.status(400).json({ error: message });
+      }
+      res.status(500).json({ error: message });
     }
   }
 

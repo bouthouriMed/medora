@@ -1,96 +1,38 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useGetInvoicesQuery, useGetAppointmentsQuery, useGetPatientsQuery, useCreateInvoiceMutation, useMarkInvoiceAsPaidMutation, useMarkInvoiceAsUnpaidMutation, useGetPresetsQuery, useCreateCheckoutSessionMutation } from '../api';
 import { showToast } from '../components/Toast';
 import { exportInvoices } from '../utils/export';
 import Modal from '../components/Modal';
 import type { Invoice, Patient, Appointment } from '../types';
 import { useTranslation } from 'react-i18next';
+import { useInvoices } from '../hooks/useInvoices';
 
 export default function Invoices() {
   const { t } = useTranslation();
-  const [showModal, setShowModal] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [dateRange, setDateRange] = useState({ start: '', end: '' });
-  const [showFilters, setShowFilters] = useState(false);
-
-  const statusFilter = searchParams.get('status') || '';
-  
-  const { data: invoices, isLoading } = useGetInvoicesQuery(statusFilter);
-  const { data: appointments } = useGetAppointmentsQuery({});
-  const { data: patients } = useGetPatientsQuery('');
-  const { data: presets } = useGetPresetsQuery('PROCEDURE');
-  const [createInvoice, { isLoading: isCreating }] = useCreateInvoiceMutation();
-  const [markAsPaid] = useMarkInvoiceAsPaidMutation();
-  const [markAsUnpaid] = useMarkInvoiceAsUnpaidMutation();
-  const [createCheckout] = useCreateCheckoutSessionMutation();
-
-  const handleStatusChange = (status: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (status) {
-      newParams.set('status', status);
-    } else {
-      newParams.delete('status');
-    }
-    setSearchParams(newParams);
-  };
-
-  const [formData, setFormData] = useState({
-    appointmentId: '',
-    patientId: '',
-    amount: '',
-    dueDate: '',
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await createInvoice({
-        ...formData,
-        amount: parseFloat(formData.amount),
-        dueDate: formData.dueDate ? new Date(formData.dueDate) : undefined,
-      }).unwrap();
-      setShowModal(false);
-      setFormData({ appointmentId: '', patientId: '', amount: '', dueDate: '' });
-      showToast(t('other.invoiceCreated'), 'success');
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : t('other.failedToCreateInvoice'), 'error');
-    }
-  };
-
-  const handleMarkPaid = async (id: string) => {
-    try {
-      await markAsPaid(id).unwrap();
-      showToast(t('other.invoiceMarkedPaid'), 'success');
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : t('other.failedToUpdateInvoice'), 'error');
-    }
-  };
-
-  const handlePayOnline = async (invoiceId: string) => {
-    try {
-      const result = await createCheckout({ invoiceId, returnUrl: window.location.href }).unwrap();
-      if (result.url) window.location.href = result.url;
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Stripe not configured', 'error');
-    }
-  };
-
-  const handleMarkUnpaid = async (id: string) => {
-    try {
-      await markAsUnpaid(id).unwrap();
-      showToast(t('other.invoiceMarkedUnpaid'), 'success');
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : t('other.failedToUpdateInvoice'), 'error');
-    }
-  };
+  const {
+    showModal, setShowModal,
+    showFilters, setShowFilters,
+    dateRange, setDateRange,
+    statusFilter,
+    formData, setFormData,
+    invoices,
+    appointments,
+    patients,
+    presets,
+    isLoading,
+    isCreating,
+    handleStatusChange,
+    handleSubmit,
+    handleMarkPaid,
+    handlePayOnline,
+    handleMarkUnpaid,
+    totalUnpaid,
+    totalPaid,
+  } = useInvoices(t);
 
   const getStatusClass = (status: string) => {
     return status === 'PAID' ? 'status-paid' : 'status-unpaid';
   };
-
-  const totalUnpaid = invoices?.filter((i: Invoice) => i.status === 'UNPAID').reduce((sum: number, i: Invoice) => sum + Number(i.amount), 0) || 0;
-  const totalPaid = invoices?.filter((i: Invoice) => i.status === 'PAID').reduce((sum: number, i: Invoice) => sum + Number(i.amount), 0) || 0;
 
   return (
     <div className="space-y-4 sm:space-y-6">

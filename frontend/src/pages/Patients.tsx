@@ -1,830 +1,125 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useGetPatientsQuery, useGetPatientAppointmentsQuery, useCreatePatientMutation, useDeletePatientMutation, useRestorePatientMutation, useGetPatientQuery, useRegeneratePatientTokenMutation, useGetTagsQuery, useGetPatientTagsQuery, useAddTagToPatientMutation, useRemoveTagFromPatientMutation, useGetPatientCustomFieldsQuery, useSavePatientCustomFieldMutation } from '../api';
-import { showToast } from '../components/Toast';
+import { useState } from 'react';
+import { useGetTagsQuery } from '../api';
 import { exportPatients } from '../utils/export';
-import Modal from '../components/Modal';
-import type { Patient, Appointment, Tag } from '../types';
+import type { Patient } from '../types';
 import { useTranslation } from 'react-i18next';
+import { usePatientList } from '../hooks/usePatientList';
+import { PageHeader } from '../components/ui/PageHeader';
+import { Button } from '../components/ui/Button';
+import { EmptyState } from '../components/ui/EmptyState';
+import PatientFilters from '../components/PatientFilters';
+import PatientDetailModal from '../components/PatientDetailModal';
+import PatientForm from '../components/PatientForm';
+import PatientList from '../components/PatientList';
 
 export default function Patients() {
-  const navigate = useNavigate();
   const { t } = useTranslation();
-  const [search, setSearch] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const {
+    search, setSearch,
+    showModal, setShowModal,
+    showFilters, setShowFilters,
+    openMenuId, setOpenMenuId,
+    showArchived, setShowArchived,
+    filters, setFilters,
+    formData, setFormData,
+    menuRef,
+    patients,
+    isLoading,
+    isCreating,
+    handleSubmit,
+    handleDelete,
+    handleRestore,
+  } = usePatientList(t);
+
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [showTagDropdown, setShowTagDropdown] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [showArchived, setShowArchived] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpenMenuId(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-  const [filters, setFilters] = useState({
-    tag: '',
-    dateFrom: '',
-    dateTo: '',
-  });
-  const { data: patients, isLoading } = useGetPatientsQuery({ search, includeArchived: showArchived });
-  
-  const filteredPatients = useMemo(() => {
-    if (!patients) return [];
-    return patients.filter((patient: Patient) => {
-      if (filters.tag) {
-        const hasTag = patient.patientTags?.some((pt: any) => pt.tagId === filters.tag);
-        if (!hasTag) return false;
-      }
-      if (filters.dateFrom) {
-        const patientDate = new Date(patient.createdAt);
-        const fromDate = new Date(filters.dateFrom);
-        if (patientDate < fromDate) return false;
-      }
-      if (filters.dateTo) {
-        const patientDate = new Date(patient.createdAt);
-        const toDate = new Date(filters.dateTo);
-        toDate.setHours(23, 59, 59);
-        if (patientDate > toDate) return false;
-      }
-      return true;
-    });
-  }, [patients, filters]);
-  
-  const { data: patientDetails } = useGetPatientQuery(selectedPatient?.id || '', {
-    skip: !selectedPatient?.id,
-  });
-  const { data: patientAppointments } = useGetPatientAppointmentsQuery(selectedPatient?.id || '', { 
-    skip: !selectedPatient?.id 
-  });
   const { data: allTags } = useGetTagsQuery(undefined);
-  const { data: patientTags, refetch: refetchPatientTags } = useGetPatientTagsQuery(selectedPatient?.id || '', {
-    skip: !selectedPatient?.id,
-  });
-  const { data: patientCustomFields, refetch: refetchCustomFields } = useGetPatientCustomFieldsQuery(selectedPatient?.id || '', {
-    skip: !selectedPatient?.id,
-  });
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ info: true });
-  const [customFieldValues, setCustomFieldValues] = useState<Record<string, string>>({});
-  const [savingFields, setSavingFields] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    if (patientCustomFields) {
-      const values: Record<string, string> = {};
-      patientCustomFields.forEach((f: any) => {
-        values[f.id] = f.value || '';
-      });
-      setCustomFieldValues(values);
-    }
-  }, [patientCustomFields]);
-
-  const [createPatient, { isLoading: isCreating }] = useCreatePatientMutation();
-  const [deletePatient] = useDeletePatientMutation();
-  const [restorePatient] = useRestorePatientMutation();
-  const [regenerateToken] = useRegeneratePatientTokenMutation();
-  const [addTagToPatient] = useAddTagToPatientMutation();
-  const [removeTagFromPatient] = useRemoveTagFromPatientMutation();
-  const [saveCustomField] = useSavePatientCustomFieldMutation();
-
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    address: '',
-    notes: '',
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await createPatient({
-        ...formData,
-        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
-      }).unwrap();
-      setShowModal(false);
-      setFormData({ firstName: '', lastName: '', email: '', phone: '', dateOfBirth: '', address: '', notes: '' });
-      showToast(t('other.patientCreated'), 'success');
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : t('other.failedToCreatePatient'), 'error');
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm(t('other.confirmArchivePatient'))) {
-      try {
-        await deletePatient(id).unwrap();
-        showToast(t('other.patientArchived'), 'success');
-      } catch (error) {
-        showToast(t('other.failedToArchivePatient'), 'error');
-      }
-    }
-  };
-
-  const handleRestore = async (id: string) => {
-    try {
-      await restorePatient(id).unwrap();
-      showToast('Patient restored successfully', 'success');
-    } catch {
-      showToast('Failed to restore patient', 'error');
-    }
-  };
 
   const handleViewPatient = (patient: Patient) => {
-    navigate(`/patients/${patient.id}`);
+    setSelectedPatient(patient);
+  };
+
+  const handlePortalClick = async (patient: Patient) => {
+    if (patient.portalToken) {
+      window.open(`${window.location.origin}/portal/${patient.portalToken}`, '_blank');
+    }
   };
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white dark:text-white dark:text-white">{t('patients.title')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mt-1">{t('patients.managePatients')}</p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={exportPatients}
-            className="px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-700 text-gray-700 dark:text-gray-300 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors font-medium"
-          >
-            📥 {t('common.export')}
-          </button>
-          <button
-            onClick={() => setShowModal(true)}
-            className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
-          >
-            + {t('patients.addPatient')}
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        title={t('patients.title')}
+        subtitle={t('patients.managePatients')}
+        actions={
+          <>
+            <Button variant="secondary" onClick={exportPatients}>
+              📥 {t('common.export')}
+            </Button>
+            <Button onClick={() => setShowModal(true)}>
+              + {t('patients.addPatient')}
+            </Button>
+          </>
+        }
+      />
 
-      {/* Search + Archived Toggle */}
-      <div className="flex gap-3 items-center">
-        <div className="relative flex-1">
-          <input
-            type="text"
-            placeholder={t('patients.searchPlaceholder')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-4 py-3 pl-12 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 shadow-sm transition-all text-gray-900 dark:text-white placeholder-gray-400"
-          />
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
-        </div>
-        <button
-          onClick={() => setShowArchived(!showArchived)}
-          className={`flex items-center gap-2 px-4 py-3 rounded-xl border font-medium text-sm transition-all whitespace-nowrap ${
-            showArchived
-              ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-400'
-              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" /></svg>
-          {showArchived ? 'Showing Archived' : 'Show Archived'}
-        </button>
-      </div>
+      <PatientFilters
+        search={search}
+        onSearchChange={setSearch}
+        showArchived={showArchived}
+        onArchivedToggle={() => setShowArchived(!showArchived)}
+        showFilters={showFilters}
+        onFiltersToggle={() => setShowFilters(!showFilters)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        allTags={allTags || []}
+        t={t}
+      />
 
-      {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 dark:border-gray-700 p-4">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 text-gray-700 dark:text-gray-300 dark:text-gray-300 font-medium hover:text-gray-900 dark:text-white dark:text-white dark:hover:text-white transition-colors"
-        >
-          <svg className={`w-5 h-5 transition-transform ${showFilters ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          {t('common.filter')}
-          <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
-            {[filters.tag, filters.dateFrom, filters.dateTo].filter(Boolean).length || t('common.all')}
-          </span>
-        </button>
-        
-        {showFilters && (
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <div className="flex flex-wrap gap-3 items-end">
-              <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mb-1">{t('other.tagName')}</label>
-                <select
-                  value={filters.tag}
-                  onChange={(e) => setFilters({ ...filters, tag: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                >
-                  <option value="">{t('common.all')} {t('other.tags')}</option>
-                  {allTags?.map((tag: Tag) => (
-                    <option key={tag.id} value={tag.id}>{tag.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mb-1">{t('patients.registeredFrom')}</label>
-                <input
-                  type="date"
-                  value={filters.dateFrom}
-                  onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
-              <div className="flex-1 min-w-[150px]">
-                <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 dark:text-gray-400 dark:text-gray-400 mb-1">{t('patients.registeredTo')}</label>
-                <input
-                  type="date"
-                  value={filters.dateTo}
-                  onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
-              <button
-                onClick={() => setFilters({ tag: '', dateFrom: '', dateTo: '' })}
-                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:text-white dark:text-white dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                {t('common.clear')}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Loading */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-40 skeleton rounded-2xl"></div>
           ))}
         </div>
-      ) : filteredPatients?.length === 0 ? (
-        /* Empty State */
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-12 text-center">
-          <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center text-4xl mx-auto mb-4">👥</div>
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white dark:text-white mb-2">{t('patients.noPatients')}</h3>
-          <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">{t('patients.noPatientsDesc')}</p>
-          <button
-            onClick={() => setShowModal(true)}
-            className="btn-gradient text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all duration-200 font-medium"
-          >
-            + {t('patients.addPatient')}
-          </button>
-        </div>
+      ) : patients?.length === 0 ? (
+        <EmptyState
+          icon="👥"
+          title={t('patients.noPatients')}
+          description={t('patients.noPatientsDesc')}
+          action={{
+            label: t('patients.addPatient'),
+            onClick: () => setShowModal(true),
+          }}
+        />
       ) : (
-        /* Patients Grid (Cards for mobile, table for desktop) */
-        <div className="hidden md:block bg-white dark:bg-gray-800 shadow-lg border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden">
-          <div className="table-responsive">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800 dark:to-gray-700">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.patient')}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.contact')}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.phone')}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('other.tags')}</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('patients.dateOfBirth')}</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-400 dark:text-gray-300 uppercase tracking-wider">{t('common.actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {filteredPatients?.map((patient: Patient) => (
-                  <tr key={patient.id} className={`hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors ${patient.deletedAt ? 'opacity-60' : ''}`}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold shadow-md ${patient.deletedAt ? 'bg-gray-400' : 'bg-gradient-to-br from-purple-400 to-pink-500'}`}>
-                          {patient.firstName[0]}{patient.lastName[0]}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900 dark:text-white">{patient.firstName} {patient.lastName}</span>
-                          {patient.deletedAt && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full">Archived</span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-400">{patient.email || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-400">{patient.phone || '-'}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1">
-                        {patient.patientTags && patient.patientTags.length > 0 ? (
-                          patient.patientTags.map(({ tag }) => (
-                            <span
-                              key={tag.id}
-                              className="px-2 py-0.5 rounded-full text-xs font-medium"
-                              style={{ backgroundColor: tag.color + '20', color: tag.color }}
-                            >
-                              {tag.name}
-                            </span>
-                          ))
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-600 dark:text-gray-400">
-                      {patient.dateOfBirth ? new Date(patient.dateOfBirth).toLocaleDateString() : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                      <div className="relative" ref={openMenuId === patient.id ? menuRef : undefined}>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === patient.id ? null : patient.id); }}
-                          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        >
-                          <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                            <circle cx="12" cy="5" r="1.5" />
-                            <circle cx="12" cy="12" r="1.5" />
-                            <circle cx="12" cy="19" r="1.5" />
-                          </svg>
-                        </button>
-                        {openMenuId === patient.id && (
-                          <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
-                            <button
-                              onClick={() => { handleViewPatient(patient); setOpenMenuId(null); }}
-                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                              {t('other.view')}
-                            </button>
-                            <button
-                              onClick={async () => {
-                                if (patient.portalToken) {
-                                  window.open(`${window.location.origin}/portal/${patient.portalToken}`, '_blank');
-                                } else {
-                                  try {
-                                    await regenerateToken(patient.id).unwrap();
-                                    showToast(t('other.portalLinkGenerated'), 'success');
-                                  } catch { showToast(t('other.failedToGeneratePortalLink'), 'error'); }
-                                }
-                                setOpenMenuId(null);
-                              }}
-                              className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                              {t('other.patientPortal')}
-                            </button>
-                            <hr className="my-1 border-gray-100 dark:border-gray-700" />
-                            {patient.deletedAt ? (
-                              <button
-                                onClick={() => { handleRestore(patient.id); setOpenMenuId(null); }}
-                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                                Restore
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => { handleDelete(patient.id); setOpenMenuId(null); }}
-                                className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                {t('other.archive')}
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <PatientList
+          patients={patients || []}
+          onViewPatient={handleViewPatient}
+          onDelete={handleDelete}
+          onRestore={handleRestore}
+          onPortalClick={handlePortalClick}
+          openMenuId={openMenuId}
+          setOpenMenuId={setOpenMenuId}
+          menuRef={menuRef}
+          t={t}
+        />
       )}
 
-      {/* Mobile Cards View */}
-      {filteredPatients && filteredPatients.length > 0 && (
-        <div className="md:hidden grid grid-cols-1 gap-4">
-          {filteredPatients?.map((patient: Patient) => (
-            <div 
-              key={patient.id} 
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 p-4 hover-lift"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                    {patient.firstName[0]}{patient.lastName[0]}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white dark:text-white">{patient.firstName} {patient.lastName}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{patient.email || t('other.noEmail')}</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{patient.phone || t('other.noPhone')}</p>
-                    {patient.patientTags && patient.patientTags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {patient.patientTags.map(({ tag }) => (
-                          <span
-                            key={tag.id}
-                            className="px-2 py-0.5 rounded-full text-xs font-medium"
-                            style={{ backgroundColor: tag.color + '20', color: tag.color }}
-                          >
-                            {tag.name}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => handleViewPatient(patient)}
-                  className="flex-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
-                >
-                  {t('other.view')}
-                </button>
-                <button
-                  onClick={async () => {
-                    if (patient.portalToken) {
-                      window.open(`${window.location.origin}/portal/${patient.portalToken}`, '_blank');
-                    } else {
-                      try {
-                        await regenerateToken(patient.id).unwrap();
-                        showToast(t('other.portalLinkGenerated'), 'success');
-                      } catch { showToast(t('other.failedToGeneratePortalLink'), 'error'); }
-                    }
-                  }}
-                  className="flex-1 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
-                >
-                  {t('other.patientPortal')}
-                </button>
-                {patient.deletedAt ? (
-                  <button
-                    onClick={() => handleRestore(patient.id)}
-                    className="flex-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
-                  >
-                    Restore
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleDelete(patient.id)}
-                    className="flex-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-lg transition-colors font-medium text-center text-sm"
-                  >
-                    {t('other.archive')}
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <PatientDetailModal
+        patient={selectedPatient}
+        isOpen={!!selectedPatient}
+        onClose={() => setSelectedPatient(null)}
+        t={t}
+      />
 
-      {/* View Patient Modal */}
-      <Modal isOpen={!!selectedPatient} onClose={() => setSelectedPatient(null)} title={t('other.patientDetails')}>
-        <div className="p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-              {selectedPatient?.firstName[0]}{selectedPatient?.lastName[0]}
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white dark:text-white">{selectedPatient?.firstName} {selectedPatient?.lastName}</h3>
-              <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.patientIdLabel')} {selectedPatient?.id.slice(0, 8).toUpperCase()}</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.email')}</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.email || t('other.notProvided')}</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.phone')}</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.phone || t('other.notProvided')}</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('patients.dateOfBirth')}</p>
-              <p className="font-medium text-gray-900 dark:text-white dark:text-white">
-                {selectedPatient?.dateOfBirth ? new Date(selectedPatient!.dateOfBirth).toLocaleDateString() : t('other.notProvided')}
-              </p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.address')}</p>
-                <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.address || t('other.notProvided')}</p>
-              </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('common.notes')}</p>
-                <p className="font-medium text-gray-900 dark:text-white dark:text-white">{selectedPatient?.notes || t('other.noNotes')}</p>
-              </div>
-
-              <div className="bg-blue-50 rounded-xl p-4">
-                <p className="text-sm text-blue-600 mb-2">{t('other.patientPortal')}</p>
-                {patientDetails?.portalToken ? (
-                  <button
-                    onClick={() => {
-                      const portalUrl = `${window.location.origin}/portal/${patientDetails.portalToken}`;
-                      navigator.clipboard.writeText(portalUrl);
-                      showToast(t('other.portalLinkCopied'), 'success');
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                    {t('other.sharePortalLink')}
-                  </button>
-                ) : (
-                  <button
-                    onClick={async () => {
-                      try {
-                        const result = await regenerateToken(selectedPatient!.id).unwrap();
-                        showToast(t('other.portalLinkGenerated'), 'success');
-                        setSelectedPatient(result);
-                      } catch (error) {
-                        showToast(t('other.failedToGeneratePortalLink'), 'error');
-                      }
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
-                  >
-                    {t('other.generatePortalLink')}
-                  </button>
-                )}
-              </div>
-
-              <div className="bg-purple-50 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-purple-600">{t('other.tags')}</p>
-                  <button
-                    onClick={() => setShowTagDropdown(!showTagDropdown)}
-                    className="text-xs text-purple-600 hover:text-purple-800 font-medium"
-                  >
-                    + {t('other.addTag')}
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {patientTags && patientTags.length > 0 ? (
-                    patientTags.map((tag: Tag) => (
-                      <span
-                        key={tag.id}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
-                        style={{ backgroundColor: tag.color + '20', color: tag.color }}
-                      >
-                        {tag.name}
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            try {
-                              await removeTagFromPatient({ patientId: selectedPatient!.id, tagId: tag.id }).unwrap();
-                              showToast(t('other.tagRemoved'), 'success');
-                              refetchPatientTags();
-                            } catch (error) {
-                              showToast(t('other.failedToRemoveTag'), 'error');
-                            }
-                          }}
-                          className="hover:opacity-70 ml-1"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">{t('other.noTagsAssigned')}</p>
-                  )}
-                </div>
-                {showTagDropdown && allTags && allTags.length > 0 && (
-                  <div className="mt-2 pt-2 border-t border-purple-200">
-                    <select
-                      onChange={async (e) => {
-                        if (!e.target.value) return;
-                        const tagId = e.target.value;
-                        const alreadyHas = patientTags?.some((t: Tag) => t.id === tagId);
-                        if (alreadyHas) {
-                          showToast(t('other.tagAlreadyAssigned'), 'error');
-                          return;
-                        }
-                        try {
-                          await addTagToPatient({ patientId: selectedPatient!.id, tagId }).unwrap();
-                          setShowTagDropdown(false);
-                          showToast(t('other.tagAdded'), 'success');
-                          refetchPatientTags();
-                        } catch (error) {
-                          showToast(t('other.failedToAddTag'), 'error');
-                        }
-                      }}
-                      className="w-full px-3 py-2 text-sm border border-purple-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      defaultValue=""
-                    >
-                      <option value="">{t('other.selectATag')}</option>
-                      {allTags.filter((t: Tag) => !patientTags?.some((pt: Tag) => pt.id === t.id)).map((tag: Tag) => (
-                        <option key={tag.id} value={tag.id}>{tag.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Custom Fields Section - Collapsible */}
-            {patientCustomFields && patientCustomFields.length > 0 && (
-              <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
-                <button
-                  onClick={() => setExpandedSections(prev => ({ ...prev, info: !prev.info }))}
-                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 flex items-center justify-between text-left"
-                >
-                  <span className="font-semibold text-gray-900 dark:text-white dark:text-white">{t('other.patientInfo')}</span>
-                  <span className="text-gray-500 dark:text-gray-400 dark:text-gray-400">
-                    {expandedSections.info ? '▲' : '▼'}
-                  </span>
-                </button>
-                {expandedSections.info && (
-                  <div className="p-4 space-y-3">
-                    {patientCustomFields.map((field: any) => (
-                      <div key={field.id}>
-                        <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">{field.name}</label>
-                        {field.fieldType === 'SELECT' && field.options ? (
-                          <div className="flex gap-2">
-                            <select
-                              value={customFieldValues[field.id] || ''}
-                              onChange={(e) => setCustomFieldValues({ ...customFieldValues, [field.id]: e.target.value })}
-                              className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                              <option value="">{t('other.selectOption')}</option>
-                              {field.options.split(',').map((opt: string) => (
-                                <option key={opt.trim()} value={opt.trim()}>{opt.trim()}</option>
-                              ))}
-                            </select>
-                            <button
-                              onClick={async () => {
-                                if (savingFields.has(field.id)) return;
-                                setSavingFields(prev => new Set(prev).add(field.id));
-                                try {
-                                  await saveCustomField({
-                                    patientId: selectedPatient!.id,
-                                    customFieldId: field.id,
-                                    value: customFieldValues[field.id] || '',
-                                  }).unwrap();
-                                  refetchCustomFields();
-                                  showToast(t('other.saved'), 'success');
-                                } catch (error) {
-                                  showToast(t('other.failedToSave'), 'error');
-                                }
-                                setSavingFields(prev => { const next = new Set(prev); next.delete(field.id); return next; });
-                              }}
-                              disabled={savingFields.has(field.id)}
-                              className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                            >
-                              {savingFields.has(field.id) ? '...' : t('common.save')}
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex gap-2">
-                            <input
-                              type={field.fieldType === 'NUMBER' ? 'number' : field.fieldType === 'DATE' ? 'date' : 'text'}
-                              value={customFieldValues[field.id] || ''}
-                              onChange={(e) => setCustomFieldValues({ ...customFieldValues, [field.id]: e.target.value })}
-                              className="flex-1 px-3 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                              placeholder={`Enter ${field.name}`}
-                            />
-                            <button
-                              onClick={async () => {
-                                if (savingFields.has(field.id)) return;
-                                setSavingFields(prev => new Set(prev).add(field.id));
-                                try {
-                                  await saveCustomField({
-                                    patientId: selectedPatient!.id,
-                                    customFieldId: field.id,
-                                    value: customFieldValues[field.id] || '',
-                                  }).unwrap();
-                                  refetchCustomFields();
-                                  showToast(t('other.saved'), 'success');
-                                } catch (error) {
-                                  showToast(t('other.failedToSave'), 'error');
-                                }
-                                setSavingFields(prev => { const next = new Set(prev); next.delete(field.id); return next; });
-                              }}
-                              disabled={savingFields.has(field.id)}
-                              className="px-3 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                            >
-                              {savingFields.has(field.id) ? '...' : t('common.save')}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <h4 className="font-semibold text-gray-900 dark:text-white dark:text-white mb-3">{t('nav.appointments')}</h4>
-              {patientAppointments?.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400 dark:text-gray-400 text-sm">{t('other.noAppointmentsFound')}</p>
-              ) : (
-                <div className="space-y-2">
-                  {patientAppointments?.slice(0, 5).map((apt: Appointment) => (
-                    <div key={apt.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white dark:text-white text-sm">{new Date(apt.dateTime).toLocaleDateString()}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-400">Dr. {apt.doctor?.firstName} {apt.doctor?.lastName}</p>
-                      </div>
-                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                        apt.status === 'COMPLETED' ? 'status-completed' :
-                        apt.status === 'CANCELLED' ? 'status-cancelled' :
-                        'status-scheduled'
-                      }`}>
-                        {apt.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={() => setSelectedPatient(null)}
-              className="w-full mt-6 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:text-gray-300 rounded-xl font-medium transition-colors"
-            >
-              {t('common.close')}
-            </button>
-        </div>
-      </Modal>
-
-      {/* Create Patient Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={t('other.addNewPatient')}>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('patients.firstName')} *</label>
-                  <input
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('patients.lastName')} *</label>
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.email')}</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.phone')}</label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('patients.dateOfBirth')}</label>
-                <input
-                  type="date"
-                  value={formData.dateOfBirth}
-                  onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.address')}</label>
-                <input
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">{t('common.notes')}</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 font-medium transition-colors"
-                >
-                  {t('common.cancel')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isCreating}
-                  className="flex-1 btn-gradient text-white py-3 rounded-xl hover:shadow-lg font-medium transition-all disabled:opacity-50 btn-shine"
-                >
-                  {isCreating ? t('other.creating') : t('other.createPatient')}
-                </button>
-              </div>
-            </form>
-      </Modal>
+      <PatientForm
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSubmit={handleSubmit}
+        formData={formData}
+        setFormData={setFormData}
+        isLoading={isCreating}
+        t={t}
+      />
     </div>
   );
 }

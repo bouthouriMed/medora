@@ -172,41 +172,44 @@ function CalendarView({
           --fc-event-bg-color: #3b82f6;
           --fc-event-border-color: #3b82f6;
           --fc-today-bg-color: rgba(59, 130, 246, 0.1);
-          --fc-now-indicator-color: #ef4444;
           --fc-page-bg-color: #1f2937;
           --fc-neutral-bg-color: #374151;
           --fc-list-event-hover-bg-color: #374151;
         }
-        .dark .fc .fc-bg {
-          background-color: #1f2937 !important;
+        .dark .fc .fc-toolbar-title {
+          color: #f9fafb !important;
+        }
+        .dark .fc .fc-col-header-cell-cushion {
+          color: #e5e7eb !important;
+        }
+        .dark .fc .fc-daygrid-day-number {
+          color: #e5e7eb !important;
+        }
+        .dark .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+          color: #3b82f6 !important;
+        }
+        .dark .fc .fc-timegrid-axis-cushion {
+          color: #9ca3af !important;
+        }
+        .dark .fc .fc-scrollgrid {
+          border-color: #374151 !important;
+        }
+        .dark .fc .fc-scrollgrid td,
+        .dark .fc .fc-scrollgrid th {
+          border-color: #374151 !important;
+        }
+        .dark .fc-theme-standard td,
+        .dark .fc-theme-standard th {
+          border-color: #374151 !important;
         }
         .dark .fc .fc-daygrid-day {
           background-color: #1f2937 !important;
         }
+        .dark .fc .fc-daygrid-day:hover {
+          background-color: #374151 !important;
+        }
         .dark .fc .fc-daygrid-day.fc-day-today {
-          background-color: rgba(59, 130, 246, 0.2) !important;
-        }
-        .dark .fc .fc-daygrid-day-number {
-          color: #d1d5db !important;
-        }
-        .dark .fc .fc-col-header-cell {
-          background-color: #374151 !important;
-        }
-        .dark .fc .fc-col-header-cell-cushion {
-          color: #f9fafb !important;
-        }
-        .dark .fc .fc-scrollgrid {
-          background-color: #1f2937 !important;
-        }
-        .dark .fc .fc-timegrid-slot {
-          background-color: #1f2937 !important;
-        }
-        .dark .fc .fc-timegrid-axis {
-          background-color: #374151 !important;
-          color: #9ca3af !important;
-        }
-        .dark .fc .fc-day-other month {
-          background-color: #111827 !important;
+          background-color: rgba(59, 130, 246, 0.15) !important;
         }
         .dark .fc .fc-day-other {
           background-color: #111827 !important;
@@ -214,128 +217,36 @@ function CalendarView({
         .dark .fc .fc-day-other .fc-daygrid-day-number {
           color: #6b7280 !important;
         }
-        .dark .fc .fc-toolbar-title {
-          color: #f9fafb;
+        .dark .fc .fc-popover {
+          background-color: #1f2937 !important;
+          border-color: #374151 !important;
         }
-        .fc .fc-toolbar-title {
-          font-size: 1.25rem !important;
-          font-weight: 600;
-          color: #111827;
-        }
-        .fc .fc-button {
-          background-color: #f3f4f6 !important;
-          border-color: #e5e7eb !important;
-          color: #374151 !important;
-          font-weight: 500 !important;
-          padding: 0.5rem 1rem !important;
-          border-radius: 0.5rem !important;
-          text-transform: capitalize !important;
-          transition: all 0.2s !important;
-        }
-        .dark .fc .fc-button {
-          background-color: #4b5563 !important;
-          border-color: #6b7280 !important;
+        .dark .fc .fc-popover-header {
           color: #f9fafb !important;
         }
-        .fc .fc-button:hover {
-          background-color: #e5e7eb !important;
-          border-color: #d1d5db !important;
+        .dark .fc .fc-more-popover .fc-popover-body {
+          background-color: #1f2937 !important;
         }
-        .dark .fc .fc-button:hover {
-          background-color: #6b7280 !important;
-          border-color: #9ca3af !important;
-        }
-        .fc .fc-button-primary:not(:disabled).fc-button-active,
-        .fc .fc-button-primary:not(:disabled):active {
+        .dark .fc .fc-v-event {
           background-color: #3b82f6 !important;
           border-color: #2563eb !important;
+        }
+        .dark .fc .fc-timegrid-event .fc-time {
           color: #ffffff !important;
         }
-        .fc .fc-daygrid-day-number,
-        .fc .fc-col-header-cell-cushion {
-          color: #374151;
-          text-decoration: none;
+        .dark .fc .fc-timegrid-event .fc-title {
+          color: #ffffff !important;
         }
-        .dark .fc .fc-daygrid-day-number,
-        .dark .fc .fc-col-header-cell-cushion {
-          color: #d1d5db;
+        .dark .fc .fc-list-event:hover td {
+          background-color: #374151 !important;
         }
-        .fc .fc-daygrid-day.fc-day-today {
-          background-color: #eff6ff !important;
+        .dark .fc .fc-list-day-cushion {
+          color: #f9fafb !important;
+          background-color: #374151 !important;
         }
-        .dark .fc .fc-daygrid-day.fc-day-today {
-          background-color: rgba(59, 130, 246, 0.2) !important;
-        }
-        .fc .fc-event {
-          border-radius: 4px !important;
-          padding: 2px 4px !important;
-          font-size: 0.75rem !important;
-          cursor: pointer;
-          border: none !important;
-        }
-        .fc .fc-event:hover {
-          opacity: 0.9;
-          transform: translateY(-1px);
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .fc .fc-daygrid-event-dot {
-          display: none;
-        }
-        .fc .fc-timegrid-slot {
-          height: 3rem !important;
-        }
-        .fc .fc-timegrid-axis-cushion {
-          color: #9ca3af;
-          font-size: 0.75rem;
-        }
-        .dark .fc .fc-timegrid-axis-cushion {
-          color: #6b7280;
-        }
-        .fc .fc-scrollgrid {
-          border-color: #e5e7eb !important;
-        }
-        .dark .fc .fc-scrollgrid {
-          border-color: #4b5563 !important;
-        }
-        .fc .fc-scrollgrid td,
-        .fc .fc-scrollgrid th {
-          border-color: #e5e7eb !important;
-        }
-        .dark .fc .fc-scrollgrid td,
-        .dark .fc .fc-scrollgrid th {
-          border-color: #4b5563 !important;
-        }
-        .fc .fc-daygrid-day:hover {
-          background-color: #f9fafb;
-          cursor: pointer;
-        }
-        .dark .fc .fc-daygrid-day:hover {
-          background-color: #374151;
-        }
-        .fc-theme-standard td, .fc-theme-standard th {
-          border-color: #e5e7eb;
-        }
-        .dark .fc-theme-standard td, .dark .fc-theme-standard th {
-          border-color: #4b5563;
-        }
-        @media (max-width: 768px) {
-          .fc .fc-toolbar {
-            flex-direction: column !important;
-            gap: 0.75rem !important;
-          }
-          .fc .fc-toolbar-title {
-            font-size: 1rem !important;
-          }
-          .fc .fc-button {
-            padding: 0.375rem 0.75rem !important;
-            font-size: 0.875rem !important;
-          }
-          .fc .fc-daygrid-day-events {
-            display: none;
-          }
-          .fc .fc-daygrid-day-top {
-            flex-direction: row;
-          }
+        .dark .fc .fc-event-title,
+        .dark .fc .fc-event-time {
+          color: #ffffff !important;
         }
       `}</style>
       <FullCalendar

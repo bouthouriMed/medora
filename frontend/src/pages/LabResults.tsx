@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { useGetLabResultsQuery, useGetPatientsQuery, useCreateLabResultMutation, useUpdateLabResultMutation, useDeleteLabResultMutation } from '../api';
+import { useGetLabResultsQuery } from '../api';
 import { showToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import type { LabResult, Patient } from '../types';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle, Minus } from 'lucide-react';
+import { useLabResults, getResultStatus, LAB_CATEGORIES } from '../hooks/useLabResults';
 
 const LAB_CATEGORIES = [
   'Blood Test',
@@ -74,84 +75,22 @@ export default function LabResults() {
     'Microbiology': t('other.labMicrobiology'),
     'Other': t('other.labOther'),
   };
-  const [showModal, setShowModal] = useState(false);
-  const [editingResult, setEditingResult] = useState<LabResult | null>(null);
-  const [filterPatient, setFilterPatient] = useState('');
-  const [filterStatus, setFilterStatus] = useState('');
 
-  const { data: labResults, isLoading } = useGetLabResultsQuery({
-    patientId: filterPatient || undefined,
-    status: filterStatus || undefined,
-  });
-  const { data: patients } = useGetPatientsQuery('');
-  const [createLabResult] = useCreateLabResultMutation();
-  const [updateLabResult] = useUpdateLabResultMutation();
-  const [deleteLabResult] = useDeleteLabResultMutation();
-
-  const [formData, setFormData] = useState({
-    patientId: '',
-    testName: '',
-    category: '',
-    result: '',
-    normalRange: '',
-    status: 'PENDING',
-    notes: '',
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (editingResult) {
-        await updateLabResult({
-          id: editingResult.id,
-          ...formData,
-        }).unwrap();
-        showToast(t('other.labResultUpdated'), 'success');
-      } else {
-        await createLabResult(formData).unwrap();
-        showToast(t('other.labResultCreated'), 'success');
-      }
-      setShowModal(false);
-      setEditingResult(null);
-      setFormData({ patientId: '', testName: '', category: '', result: '', normalRange: '', status: 'PENDING', notes: '' });
-    } catch (error) {
-      showToast(t('other.failedToSaveLabResult'), 'error');
-    }
-  };
-
-  const handleEdit = (result: LabResult) => {
-    setEditingResult(result);
-    setFormData({
-      patientId: result.patientId,
-      testName: result.testName,
-      category: result.category || '',
-      result: result.result || '',
-      normalRange: result.normalRange || '',
-      status: result.status,
-      notes: result.notes || '',
-    });
-    setShowModal(true);
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm(t('other.deleteThisLabResult'))) {
-      try {
-        await deleteLabResult(id).unwrap();
-        showToast(t('other.labResultDeleted'), 'success');
-      } catch (error) {
-        showToast(t('other.failedToDeleteLabResult'), 'error');
-      }
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'COMPLETED': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-      case 'ABNORMAL': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-      case 'PENDING': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-      default: return 'bg-gray-100 text-gray-700 dark:text-gray-300';
-    }
-  };
+  const {
+    showModal, setShowModal,
+    editingResult, setEditingResult,
+    filterPatient, setFilterPatient,
+    filterStatus, setFilterStatus,
+    formData, setFormData,
+    labResults,
+    patients,
+    isLoading,
+    handleSubmit,
+    handleEdit,
+    handleDelete,
+    handleOpenCreate,
+    getStatusColor,
+  } = useLabResults(t);
 
   const getResultIndicator = (result: string | null, normalRange: string | null) => {
     const status = getResultStatus(result, normalRange);
@@ -191,11 +130,7 @@ export default function LabResults() {
         <p className="text-gray-500 dark:text-gray-400 mt-1">{t('other.trackLabResults')}</p>
         </div>
         <button
-          onClick={() => {
-            setEditingResult(null);
-            setFormData({ patientId: '', testName: '', category: '', result: '', normalRange: '', status: 'PENDING', notes: '' });
-            setShowModal(true);
-          }}
+          onClick={handleOpenCreate}
           className="btn-gradient text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all duration-200 font-medium btn-shine"
         >
           + {t('other.addLabResult')}
